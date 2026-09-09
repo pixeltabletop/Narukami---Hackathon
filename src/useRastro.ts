@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { api, type Session, type ModelStatus } from "./api";
 import type { Category, Dashboard } from "../server/domain";
+import type { Commitment, PlanningView, PlanInput } from "../server/planning-domain";
 export const useRastro = () => {
   const [session, setSession] = useState<Session | null>(null),
     [period, setPeriod] = useState("2026-09"),
     [dashboard, setDashboard] = useState<Dashboard | null>(null);
+  const [planning, setPlanning] = useState<PlanningView | null>(null);
   const [model, setModel] = useState<ModelStatus>({ status: "disabled" }),
     [tab, setTab] = useState("Resumen"),
     [error, setError] = useState("");
@@ -38,6 +40,13 @@ export const useRastro = () => {
       active = false;
     };
   }, [session?.customer?.id, period, revision]);
+  useEffect(() => {
+    if (!session?.customer) return;
+    let active = true;
+    setPlanning(null);
+    api<PlanningView>("/planning").then((view) => { if (active) setPlanning(view); }).catch((e) => { if (active) setError(e.message); });
+    return () => { active = false; };
+  }, [session?.customer?.id]);
   useEffect(() => {
     if (!session?.customer) return;
     let active = true;
@@ -87,6 +96,18 @@ export const useRastro = () => {
       .then(setModel)
       .catch((e) => setError(e.message));
   };
+  const savePlan = async (plan: PlanInput) => {
+    try {
+      setPlanning(await api<PlanningView>("/planning", { method: "PUT", body: JSON.stringify(plan) }));
+      setError("");
+    } catch (e) { setError((e as Error).message); }
+  };
+  const setCommitment = async (id: string, state: Commitment["state"]) => {
+    try {
+      setPlanning(await api<PlanningView>("/commitments/" + id, { method: "PATCH", body: JSON.stringify({ state }) }));
+      setError("");
+    } catch (e) { setError((e as Error).message); }
+  };
   const showEvidence = (ids: string[], title: string) => {
     setEvidence({ ids, title });
     setTab("Movimientos");
@@ -112,6 +133,7 @@ export const useRastro = () => {
     period,
     setPeriod,
     dashboard,
+    planning,
     model,
     tab,
     setTab,
@@ -126,6 +148,8 @@ export const useRastro = () => {
     correct,
     login,
     load,
+    savePlan,
+    setCommitment,
     showEvidence,
     customer,
     rows,

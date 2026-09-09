@@ -8,6 +8,7 @@ import { analyze } from "./analysis";
 import { categories } from "./domain";
 import { demoCustomers } from "./fixtures";
 import { MovementRepository } from "./repository";
+import { PlanningRepository } from "./planning-repository";
 import { LocalQvac, inferenceEnabled } from "./qvac";
 declare module "express-session" {
   interface SessionData {
@@ -17,6 +18,7 @@ declare module "express-session" {
 }
 const app = express(),
   repository = new MovementRepository(),
+  planningRepository = new PlanningRepository(),
   qvac = new LocalQvac();
 app.disable("x-powered-by");
 app.use(express.json({ limit: "8kb" }));
@@ -88,6 +90,23 @@ app.patch("/api/movements/:id/category", (req, res) => {
   )
     return res.status(404).json({ error: "Movimiento no encontrado" });
   res.json({ ok: true });
+});
+const planSchema = z.object({
+  nextIncomeDate: z.string().date(),
+  variableBudgetCents: z.number().int().nonnegative().max(100_000_000),
+  reserveCents: z.number().int().nonnegative().max(100_000_000),
+}).strict();
+app.get("/api/planning", (req, res) =>
+  res.json(planningRepository.get(req.session.customerId!)),
+);
+app.put("/api/planning", (req, res) =>
+  res.json(planningRepository.savePlan(req.session.customerId!, planSchema.parse(req.body))),
+);
+app.patch("/api/commitments/:id", (req, res) => {
+  const { state } = z.object({ state: z.enum(["confirmed", "excluded"]) }).strict().parse(req.body);
+  const view = planningRepository.setCommitment(req.session.customerId!, String(req.params.id), state);
+  if (!view) return res.status(404).json({ error: "Compromiso no encontrado" });
+  res.json(view);
 });
 app.get("/api/model", (_req, res) =>
   res.json({
@@ -188,5 +207,6 @@ const server = app.listen(port, "127.0.0.1", () =>
 process.on("SIGINT", () => {
   server.close();
   repository.close();
+  planningRepository.close();
   void qvac.close().finally(() => process.exit());
 });

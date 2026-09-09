@@ -16,6 +16,25 @@ try {
   ).toBeVisible();
   await expect(page.locator(".primary-stat>strong")).toHaveText(/353.98/);
   mkdirSync("artifacts", { recursive: true });
+  await page.getByRole("button", { name: "Organiza", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Ajusta tus supuestos" })).toBeVisible();
+  await expect(page.locator(".planning-hero")).toContainText("169.51");
+  await page.screenshot({ path: "artifacts/organiza-desktop.png", fullPage: true });
+  const reserve = page.getByLabel("Reserva que no quieres tocar (USD)");
+  await reserve.fill("90.00");
+  await Promise.all([
+    page.waitForResponse((r) => r.url().endsWith("/api/planning") && r.request().method() === "PUT" && r.status() === 200),
+    page.getByRole("button", { name: "Recalcular mi margen" }).click(),
+  ]);
+  await expect(page.locator(".planning-hero")).toContainText("179.51");
+  await reserve.fill("100.00");
+  await page.getByRole("button", { name: "Recalcular mi margen" }).click();
+  await expect(page.locator(".planning-hero")).toContainText("169.51");
+  await page.getByRole("button", { name: "Escenarios", exact: true }).click();
+  await expect(page.getByRole("heading", { name: /Elige cuánto separar/ })).toBeVisible();
+  await expect(page.locator(".scenario")).toHaveCount(3);
+  await page.screenshot({ path: "artifacts/escenarios-desktop.png", fullPage: true });
+  await page.getByRole("button", { name: "Resumen", exact: true }).click();
   await page.screenshot({ path: "artifacts/desktop.png", fullPage: true });
   await page.getByRole("button", { name: "Recurrentes", exact: true }).click();
   await expect(
@@ -95,6 +114,12 @@ try {
     .selectOption("ana");
   await expect(page.locator(".primary-stat>strong")).toHaveText(/353.98/);
 
+  await page.getByRole("button", { name: "Organiza", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Ajusta tus supuestos" })).toBeVisible();
+  await page.screenshot({ path: "artifacts/organiza-mobile.png", fullPage: true });
+  await page.getByRole("button", { name: "Escenarios", exact: true }).click();
+  await expect(page.locator(".scenario")).toHaveCount(3);
+
   await page.screenshot({ path: "artifacts/mobile.png", fullPage: true });
   if (
     await page.evaluate(
@@ -170,6 +195,9 @@ try {
           "csrf",
           "foreign-movement-denied",
           "customer-query-ignored",
+          "planning-margin",
+          "planning-persistence",
+          "savings-scenarios",
         ],
         errors,
       },

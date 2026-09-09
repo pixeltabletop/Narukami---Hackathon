@@ -4,6 +4,8 @@ import { LoginScreen } from "./LoginScreen";
 import { SpendingOverview } from "./SpendingOverview";
 import { RecurringPanel } from "./RecurringPanel";
 import { ActivityPanel } from "./ActivityPanel";
+import { OrganizePanel } from "./OrganizePanel";
+import { ScenariosPanel } from "./ScenariosPanel";
 import { monthNames } from "./period-labels";
 export const App = () => {
   const state = useRastro();
@@ -21,15 +23,23 @@ export const App = () => {
               ? "Entiende tu dinero."
               : tab === "Movimientos"
                 ? "Sigue cada movimiento."
-                : "Reconoce lo que se repite."}
+                : tab === "Recurrentes"
+                  ? "Reconoce lo que se repite."
+                  : tab === "Organiza"
+                    ? "Haz que el saldo llegue contigo."
+                    : "Prueba antes de decidir."}
           </h1>
           <p className="muted">
             {tab === "Resumen"
               ? "Menos dudas. Más claridad sobre tus gastos."
-              : "Cada importe conserva su contexto y su origen."}
+              : tab === "Organiza"
+                ? "Ordena lo comprometido, lo variable y lo que quieres proteger."
+                : tab === "Escenarios"
+                  ? "Compara cuánto ahorrar y cuánto conservarías disponible."
+                  : "Cada importe conserva su contexto y su origen."}
           </p>
         </div>
-        <label className="period">
+        {!["Organiza", "Escenarios"].includes(tab) && <label className="period">
           Período
           <select
             aria-label="Período"
@@ -42,7 +52,7 @@ export const App = () => {
               </option>
             ))}
           </select>
-        </label>
+        </label>}
       </div>
       {error && (
         <p role="alert" className="error">
@@ -60,12 +70,11 @@ export const App = () => {
               : "Del 1 al " + dashboard.cutoff + " de cada mes"}{" "}
             · Moneda USD
           </div>
-          {tab === "Resumen" && <SpendingOverview state={state} />}
-          {tab === "Recurrentes" ? (
-            <RecurringPanel state={state} />
-          ) : (
-            <ActivityPanel state={state} />
-          )}
+          {tab === "Resumen" && <><SpendingOverview state={state} /><ActivityPanel state={state} /></>}
+          {tab === "Movimientos" && <ActivityPanel state={state} />}
+          {tab === "Recurrentes" && <RecurringPanel state={state} />}
+          {tab === "Organiza" && <OrganizePanel state={state} />}
+          {tab === "Escenarios" && <ScenariosPanel state={state} />}
         </>
       )}
       <footer>

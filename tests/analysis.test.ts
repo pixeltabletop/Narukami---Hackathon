@@ -51,6 +51,10 @@ test("rechaza períodos inválidos y futuros", () => {
   for (const p of ["2026-13", "2026-9", "2026-10", "otro"])
     assert.throws(() => analyze(source, "ana", p));
 });
+test("rechaza fechas imposibles y categorías fuera del catálogo", () => {
+  assert.throws(() => uniqueMovements([{ ...source[0], date: "2026-08-00" }]));
+  assert.throws(() => uniqueMovements([{ ...source[0], category: "Inventada" as never }]));
+});
 test("recurrencias conservan evidencia de ambos períodos y cambios de importe", () => {
   const d = analyze(source, "ana", "2026-09"),
     r = d.recurring.find((r) => r.merchant === "Cine en casa")!;

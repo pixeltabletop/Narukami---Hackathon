@@ -12,6 +12,12 @@ export const uniqueMovements = (rows: Movement[]): Movement[] => {
   for (const row of rows) {
     if (!Number.isSafeInteger(row.amountCents) || row.amountCents < 0)
       throw new Error("Importe inválido");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(row.date) || Number.isNaN(Date.parse(row.date + "T00:00:00Z")))
+      throw new Error("Fecha inválida");
+    const [year, month, day] = row.date.split("-").map(Number);
+    if (new Date(Date.UTC(year, month - 1, day)).toISOString().slice(0, 10) !== row.date)
+      throw new Error("Fecha inválida");
+    if (!categories.includes(row.category)) throw new Error("Categoría inválida");
     const key = row.customerId + ":" + row.id,
       prior = seen.get(key);
     if (prior && JSON.stringify(prior) !== JSON.stringify(row))
@@ -62,6 +68,8 @@ export const analyze = (
       };
     })
     .sort((a, b) => b.current - a.current);
+  if (amounts.reduce((n, category) => n + category.current, 0) !== total)
+    throw new Error("El total no coincide con sus categorías");
   const facts: Fact[] = [
     {
       id: "total",

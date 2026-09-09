@@ -17,7 +17,7 @@ export const AppFrame = ({
         </a>
         <p className="sidebar-caption">TU DINERO, MÁS CLARO.</p>
         <nav aria-label="Navegación principal">
-          {["Resumen", "Movimientos", "Recurrentes"].map((name, i) => (
+          {["Resumen", "Movimientos", "Recurrentes", "Organiza", "Escenarios"].map((name, i) => (
             <button
               className={tab === name ? "active" : ""}
               key={name}
@@ -26,7 +26,7 @@ export const AppFrame = ({
                 setEvidence(null);
               }}
             >
-              <span aria-hidden="true">{["◫", "≡", "↻"][i]}</span>
+              <span aria-hidden="true">{["◫", "≡", "↻", "◎", "◇"][i]}</span>
               {name}
             </button>
           ))}
@@ -86,7 +86,7 @@ export const AppFrame = ({
               </option>
             ))}
           </select>
-          <span className="demo-badge">DEMO · DATOS SINTÉTICOS</span>
+          <span className="demo-badge"><i aria-hidden="true" /> CAJA DE AHORROS · IDENTIDAD PENDIENTE</span>
         </header>
         <div className="page-content">{children}</div>
       </main>

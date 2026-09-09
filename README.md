@@ -1,78 +1,75 @@
-# Rastro — estructura lista, modelos desactivados
+# Rastro — inteligencia local para entender y organizar el dinero
 
-Prototipo de análisis de gastos de tarjeta para el reto de Caja de Ahorros.
-Interfaz, API, cálculos, sesiones de demo y correcciones funcionan sin cargar modelos.
-**La inferencia está desactivada por defecto. Esta entrega no incluye pesos de IA.**
+Prototipo para el Track 05 de Caja de Ahorros. Rastro une dos recorridos: explica el consumo de tarjeta con evidencia y ayuda a organizar el saldo disponible hasta el próximo ingreso. Los cálculos se realizan en el servidor local y QVAC se usa exclusivamente en el dispositivo para clasificar las preguntas del cliente.
 
-## Trasladar a otra laptop
-1. Extraer este proyecto en un disco local, por ejemplo C:/Proyectos/rastro. Evitar instalar node_modules en Google Drive.
-2. Instalar Node 24 y npm si faltan.
-3. Desde la carpeta:
+**La inferencia está desactivada por defecto y el repositorio no incluye pesos de modelos.** Toda la demostración usa clientes y movimientos sintéticos.
+
+## Ejecutar
+
+Requiere Node 24 y npm. En Windows conviene trabajar en un disco local, fuera de carpetas sincronizadas.
+
 ```powershell
 npm ci
 npm run build
 npm test
 npm run dev
 ```
-4. Abrir http://127.0.0.1:4173 y elegir un cliente ficticio.
-5. Entregar a la otra IA el archivo **HANDOFF_AI.md**.
 
-npm ci descarga dependencias de software, pero la aplicación no solicita pesos ni carga modelos al arrancar.
-No establecer RASTRO_ENABLE_QVAC=1 durante la revisión sin IA.
-El script npm run qvac:check se omite explícitamente cuando la inferencia está desactivada.
+Abrir `http://127.0.0.1:4173` y seleccionar un cliente ficticio. Con el servidor activo, `npm run ui:check` recorre la experiencia en Edge para escritorio y móvil.
 
 ## Qué funciona
-- Resumen de gasto neto, categorías y comparación de períodos.
-- Bandeja con búsqueda, filtros y movimientos de respaldo.
-- Posibles cargos recurrentes y cambios de importe.
-- Correcciones de categoría por cliente/comercio en SQLite.
-- Dos clientes ficticios con sesiones separadas.
-- Vista adaptable a escritorio y móvil.
-- Hallazgos calculados identificados como tales, sin simular respuestas de IA.
 
-## Qué queda pendiente
-- Configurar y validar QVAC/modelo en la laptop de destino.
-- Completar evaluación de preguntas en español y latencia.
-- Verificar inferencia con la salida de red del sistema deshabilitada.
-- Conectar sistemas reales del banco solo con autorización.
-- Publicar repositorio y video accesibles al jurado.
+- **Entiende:** gasto neto, comparación de períodos, categorías, movimientos y posibles cargos recurrentes.
+- **Organiza:** saldo explícito, pendientes, compromisos confirmables, presupuesto variable, reserva y margen hasta el próximo ingreso.
+- **Escenarios:** alternativas conservadora, sugerida y ambiciosa, con el dinero que quedaría en cada caso.
+- Correcciones de categoría y planes persistentes por cliente en SQLite.
+- Dos clientes ficticios, sesiones separadas, CSRF y aislamiento de registros.
+- Diseño adaptable, estados visibles y acceso desde cada resultado a su evidencia.
+
+## Fórmula del plan
+
+`margen = saldo − pendientes − compromisos confirmados − presupuesto variable − reserva`
+
+El próximo ingreso no se suma antes de recibirse. Las compras de tarjeta pertenecen al análisis de consumo; el flujo de cuenta solo registra el pago de tarjeta, evitando contar el mismo dinero dos veces. La sugerencia de ahorro toma la mitad de la capacidad histórica y nunca supera el margen disponible.
 
 ## Arquitectura
-React + TypeScript → API Express → repositorio de movimientos → motor determinista.
-El adaptador QVAC y el validador de respuestas están preparados, pero desactivados.
-Los cálculos usan enteros en centavos. El modelo no ejecuta SQL ni mueve dinero.
-Las referencias e importes de una respuesta se verifican contra sus hechos seleccionados.
-La comprobación estructural y numérica no garantiza toda la semántica de la IA.
 
-## Reglas
-Gasto neto = compras y comisiones contabilizadas menos devoluciones y reversos.
-Pagos de tarjeta, pendientes y anulados se muestran separados.
-Solo USD. Corte sintético: 9 de septiembre de 2026.
-Septiembre 1–9 se compara con agosto 1–9; los meses anteriores son completos.
-Si falta historial anterior, no se interpreta como gasto cero.
-Recurrencias son heurísticas, no confirmaciones de suscripción.
+React + TypeScript → API Express local → SQLite + fixtures sintéticos → motores deterministas.
 
-## Límites y privacidad
-Todos los clientes, comercios y movimientos son sintéticos.
-No es una aplicación oficial del banco ni se solicitan credenciales bancarias.
-El servidor escucha únicamente en localhost; las sesiones son de demostración.
-En producción se requieren identidad bancaria, TLS, controles de retención y auditoría.
-No hay proveedor de inferencia en nube ni fallback remoto.
-No usar carpetas sincronizadas con terceros para datos bancarios reales.
+QVAC recibe la pregunta y hechos ya calculados. Su salida permitida contiene únicamente una intención tipada y entre una y tres referencias de evidencia. La aplicación redacta la respuesta desde esos hechos; el modelo no redacta libremente, no calcula importes, no ejecuta SQL y no mueve dinero. No existe fallback de inferencia en nube.
+
+## QVAC pendiente de validación
+
+El adaptador usa QVAC SDK 0.19.0 y el modelo `QWEN3_4B_INST_Q4_K_M`. Para habilitarlo en el equipo de demostración:
+
+```powershell
+$env:RASTRO_ENABLE_QVAC="1"
+npm run qvac:check
+npm run dev
+```
+
+Antes de elegir el modelo final se debe medir un corpus fijo de preguntas bancarias, exactitud de intención, referencias válidas, latencia, memoria y ejecución sin red. La máquina usada para este incremento tenía menos de 1 GB libre, por lo que no se cargó el modelo para evitar una validación engañosa.
+
+## Privacidad y límites
+
+- No contiene datos reales ni solicita credenciales bancarias.
+- El servidor escucha solo en `127.0.0.1` y limita el acceso de la demo a localhost.
+- No es una aplicación oficial del banco ni una instrucción financiera.
+- Una integración bancaria real requiere identidad, TLS, autorización, retención y auditoría del banco.
+- La identidad visual oficial está pendiente; el sello superior es el punto reemplazable para el logo y la guía de Caja de Ahorros.
 
 ## Base preexistente declarada
-Código de Rastro creado para este prototipo con asistencia de Codex; sin fork de una app bancaria.
-Dependencias: QVAC SDK 0.19.0, React, Vite, Express, express-session, Zod, TypeScript, tsx y herramientas de prueba. Versiones fijadas en package-lock.json.
-El adaptador se desarrolló usando los ejemplos oficiales del SDK:
-https://docs.qvac.tether.io/js-ts-sdk/
-https://docs.qvac.tether.io/ai-capabilities/text-generation/
-Se aplicó la skill personal software-architecture.
-Se exploraron previamente Llama 3.2 1B y Qwen3 4B del catálogo QVAC en la laptop original.
-Sus pesos no se incluyen y no son necesarios para esta entrega estructural. La evaluación final de IA quedó pendiente por decisión del usuario.
-No se usaron logotipos oficiales ni se presupone aval de Caja de Ahorros.
+
+La base de Rastro recibida de Diego el 9 de septiembre de 2026 se importó sin modificar en el commit `7c02033`. Incluía la experiencia de análisis de tarjeta, React/Vite, Express, SQLite, fixtures, pruebas y el adaptador inicial de QVAC. Este incremento agrega el dominio de cuenta, planificación y escenarios; endurece la validación de datos; y cambia la respuesta de QVAC a un contrato de intención tipada con redacción determinista.
+
+Dependencias declaradas y fijadas en `package-lock.json`: QVAC SDK, React, Vite, Express, express-session, Zod, TypeScript, tsx y Playwright. Documentación de referencia del SDK: https://docs.qvac.tether.io/js-ts-sdk/ y https://docs.qvac.tether.io/ai-capabilities/text-generation/.
+
+No se han usado logotipos oficiales ni se presupone aval de Caja de Ahorros.
 
 ## Archivos importantes
-- HANDOFF_AI.md: instrucciones de continuación.
-- docs/ARQUITECTURA.md: componentes y decisiones.
-- docs/DEMO.md: guion futuro.
-- docs/VALIDACION.md: resultados de esta entrega sin modelos.
+
+- `blueprint.md`: arquitectura completa y criterios de aceptación.
+- `AGENTS.md`: reglas de construcción para cualquier agente.
+- `docs/ARQUITECTURA.md`: arquitectura de la base recibida.
+- `docs/VALIDACION.md`: validación previa sin modelos.
+- `scripts/ui-check.ts`: recorrido funcional reproducible.
