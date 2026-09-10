@@ -68,8 +68,9 @@ npm run qvac:check
 npm run dev
 ```
 
-`npm run qvac:check` carga el modelo, corre siete preguntas reales (resumen, comparación,
-recurrencias, traslados y las tres de historial) y escribe `artifacts/qvac-check.json` con el
+`npm run qvac:check` carga el modelo, corre nueve preguntas reales (resumen, comparación,
+recurrencias, traslados, las tres de historial y las dos que miran hacia adelante) y escribe
+`artifacts/qvac-check.json` con el
 modelo, el tiempo de carga, la latencia de cada respuesta y la medición de red completa.
 
 El comando **falla si el modelo devuelve una intención equivocada**. Cada pregunta declara qué
@@ -202,7 +203,7 @@ Tres capas, no una promesa:
    que existe justamente para poder demostrar que no había red. Cualquier otro destino rompe la
    suite. Es una cerca, no una declaración.
 3. **La corrida sin red, con todo encendido.** Con el Wi-Fi desconectado, el modelo de texto
-   responde las siete preguntas y Whisper transcribe las dos frases dictadas. Ni el texto ni la
+   responde las nueve preguntas y Whisper transcribe las dos frases dictadas. Ni el texto ni la
    voz necesitan internet.
 
    La medición de red no se toma a la ligera, porque es la evidencia que decide el reto. Un solo
@@ -427,5 +428,6 @@ No se presupone aval de Caja de Ahorros ni titularidad sobre su marca.
 - `AGENTS.md`: reglas de construcción para cualquier agente que toque este repositorio.
 - `docs/ARQUITECTURA.md`: cómo está armado y cuál es el contrato con el modelo.
 - `docs/VALIDACION.md`: qué se verificó, con qué resultado y qué falta.
-- `docs/DEMO.md`: guion de cinco minutos, minuto a minuto.
-- `docs/BLUEPRINT.md`: el diseño original, congelado antes de escribir código. Documento histórico.
+- `docs/DEMO.md`: guion de la demostración en vivo, minuto a minuto.
+- `docs/GUION-VIDEO.md`: guion narrado del video, con la locución separada de la acción en pantalla y la regla de montaje: se acelera la espera, nunca se sustituye una respuesta del modelo.
+- `audio/`: dos frases sintéticas en español para poder correr la prueba de dictado sin grabar nada. La voz en off del video se genera con `npm run locucion` desde el propio guion.

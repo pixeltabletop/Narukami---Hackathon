@@ -1,6 +1,6 @@
 # Chen — reglas de construcción
 
-- El Track 05 Caja de Ahorros es un subproyecto independiente del Track 01 Philips.
+- Esta es una entrega independiente para el Track 05 de Caja de Ahorros.
 - La inferencia bancaria se ejecuta localmente con QVAC; una API de inferencia en nube descalifica la entrega.
 - Solo se usan datos sintéticos o públicos. Nunca agregar datos reales de clientes.
 - El servidor calcula importes en centavos enteros. El modelo no calcula saldos, márgenes ni escenarios.

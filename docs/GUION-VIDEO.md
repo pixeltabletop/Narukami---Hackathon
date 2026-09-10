@@ -121,7 +121,7 @@ Hoy, este portátil es el dispositivo y el servidor. Express escucha solamente e
 ## Antes de grabar, en este orden
 
 1. Liberar memoria. Con menos de cuatro gigabytes libres el modelo tarda minutos en cargar y la
-   grabación se vuelve impracticable. Cerrar lo que esté ocupando memoria, Jajanken incluido.
+   grabación se vuelve impracticable. Cerrar todo lo demás antes de empezar.
 2. `npm run fit:check`, para saber si la máquina de grabación aguanta el modelo.
 3. `npm run demo`, pulsar **Cargar modelo local** y esperar el estado listo. No es automático.
 4. La corrida sin red ya está hecha y archivada, del 10 de septiembre. Si se rehace, poner el

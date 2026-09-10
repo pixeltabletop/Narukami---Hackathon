@@ -6,7 +6,7 @@ process.env.CHEN_ENABLE_QVAC = "1";
 console.log(
   [
     "Chen con inferencia local activada.",
-    "La primera vez descarga el modelo (2.33 GB). Después arranca desde caché.",
+    "La primera vez descarga el modelo (unos 2,5 GB). Después arranca desde caché.",
     "Abre http://127.0.0.1:4173 y toca «Cargar modelo local» en el Asistente.",
     "",
   ].join("\n"),
