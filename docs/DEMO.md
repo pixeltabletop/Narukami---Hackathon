@@ -34,7 +34,13 @@ evidencias. La aplicación redacta la respuesta desde los hechos ya calculados. 
 suma, no inventa cifras y no ejecuta consultas.
 Abrir la evidencia de una respuesta para mostrar el movimiento exacto.
 
-**2:20 – 3:00 · Productos, recurrentes y correcciones**
+**2:20 – 2:50 · El asistente, dictado y con memoria de meses**
+Tocar el micrófono y preguntar en voz alta: «¿en qué rubro se me ha ido más en los últimos tres
+meses?». Decir que la voz también se transcribe aquí, con Whisper dentro de QVAC, porque la API
+del navegador mandaría el audio a un servidor ajeno. Después preguntar por escrito «si aparto
+cien dólares al mes, ¿cuánto junto hasta fin de año?» y abrir la evidencia de una respuesta.
+
+**2:50 – 3:00 · Productos, recurrentes y correcciones**
 En la bandeja de movimientos, cambiar el filtro de producto entre tarjeta de crédito, cuenta
 corriente y cuenta de ahorros. Señalar que el pago de tarjeta aparece en la cuenta y no vuelve
 a contarse como consumo. Mostrar los cargos que se repiten y uno que cambió de importe.

@@ -66,3 +66,22 @@ test("un traslado tiene encabezado propio y exige su propia evidencia", () => {
     /no coincide con la evidencia/,
   );
 });
+
+test("la temporalidad se decide por regla y recorta lo que el modelo puede elegir", async () => {
+  const { timeframeHint } = await import("../server/timeframe");
+  // Estas frases no admiten discusión: son de varios meses.
+  for (const q of [
+    "¿Cuánto llevo gastado en Restaurantes?",
+    "¿En qué rubro he gastado más en los últimos tres meses?",
+    "¿Cuál es mi promedio mensual en suscripciones?",
+    "¿Cuánto he gastado en lo que va del año?",
+  ])
+    assert.equal(timeframeHint(q), "history", q);
+  assert.equal(
+    timeframeHint("Si aparto cien dólares al mes, ¿cuánto junto hasta fin de año?"),
+    "savings",
+  );
+  // Una pregunta del mes no puede quedar atrapada en el historial.
+  for (const q of ["¿Por qué gasté más?", "¿Qué me cobran seguido?"])
+    assert.equal(timeframeHint(q), "unclear", q);
+});

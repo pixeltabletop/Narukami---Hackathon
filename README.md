@@ -158,6 +158,44 @@ la aplicación redacta con importes ya calculados, y cada afirmación se abre ha
 que la sostienen. Mientras piensa se reproduce el loop oficial de Caja de Ahorros, que es también
 la espera al cargar el modelo y al guardar cambios.
 
+## Preguntas que responde
+
+Además del mes en curso, Chen responde sobre varios meses. El modelo nunca calcula: clasifica y
+llena huecos tipados, y la aplicación hace la aritmética.
+
+| Lo que pregunta el cliente | Lo que devuelve |
+| --- | --- |
+| ¿Cuánto llevo gastado en Restaurantes? | Total del período, porcentaje del gasto y promedio mensual |
+| ¿Cuánto he gastado en Nube Música? | Total, número de cargos, promedio mensual y su rubro |
+| ¿En qué rubro se me ha ido más en los últimos tres meses? | Los tres rubros que más pesan, con importe y porcentaje |
+| Si aparto cien dólares al mes, ¿cuánto junto hasta fin de año? | El acumulado, los meses de aporte y qué porcentaje de un mes representa |
+
+Dos detalles que sostienen la honestidad de esas respuestas. La ventana declara el mes parcial:
+si septiembre va por el día 9, se dice, porque promediar sin avisar haría parecer que el cliente
+gasta menos. Y la gramática solo admite rubros y comercios que existen en sus datos, así que el
+modelo no puede inventar uno.
+
+Decidir si una pregunta abarca varios meses es trivial con una regla y el modelo de 4B lo
+fallaba, porque se ancla en los hechos del mes que tiene delante. La regla resuelve la
+temporalidad y recorta el enum del esquema; el modelo sigue haciendo lo difícil, que es elegir
+la intención exacta y extraer el rubro o el comercio. Una instrucción se puede ignorar, una
+gramática no.
+
+## Dictado, también local
+
+El micrófono del asistente transcribe con Whisper dentro de QVAC, en el mismo equipo. La API de
+voz del navegador manda el audio a un servidor del fabricante, y eso sacaría del dispositivo un
+dato del cliente, que es exactamente lo que el reto prohíbe.
+
+El navegador captura a WAV PCM de 16 bits, 16 kHz y mono, que es lo que Whisper espera, y lo
+envía crudo al servidor local. Medido en esta máquina: el modelo carga en 17 s y transcribe una
+frase en 1.5 s. Lo dictado se deja en el campo para que el cliente lo revise antes de enviar; no
+se corrige en silencio, porque colapsar sinónimos cambia la pregunta.
+
+```powershell
+npm run voice:check -- rutaludio.wav
+```
+
 ## Guía dentro de la aplicación
 
 La pestaña Guía explica, sección por sección, qué entra en cada cálculo, qué queda fuera a

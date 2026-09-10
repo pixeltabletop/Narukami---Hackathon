@@ -1192,8 +1192,10 @@ tr.no-cuenta .amount {
 .forecast-hero.ok {
   background: #0e3a6b;
 }
-.forecast-hero.red {
-  background: #6d2230;
+/* Ámbar de aviso, no rojo de alarma: la persona todavía tiene días para
+   acomodar el tramo, y asustarla es contraproducente. */
+.forecast-hero.alerta {
+  background: #8a5a18;
 }
 .forecast-hero > div:first-child > strong {
   display: block;
@@ -1209,8 +1211,8 @@ tr.no-cuenta .amount {
   margin: 0;
   font-size: 12px;
 }
-.forecast-hero.red p {
-  color: #ecd0d4;
+.forecast-hero.alerta p {
+  color: #f3e3cb;
 }
 .forecast-hero .balance-breakdown {
   background: rgba(255, 255, 255, 0.16);
@@ -1278,7 +1280,7 @@ tr.no-cuenta .amount {
   min-width: 3px;
 }
 .forecast-bar.neg {
-  background: #c0697a;
+  background: #d99a4e;
 }
 .forecast-list {
   display: grid;
@@ -1296,7 +1298,7 @@ tr.no-cuenta .amount {
   padding-bottom: 9px;
 }
 .forecast-day.negative b {
-  color: #a0364a;
+  color: #8a5a18;
 }
 .forecast-date {
   color: #8a968c;
@@ -1592,4 +1594,42 @@ tr.no-cuenta .amount {
    último botón de cada pantalla, que suele ser el que hay que tocar. */
 .page-content {
   padding-bottom: 96px;
+}
+
+/* Dictado. El micrófono vive junto al campo, no como una pantalla aparte:
+   dictar es otra forma de escribir la misma pregunta. */
+.mic-button {
+  border: 1px solid #cfdcec;
+  background: #fff;
+  color: #10457f;
+  border-radius: 8px;
+  width: 42px;
+  flex-shrink: 0;
+  font-size: 15px;
+  line-height: 1;
+}
+.mic-button.recording {
+  background: #8a5a18;
+  border-color: #8a5a18;
+  color: #fff;
+  animation: mic-pulse 1.4s ease-in-out infinite;
+}
+@keyframes mic-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(138, 90, 24, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(138, 90, 24, 0);
+  }
+}
+.voice-status {
+  font-size: 11px;
+  color: #5d6b64;
+  margin: 10px 0 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mic-button.recording {
+    animation: none;
+  }
 }

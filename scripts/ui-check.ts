@@ -131,8 +131,8 @@ try {
   await variable.fill("900.00");
   await save();
   await page.getByRole("button", { name: "Proyección", exact: true }).click();
-  await expect(page.locator(".forecast-hero.red")).toHaveCount(1);
-  await expect(page.locator(".forecast-hero")).toContainText("No llegas");
+  await expect(page.locator(".forecast-hero.alerta")).toHaveCount(1);
+  await expect(page.locator(".forecast-hero")).toContainText("Conviene tomar previsiones");
   await page.screenshot({ path: "artifacts/proyeccion-rojo.png", fullPage: true });
   await page.getByRole("button", { name: "Organiza", exact: true }).click();
   await variable.fill("140.00");

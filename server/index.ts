@@ -4,7 +4,9 @@ import { randomBytes } from "node:crypto";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { z } from "zod";
-import { analyze } from "./analysis";
+import { analyze, AS_OF } from "./analysis";
+import { LocalVoice, VOICE_MODEL } from "./voice";
+import { buildHistory, merchantChoices } from "./history";
 import { categories } from "./domain";
 import { demoCustomers } from "./fixtures";
 import { MovementRepository } from "./repository";
@@ -19,7 +21,8 @@ declare module "express-session" {
 const app = express(),
   repository = new MovementRepository(),
   planningRepository = new PlanningRepository(),
-  qvac = new LocalQvac();
+  qvac = new LocalQvac(),
+  voice = new LocalVoice();
 app.disable("x-powered-by");
 app.use(express.json({ limit: "8kb" }));
 app.use(
@@ -115,6 +118,54 @@ app.patch("/api/commitments/:id", (req, res) => {
   if (!view) return res.status(404).json({ error: "Compromiso no encontrado" });
   res.json(view);
 });
+// El dictado se carga aparte del modelo de texto: pesa poco y no todo el
+// mundo lo va a usar, así que no se paga su carga sin pedirlo.
+app.get("/api/voice", (_req, res) =>
+  res.json({
+    status: inferenceEnabled() ? voice.status : "disabled",
+    model: VOICE_MODEL,
+    error: voice.lastError ? "No fue posible preparar el dictado." : null,
+  }),
+);
+app.post("/api/voice/load", (req, res) => {
+  if (!inferenceEnabled())
+    return res.status(409).json({
+      status: "disabled",
+      error: "Dictado desactivado para esta entrega.",
+    });
+  const customer = req.session.customerId!;
+  const merchants = merchantChoices(
+    buildHistory(repository.list(customer), customer, AS_OF, 12),
+  );
+  voice
+    .load(merchants)
+    .then(() => res.json({ status: voice.status, model: VOICE_MODEL }))
+    .catch(() =>
+      res
+        .status(503)
+        .json({ status: voice.status, error: "No se pudo preparar el dictado." }),
+    );
+});
+// El audio llega crudo: WAV PCM 16 bit, 16 kHz, mono, generado en el navegador.
+app.post(
+  "/api/voice/transcribe",
+  express.raw({ type: "audio/wav", limit: "3mb" }),
+  async (req, res) => {
+    if (!inferenceEnabled())
+      return res.status(409).json({ error: "Dictado desactivado." });
+    const body = req.body as Buffer;
+    if (!Buffer.isBuffer(body) || body.length < 1000)
+      return res.status(400).json({ error: "Audio vacío o demasiado corto." });
+    try {
+      res.json(await voice.transcribe(new Uint8Array(body)));
+    } catch {
+      res.status(503).json({
+        error:
+          "No se pudo transcribir en este equipo. Puedes escribir la pregunta.",
+      });
+    }
+  },
+);
 app.get("/api/model", (_req, res) =>
   res.json({
     status: qvac.status,
@@ -149,9 +200,16 @@ app.post("/api/explain", async (req, res) => {
     .strict()
     .parse(req.body);
   const customer = req.session.customerId!;
-  const dashboard = analyze(repository.list(customer), customer, period);
+  const movements = repository.list(customer);
+  const dashboard = analyze(movements, customer, period);
   try {
-    res.json(await qvac.explain(question, dashboard));
+    res.json(
+      await qvac.explain(question, dashboard, {
+        movements,
+        customerId: customer,
+        asOf: AS_OF,
+      }),
+    );
   } catch {
     res.status(503).json({
       error:

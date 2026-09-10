@@ -142,6 +142,22 @@ const sections: { title: string; lead: string; items: [string, string][] }[] = [
         "La aplicación, con los importes ya calculados. Por eso cada cifra se puede abrir hasta sus movimientos.",
       ],
       [
+        "Preguntas de historial",
+        "Además del mes en curso responde por rubro y por comercio sobre varios meses: cuánto llevas, cuánto promedias al mes y qué porcentaje representa.",
+      ],
+      [
+        "Proyección de ahorro",
+        "Si dices cuánto quieres apartar al mes, calcula cuánto juntarías hasta el horizonte que pidas. Es aritmética sobre tu monto, no una promesa de rendimiento.",
+      ],
+      [
+        "Dictado",
+        "El micrófono transcribe con Whisper en este mismo equipo. Lo dictado se deja en el campo para que lo revises antes de enviar: nada se corrige en silencio.",
+      ],
+      [
+        "Huecos tipados",
+        "El modelo solo puede nombrar rubros y comercios que existen en tus datos. No puede inventar uno, y si lo que pides está fuera de la lista, lo dice.",
+      ],
+      [
         "Sin nube",
         "Si el modelo local no está disponible, el asistente lo dice y no responde. No existe un respaldo en internet.",
       ],

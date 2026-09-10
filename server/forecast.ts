@@ -374,28 +374,30 @@ export const buildForecast = (input: {
     (d) => d.date <= endOfMonth && d.closingCents < 0,
   );
   const shortfallCents = lowestCents < 0 ? -lowestCents : 0;
-  const verdict = !nextIncomeDate
-    ? reachesEndOfMonth
-      ? "Llegas a fin de mes con " + money(balanceAtEndOfMonthCents) + "."
-      : "No llegas a fin de mes: te faltan " + money(shortfallCents) + "."
-    : reachesNextIncome
-      ? "Llegas al próximo pago del " +
+  // El tono importa tanto como el número. Una proyección apretada es un aviso
+  // para tomar previsiones, no un veredicto de fracaso: quien la lee todavía
+  // tiene días para mover algo.
+  const holds = reachesNextIncome || (!nextIncomeDate && reachesEndOfMonth);
+  const verdict = holds
+    ? nextIncomeDate
+      ? "Vas bien: con tu ritmo actual llegas al próximo pago del " +
         nextIncomeDate +
         " con " +
         money(balanceAtNextIncomeCents ?? 0) +
+        " disponibles."
+      : "Vas bien: con tu ritmo actual cierras el mes con " +
+        money(balanceAtEndOfMonthCents) +
         "."
-      : "No llegas al próximo pago del " +
-        nextIncomeDate +
-        ": el " +
-        firstNegativeDate +
-        " te quedas corto y el punto más bajo es " +
-        money(lowestCents) +
-        ".";
-  const advice = reachesNextIncome || (!nextIncomeDate && reachesEndOfMonth)
-    ? "El margen aguanta el tramo. Si quieres apretar más, súbelo en Escenarios."
-    : "Para cruzar el tramo necesitas " +
+    : "Conviene tomar previsiones: si todo sigue igual, alrededor del " +
+      (firstNegativeDate ?? lowestDate) +
+      " el saldo se quedaría corto por " +
       money(shortfallCents) +
-      ": baja el gasto variable diario, excluye un compromiso que puedas mover o adelanta un cobro.";
+      (nextIncomeDate
+        ? " antes de tu próximo pago del " + nextIncomeDate + "."
+        : " antes de cerrar el mes.");
+  const advice = holds
+    ? "El margen aguanta el tramo. Si quieres apretar más el ahorro, ajústalo en Escenarios."
+    : "Todavía hay días para acomodarlo: bajar el gasto variable diario, mover un compromiso que no sea urgente o adelantar un cobro cubre la diferencia. Esta proyección supone que tu ritmo no cambia; cualquiera de esos ajustes la cambia.";
   const assumptions = [
     income.explanation,
     "El gasto variable se reparte parejo: " +

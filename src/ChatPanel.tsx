@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { api } from "./api";
+import { api, postAudio, type VoiceStatus } from "./api";
+import { WavRecorder } from "./wav-recorder";
 import { BrandLoader } from "./BrandLoader";
 import type { Fact } from "../server/domain";
 import type { ChenState } from "./useChen";
@@ -14,11 +15,12 @@ type Turn = {
 };
 
 const suggestions = [
-  "¿En qué se me fue el dinero?",
+  "¿En qué rubro he gastado más en los últimos tres meses?",
+  "¿Cuánto llevo gastado en Restaurantes?",
+  "¿Cuánto he gastado en Nube Música?",
+  "Si aparto cien dólares al mes, ¿cuánto junto hasta fin de año?",
   "¿Por qué gasté más este mes?",
   "¿Qué me cobran seguido?",
-  "¿Cuánto moví a mi cuenta de ahorros?",
-  "¿Qué compras todavía no se han contabilizado?",
 ];
 
 export const ChatPanel = ({
@@ -33,6 +35,62 @@ export const ChatPanel = ({
   const [question, setQuestion] = useState("");
   const [thinking, setThinking] = useState(false);
   const thread = useRef<HTMLDivElement>(null);
+  // El dictado se transcribe en el mismo equipo con Whisper dentro de QVAC. La
+  // API de voz del navegador manda el audio al servidor del fabricante, y eso
+  // sacaría del dispositivo un dato del cliente, que es justo lo prohibido.
+  const recorder = useRef(new WavRecorder());
+  const [voice, setVoice] = useState<"idle" | "preparando" | "grabando" | "transcribiendo">("idle");
+  const [voiceError, setVoiceError] = useState("");
+  const [seconds, setSeconds] = useState(0);
+  useEffect(() => {
+    if (voice !== "grabando") return;
+    const timer = setInterval(
+      () => setSeconds(Math.round(recorder.current.seconds)),
+      400,
+    );
+    return () => clearInterval(timer);
+  }, [voice]);
+  const dictate = async () => {
+    setVoiceError("");
+    if (voice === "grabando") {
+      setVoice("transcribiendo");
+      try {
+        const wav = await recorder.current.stop();
+        const out = await postAudio(wav);
+        // El texto se deja en el campo, no se envía solo: dictar y que la
+        // pregunta salga sin poder corregirla es la peor versión de esto.
+        if (out.text) setQuestion(out.text);
+        else setVoiceError("No se escuchó nada. Intenta de nuevo, más cerca.");
+      } catch (e) {
+        setVoiceError((e as Error).message);
+      } finally {
+        setVoice("idle");
+        setSeconds(0);
+      }
+      return;
+    }
+    try {
+      const status = await api<VoiceStatus>("/voice");
+      if (status.status === "disabled") {
+        setVoiceError("El dictado está apagado en este modo.");
+        return;
+      }
+      if (status.status !== "ready") {
+        setVoice("preparando");
+        await api<VoiceStatus>("/voice/load", { method: "POST", body: "{}" });
+      }
+      await recorder.current.start();
+      setVoice("grabando");
+    } catch (e) {
+      setVoice("idle");
+      setVoiceError(
+        (e as Error).message.includes("Permission") ||
+          (e as Error).name === "NotAllowedError"
+          ? "Necesito permiso del micrófono para dictar."
+          : (e as Error).message,
+      );
+    }
+  };
   useEffect(() => {
     thread.current?.scrollTo({ top: thread.current.scrollHeight });
   }, [turns.length, thinking]);
@@ -195,12 +253,38 @@ export const ChatPanel = ({
           placeholder="¿Qué quieres entender de tu dinero?"
         />
         <button
+          type="button"
+          className={"mic-button " + (voice === "grabando" ? "recording" : "")}
+          aria-label={
+            voice === "grabando" ? "Detener el dictado" : "Dictar la pregunta"
+          }
+          aria-pressed={voice === "grabando"}
+          disabled={voice === "preparando" || voice === "transcribiendo"}
+          onClick={() => void dictate()}
+        >
+          {voice === "grabando" ? "■" : "🎙"}
+        </button>
+        <button
           aria-label="Enviar pregunta"
           disabled={!ready || thinking || question.trim().length < 3}
         >
           ↑
         </button>
       </form>
+      {voice !== "idle" && (
+        <p role="status" className="voice-status">
+          {voice === "preparando"
+            ? "Preparando el dictado en este equipo…"
+            : voice === "grabando"
+              ? "Escuchando… " + seconds + " s. Toca el cuadro para terminar."
+              : "Transcribiendo en este equipo…"}
+        </p>
+      )}
+      {voiceError && (
+        <p role="alert" className="error">
+          {voiceError}
+        </p>
+      )}
       <p className="table-note">
         {compact
           ? "Chen no mueve dinero. Si los datos no alcanzan, lo dice."

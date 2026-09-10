@@ -35,20 +35,33 @@ try {
   await model.load();
   const loadMs = Date.now() - started;
   console.log("Modelo cargado en", loadMs, "ms");
-  const dashboard = analyze(createFixtures(), "ana", "2026-09");
+  const movements = createFixtures();
+  const dashboard = analyze(movements, "ana", "2026-09");
+  const context = { movements, customerId: "ana", asOf: "2026-09-09" };
   const scenarios = [
     { question: "¿En qué se me fue el dinero?", required: "category-1" },
     { question: "¿Por qué gasté más?", required: "category-1" },
     { question: "¿Qué me cobran seguido?", required: "recurring-" },
     { question: "¿Cuánto moví a mi cuenta de ahorros?", required: "transfers" },
+    // Historial: la evidencia se arma con los movimientos del propio rubro.
+    { question: "¿Cuánto llevo gastado en Restaurantes?", required: "history", expect: /Restaurantes/ },
+    { question: "¿En qué rubro he gastado más en los últimos tres meses?", required: "history", expect: /se concentra en/ },
+    { question: "Si aparto cien dólares al mes, ¿cuánto junto hasta fin de año?", required: "", expect: /Apartando/ },
   ];
   const results = [];
   for (const scenario of scenarios) {
-    const answer = await model.explain(scenario.question, dashboard);
-    assert.ok(
-      answer.factIds.some((id) => id.startsWith(scenario.required)),
-      "Falta evidencia relevante: " + scenario.question,
-    );
+    const answer = await model.explain(scenario.question, dashboard, context);
+    if (scenario.required)
+      assert.ok(
+        answer.factIds.some((id) => id.startsWith(scenario.required)),
+        "Falta evidencia relevante: " + scenario.question,
+      );
+    if ("expect" in scenario && scenario.expect)
+      assert.match(
+        answer.summary,
+        scenario.expect as RegExp,
+        "La respuesta no habla de lo que se preguntó: " + scenario.question,
+      );
     assert.ok(
       !answer.summary.includes("?"),
       "La explicación no debe repetir una pregunta",

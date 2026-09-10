@@ -57,7 +57,7 @@ test("la proyección avanza día a día y cuadra con sus eventos", () => {
   }
   assert.equal(f.balanceAtEndOfMonthCents, f.days[f.days.length - 1].closingCents);
   assert.ok(f.reachesNextIncome);
-  assert.match(f.verdict, /Llegas al próximo pago/);
+  assert.match(f.verdict, /llegas al próximo pago/);
 });
 
 test("un descuento de planilla no aparece como salida de la cuenta", () => {
@@ -102,8 +102,8 @@ test("un gasto variable alto empuja la cuenta a números rojos y lo dice", () =>
   assert.equal(f.reachesNextIncome, false);
   assert.ok(f.firstNegativeDate);
   assert.ok(f.shortfallCents > 0);
-  assert.match(f.verdict, /No llegas al próximo pago/);
-  assert.match(f.advice, /necesitas/);
+  assert.match(f.verdict, /Conviene tomar previsiones/);
+  assert.match(f.advice, /días para acomodarlo/);
 });
 
 test("la autonomía sin cobrar no supone ningún ingreso", () => {

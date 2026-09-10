@@ -25,10 +25,10 @@ export const ForecastPanel = ({ state }: { state: ChenState }) => {
   const span = Math.max(1, ceiling - floor);
   return (
     <div className="planning-stack">
-      <section className={"forecast-hero " + (ok ? "ok" : "red")}>
+      <section className={"forecast-hero " + (ok ? "ok" : "alerta")}>
         <div>
           <span className="eyebrow">
-            {ok ? "SÍ ALCANZAS" : "NO ALCANZAS"}
+            {ok ? "VAS BIEN" : "TOMA PREVISIONES"}
           </span>
           <strong>{forecast.verdict}</strong>
           <p>{forecast.advice}</p>

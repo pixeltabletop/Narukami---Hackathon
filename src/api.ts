@@ -31,3 +31,16 @@ export type Session = {
 export type ModelStatus = {
   status: "disabled" | "unloaded" | "loading" | "ready" | "error";
 };
+export type VoiceStatus = ModelStatus & { model?: string };
+/** El audio viaja crudo: JSON base64 lo inflaría un tercio sin ganar nada. */
+export const postAudio = async (wav: Uint8Array) => {
+  const response = await fetch("/api/voice/transcribe", {
+    method: "POST",
+    headers: { "Content-Type": "audio/wav", "x-chen-csrf": csrf },
+    body: new Blob([wav as unknown as BlobPart], { type: "audio/wav" }),
+  });
+  const body = await response.json();
+  if (!response.ok)
+    throw new Error(body.error ?? "No se pudo transcribir el dictado");
+  return body as { text: string; elapsedMs: number };
+};
