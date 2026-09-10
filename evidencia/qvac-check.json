@@ -1,26 +1,142 @@
 {
   "passed": true,
-  "timestamp": "2026-09-10T03:26:40.743Z",
+  "timestamp": "2026-09-10T17:33:02.719Z",
   "model": "QWEN3_4B_INST_Q4_K_M",
-  "loadMs": 55603,
+  "loadMs": 51473,
   "network": {
     "reachable": true,
-    "detail": "HTTP 200"
+    "timeoutMs": 2000,
+    "samples": [
+      {
+        "moment": "antes de cargar el modelo",
+        "at": "2026-09-10T17:27:22.167Z",
+        "reachable": true,
+        "destinations": [
+          {
+            "target": "1.1.1.1:443",
+            "layer": "tcp",
+            "reachable": true,
+            "detail": "conectado",
+            "ms": 68
+          },
+          {
+            "target": "8.8.8.8:443",
+            "layer": "tcp",
+            "reachable": true,
+            "detail": "conectado",
+            "ms": 130
+          },
+          {
+            "target": "https://cloudflare.com/cdn-cgi/trace",
+            "layer": "https",
+            "reachable": true,
+            "detail": "HTTP 200",
+            "ms": 178
+          },
+          {
+            "target": "example.com",
+            "layer": "dns",
+            "reachable": true,
+            "detail": "104.20.23.154",
+            "ms": 16
+          }
+        ]
+      },
+      {
+        "moment": "mientras el modelo respondía la primera pregunta",
+        "at": "2026-09-10T17:28:14.894Z",
+        "reachable": true,
+        "destinations": [
+          {
+            "target": "1.1.1.1:443",
+            "layer": "tcp",
+            "reachable": true,
+            "detail": "conectado",
+            "ms": 349
+          },
+          {
+            "target": "8.8.8.8:443",
+            "layer": "tcp",
+            "reachable": true,
+            "detail": "conectado",
+            "ms": 532
+          },
+          {
+            "target": "https://cloudflare.com/cdn-cgi/trace",
+            "layer": "https",
+            "reachable": true,
+            "detail": "HTTP 200",
+            "ms": 576
+          },
+          {
+            "target": "example.com",
+            "layer": "dns",
+            "reachable": true,
+            "detail": "104.20.23.154",
+            "ms": 129
+          }
+        ]
+      },
+      {
+        "moment": "al terminar todas las respuestas",
+        "at": "2026-09-10T17:33:02.710Z",
+        "reachable": true,
+        "destinations": [
+          {
+            "target": "1.1.1.1:443",
+            "layer": "tcp",
+            "reachable": true,
+            "detail": "conectado",
+            "ms": 246
+          },
+          {
+            "target": "8.8.8.8:443",
+            "layer": "tcp",
+            "reachable": true,
+            "detail": "conectado",
+            "ms": 232
+          },
+          {
+            "target": "https://cloudflare.com/cdn-cgi/trace",
+            "layer": "https",
+            "reachable": true,
+            "detail": "HTTP 200",
+            "ms": 388
+          },
+          {
+            "target": "example.com",
+            "layer": "dns",
+            "reachable": true,
+            "detail": "104.20.23.154",
+            "ms": 61
+          }
+        ]
+      }
+    ]
+  },
+  "intents": {
+    "correctas": 9,
+    "total": 9,
+    "fallos": []
   },
   "latencyMs": {
-    "min": 15142,
-    "max": 19929
+    "min": 24601,
+    "max": 44540
   },
   "results": [
     {
       "question": "¿En qué se me fue el dinero?",
-      "intent": "changes",
+      "expected": [
+        "spending_summary",
+        "largest_categories"
+      ],
+      "intent": "largest_categories",
       "factIds": [
         "total",
         "category-1",
         "category-12"
       ],
-      "summary": "Estos son los cambios que muestran tus movimientos: Gasto neto contabilizado: USD 794.98. Período comparado: USD 617.93. Diferencia: USD 177.05. Restaurantes: USD 120.55 frente a USD 27.50. Diferencia: USD 93.05. Proveedores: USD 86.00 frente a USD 74.00. Diferencia: USD 12.00.",
+      "summary": "Estas categorías explican la mayor parte de tu gasto: Gasto neto contabilizado: USD 794.98. Período comparado: USD 617.93. Diferencia: USD 177.05. Restaurantes: USD 120.55 frente a USD 27.50. Diferencia: USD 93.05. Proveedores: USD 86.00 frente a USD 74.00. Diferencia: USD 12.00.",
       "facts": [
         {
           "id": "total",
@@ -102,10 +218,13 @@
       ],
       "provider": "qvac-local",
       "model": "QWEN3_4B_INST_Q4_K_M",
-      "elapsedMs": 18461
+      "elapsedMs": 24601
     },
     {
       "question": "¿Por qué gasté más?",
+      "expected": [
+        "changes"
+      ],
       "intent": "changes",
       "factIds": [
         "total",
@@ -179,10 +298,13 @@
       ],
       "provider": "qvac-local",
       "model": "QWEN3_4B_INST_Q4_K_M",
-      "elapsedMs": 15142
+      "elapsedMs": 40339
     },
     {
       "question": "¿Qué me cobran seguido?",
+      "expected": [
+        "recurring"
+      ],
       "intent": "recurring",
       "factIds": [
         "recurring-1",
@@ -217,10 +339,13 @@
       ],
       "provider": "qvac-local",
       "model": "QWEN3_4B_INST_Q4_K_M",
-      "elapsedMs": 17961
+      "elapsedMs": 26514
     },
     {
       "question": "¿Cuánto moví a mi cuenta de ahorros?",
+      "expected": [
+        "transfers"
+      ],
       "intent": "transfers",
       "factIds": [
         "transfers"
@@ -241,10 +366,13 @@
       ],
       "provider": "qvac-local",
       "model": "QWEN3_4B_INST_Q4_K_M",
-      "elapsedMs": 15932
+      "elapsedMs": 27835
     },
     {
       "question": "¿Cuánto llevo gastado en Restaurantes?",
+      "expected": [
+        "category_history"
+      ],
       "intent": "category_history",
       "factIds": [
         "history"
@@ -253,7 +381,7 @@
       "facts": [
         {
           "id": "history",
-          "text": "En Restaurantes llevas USD 263.15 de julio 2026 a septiembre 2026 (septiembre 2026 va hasta el día 9). Es 9.6% de tu gasto del período y un promedio de USD 87.72 al mes.",
+          "text": "13 movimientos sostienen este cálculo",
           "cents": [],
           "movementIds": [
             "ana-0003",
@@ -274,10 +402,13 @@
       ],
       "provider": "qvac-local",
       "model": "QWEN3_4B_INST_Q4_K_M",
-      "elapsedMs": 17380
+      "elapsedMs": 38090
     },
     {
       "question": "¿En qué rubro he gastado más en los últimos tres meses?",
+      "expected": [
+        "top_categories_history"
+      ],
       "intent": "top_categories_history",
       "factIds": [
         "history"
@@ -286,7 +417,7 @@
       "facts": [
         {
           "id": "history",
-          "text": "Tu gasto de julio 2026 a septiembre 2026 (septiembre 2026 va hasta el día 9) suma USD 2,734.44 y se concentra en Supermercado con USD 610.30 (22.3%), Pago de préstamo con USD 555.00 (20.3%), Servicios profesionales con USD 375.00 (13.7%). El primero promedia USD 203.43 al mes.",
+          "text": "16 movimientos sostienen este cálculo",
           "cents": [],
           "movementIds": [
             "ana-0001",
@@ -310,17 +441,46 @@
       ],
       "provider": "qvac-local",
       "model": "QWEN3_4B_INST_Q4_K_M",
-      "elapsedMs": 18552
+      "elapsedMs": 44540
     },
     {
       "question": "Si aparto cien dólares al mes, ¿cuánto junto hasta fin de año?",
+      "expected": [
+        "savings_projection"
+      ],
       "intent": "savings_projection",
       "factIds": [],
       "summary": "Apartando USD 100.00 cada mes juntarías USD 300.00 hasta fin de año: son 3 meses de aportes. Equivale al 11% de lo que gastas en un mes promedio. Es aritmética sobre el monto que dijiste, no una promesa de rendimiento.",
       "facts": [],
       "provider": "qvac-local",
       "model": "QWEN3_4B_INST_Q4_K_M",
-      "elapsedMs": 19929
+      "elapsedMs": 32157
+    },
+    {
+      "question": "¿Me alcanza hasta el próximo pago?",
+      "expected": [
+        "payday_forecast"
+      ],
+      "intent": "payday_forecast",
+      "factIds": [],
+      "summary": "Vas bien: con tu ritmo actual llegas al próximo pago del 2026-09-15 con USD 761.53 disponibles. Sin contar ningún cobro nuevo, el saldo aguanta 6 días, hasta el 2026-09-16. El margen aguanta el tramo. Si quieres apretar más el ahorro, ajústalo en Escenarios.",
+      "facts": [],
+      "provider": "qvac-local",
+      "model": "QWEN3_4B_INST_Q4_K_M",
+      "elapsedMs": 26769
+    },
+    {
+      "question": "¿Cuánto me queda disponible después de mis compromisos?",
+      "expected": [
+        "available_margin"
+      ],
+      "intent": "available_margin",
+      "factIds": [],
+      "summary": "Hasta tu próximo ingreso del 2026-09-15 tienes USD 131.51 disponibles. Sale de un saldo de USD 650.00 menos USD 32.00 pendientes de que te los cobren, USD 246.49 de compromisos que salen de la cuenta, USD 140.00 de presupuesto variable y USD 100.00 de reserva. Los USD 122.50 que te retienen de planilla no tocan este saldo: reducen tu próximo ingreso, que queda en USD 502.50.",
+      "facts": [],
+      "provider": "qvac-local",
+      "model": "QWEN3_4B_INST_Q4_K_M",
+      "elapsedMs": 27183
     }
   ]
 }

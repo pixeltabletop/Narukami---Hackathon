@@ -13,7 +13,7 @@ demuestra. La carpeta `artifacts/` es donde los comandos las regeneran y no se v
 
 | Qué | Resultado |
 | --- | --- |
-| `npm test` | 48 de 48 |
+| `npm test` | 71 de 71 |
 | `npm run build` | TypeScript y Vite sin errores |
 | `npm run ui:check` | Recorrido en Edge, escritorio y móvil |
 
@@ -38,9 +38,17 @@ medir, y elige un destino de categoría distinto del actual antes de guardarlo.
 
 ## Inferencia local con QVAC
 
-`npm run qvac:check` carga el modelo, corre siete preguntas reales y escribe
-`artifacts/qvac-check.json`. Última corrida con red disponible: 7 de 7 respondidas, con la
-evidencia y la redacción correctas.
+`npm run qvac:check` carga el modelo, corre nueve preguntas reales y escribe
+`artifacts/qvac-check.json`. Última corrida, del 10 de septiembre de 2026: **9 de 9 con la
+intención esperada**, incluidas las dos que miran hacia adelante. El modelo cargó desde caché en
+51 segundos y cada respuesta tardó entre 17 y 27 segundos.
+
+Las dos nuevas son las que antes devolvían una negativa:
+
+| Pregunta | Intención | Lo que contestó |
+| --- | --- | --- |
+| ¿Me alcanza hasta el próximo pago? | `payday_forecast` | Que sí, con el saldo con que llega al 15, y que sin ningún cobro nuevo aguanta 6 días |
+| ¿Cuánto me queda disponible después de mis compromisos? | `available_margin` | El margen y la resta completa, con el descuento de planilla explicado aparte |
 
 El comando comprueba, sin intervención humana: que la intención devuelta sea una de las que la
 pregunta admite, que la evidencia elegida corresponda a lo preguntado, que la respuesta hable del
@@ -123,7 +131,7 @@ haría el jurado y no lo que funciona en la máquina donde se escribió el códi
 | --- | --- |
 | `npm ci` | Sin vulnerabilidades |
 | `npm run build` | TypeScript y Vite sin errores |
-| `npm test` | 48 de 48 |
+| `npm test` | 71 de 71 |
 | `npm run demo` y recorrer las ocho pestañas | Todas renderizan, ninguna con error |
 | Cargar el modelo desde la interfaz | Listo, «Modelo disponible» en pantalla |
 | Dictado por la ruta HTTP real, con sesión y CSRF | Whisper listo y transcripción correcta en 2.4 s |
