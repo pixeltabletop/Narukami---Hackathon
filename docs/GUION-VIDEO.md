@@ -2,13 +2,13 @@
 
 **Equipo:** Narukami — Diego Laverde y Josué Carrillo
 **Reto:** Track 05, Caja de Ahorros — Hackatón ISD/QVAC 2026
-**Duración objetivo:** menos de 4 minutos 45 segundos
+**Locución medida:** 3 minutos 21 segundos. Con transiciones y esperas, el video debe cerrar por debajo de 4 minutos. El límite duro del reto es 5.
 
-## Bloque 1 — 0:00 a 0:24 · El equipo y la condición central
+## Bloque 1 — 0:00 a 0:19 · El equipo y la condición central
 
 ### LOCUCIÓN
 
-Chen, tu pasiero financiero. Somos Narukami: Diego Laverde y Josué Carrillo. Diego escribió la base Rastro para analizar consumo. Josué construyó sobre ella Chen: el dominio de cuenta, la organización del saldo, la proyección, el asistente y la integración verificada de QVAC. Chen nace para el Track 05 de Caja de Ahorros. Toda esta demostración usa clientes y movimientos sintéticos.
+Chen, tu pasiero financiero. Somos Narukami: Diego Laverde y Josué Carrillo. Diego escribió la base Rastro para analizar consumo. Josué construyó Chen sobre ella. Esta demostración del reto de Caja de Ahorros usa únicamente clientes y movimientos sintéticos.
 
 ### EN PANTALLA
 
@@ -16,11 +16,11 @@ Chen, tu pasiero financiero. Somos Narukami: Diego Laverde y Josué Carrillo. Di
 2. Abra Chen en la portada.
 3. Mantenga visibles el logotipo y la advertencia de datos ficticios.
 
-## Bloque 2 — 0:24 a 0:58 · Antes de descargar, el equipo dice lo que sabe
+## Bloque 2 — 0:19 a 0:40 · Antes de descargar, el equipo dice lo que sabe
 
 ### LOCUCIÓN
 
-Antes de descargar un modelo, ejecutamos `fit check`. El comando consulta al SDK y no baja pesos. En esta máquina, con cuatro coma cinco gigabytes libres, el SDK respondió que no tenía evidencia suficiente para decidir. Con trescientos treinta y un megabytes libres, indicó que ninguno de los dos candidatos entraba. Chen no convierte incertidumbre en una promesa. Muestra el rango de memoria, el tamaño de la descarga y la memoria disponible para tomar una decisión informada.
+Antes de descargar un modelo, Chen consulta al sistema sin bajar sus archivos. En este equipo, con menos de un gigabyte libre, ningún candidato entraba. Cuando la evidencia no basta, Chen admite que no sabe. También muestra la memoria necesaria, la descarga y la memoria disponible.
 
 ### EN PANTALLA
 
@@ -29,11 +29,11 @@ Antes de descargar un modelo, ejecutamos `fit check`. El comando consulta al SDK
 3. Cambie a Chen y abra “¿Aguanta este equipo el modelo?”.
 4. Muestre el mismo veredicto junto al botón de carga.
 
-## Bloque 3 — 0:58 a 1:36 · El problema bancario: entender qué sí fue gasto
+## Bloque 3 — 0:40 a 1:05 · El problema bancario: entender qué sí fue gasto
 
 ### LOCUCIÓN
 
-Un estado de cuenta enumera movimientos. La pregunta del cliente es otra: ¿en qué se me fue el dinero y cuánto tengo realmente disponible? Chen separa consumo de flujo de cuenta. Una compra de tarjeta explica consumo. El pago de esa tarjeta sale de la cuenta, pero no vuelve a contarse como gasto. Y una transferencia hacia la cuenta de ahorros es un traslado: el dinero cambió de lugar, no se consumió. Chen la muestra aparte con su importe. Esa distinción evita que un tablero genérico infle el gasto.
+Un estado de cuenta enumera movimientos. Chen responde algo más útil: en qué se fue el dinero y cuánto queda disponible. Separa consumo de flujo de cuenta. Una compra de tarjeta sí es gasto. Pagar esa tarjeta mueve dinero desde la cuenta, pero no duplica el consumo. Transferir hacia ahorros también es un traslado. El dinero cambió de lugar; no se gastó.
 
 ### EN PANTALLA
 
@@ -44,11 +44,11 @@ Un estado de cuenta enumera movimientos. La pregunta del cliente es otra: ¿en q
 5. Abra Movimientos y alterne los filtros “Tarjeta de crédito”, “Cuenta corriente” y “Cuenta de ahorros”.
 6. Señale el pago de tarjeta sin volver a sumarlo al consumo.
 
-## Bloque 4 — 1:36 a 2:22 · Una pregunta real y su evidencia
+## Bloque 4 — 1:05 a 1:32 · Una pregunta real y su evidencia
 
 ### LOCUCIÓN
 
-Ahora hacemos una inferencia real. Preguntamos: “¿en qué se me fue el dinero?”. QVAC corre en este equipo. El modelo no suma importes, no consulta la base de datos y no redacta libremente. Recibe hechos ya calculados, clasifica la intención y selecciona entre una y tres referencias. La aplicación redacta con esos hechos. Si la intención no coincide con la evidencia, la respuesta se rechaza y se intenta una vez más. Abrimos la evidencia de la respuesta. La cifra no termina en una tarjeta del tablero: llega hasta los movimientos que la sostienen.
+Ahora hacemos una inferencia real: preguntamos en qué se fue el dinero. QVAC corre en este equipo. El modelo no suma importes ni consulta la base. Recibe hechos ya calculados, clasifica la intención y elige referencias. La aplicación redacta con esos hechos. Si la evidencia no coincide, rechaza la respuesta. Luego abrimos los movimientos que sostienen la cifra.
 
 ### EN PANTALLA
 
@@ -59,11 +59,11 @@ Ahora hacemos una inferencia real. Preguntamos: “¿en qué se me fue el dinero
 5. Abra la evidencia elegida por esa respuesta.
 6. Muestre los movimientos de respaldo y sus importes.
 
-## Bloque 5 — 2:22 a 3:08 · Organizar el saldo, no solo leer el pasado
+## Bloque 5 — 1:32 a 1:57 · Organizar el saldo, no solo leer el pasado
 
 ### LOCUCIÓN
 
-Chen no se queda en explicar el pasado. En Organiza, parte del saldo que existe hoy. Resta pendientes, compromisos confirmados, presupuesto variable y reserva. El próximo ingreso no se suma antes de recibirse. Un descuento directo de planilla se trata distinto: no reduce el saldo de hoy, porque el empleador lo retiene antes de pagar; reduce el próximo ingreso. Al excluir un compromiso o ajustar el presupuesto, el margen se recalcula. Así el cliente ve qué está disponible, qué ya está comprometido y qué puede reservar sin mezclar conceptos.
+En Organiza, Chen parte del saldo disponible hoy. Separa pendientes, compromisos, presupuesto variable y reserva. El próximo ingreso no se suma antes de recibirse. Un descuento directo de planilla tampoco toca el saldo de hoy; el empleador lo retiene del próximo ingreso. Al cambiar un compromiso o presupuesto, Chen recalcula el margen.
 
 ### EN PANTALLA
 
@@ -74,11 +74,11 @@ Chen no se queda en explicar el pasado. En Organiza, parte del saldo que existe 
 5. Muestre por separado un descuento directo de planilla y su efecto sobre el próximo ingreso.
 6. Ajuste el presupuesto variable y muestre nuevamente el margen.
 
-## Bloque 6 — 3:08 a 3:57 · Escenarios, proyección y la pregunta que decide
+## Bloque 6 — 1:57 a 2:31 · Escenarios, proyección y la pregunta que decide
 
 ### LOCUCIÓN
 
-En Escenarios, el cliente compara una reserva conservadora, una sugerida y una ambiciosa, siempre viendo cuánto dinero queda. Ningún escenario altera sus movimientos. En Proyección, Chen avanza día por día porque un promedio mensual puede esconder la fecha en que la cuenta se queda corta. Reconoce patrones de ingreso mensuales, quincenales o irregulares. Coloca compromisos y cargos recurrentes en sus fechas. Si el saldo no alcanza, muestra el día y el faltante. También calcula cuántos días aguanta el saldo sin otro ingreso. Y esa misma respuesta se puede pedir hablando. Le preguntamos al asistente si alcanza hasta el próximo pago, y contesta con el mismo veredicto y los mismos números que muestra la pestaña. La pregunta más natural sobre el dinero se responde por donde el cliente la haría.
+En Escenarios, el cliente compara tres niveles de ahorro y cuánto dinero queda. Ninguno altera sus movimientos. La proyección avanza día por día, porque un promedio mensual puede ocultar cuándo falta dinero. Reconoce el patrón de ingresos y ubica compromisos en sus fechas. Si el saldo no alcanza, muestra el día y el faltante. También calcula cuánto aguanta sin otro ingreso. Preguntamos al asistente si alcanza hasta el próximo pago. Responde con el mismo veredicto de la proyección.
 
 ### EN PANTALLA
 
@@ -90,11 +90,11 @@ En Escenarios, el cliente compara una reserva conservadora, una sugerida y una a
 6. Conserve el envío y la llegada de la respuesta real; acelere solamente la espera.
 7. Ponga la respuesta del asistente al lado del veredicto de la pestaña para que se vea que dicen lo mismo.
 
-## Bloque 7 — 3:57 a 4:35 · La prueba de que la inferencia no sale del dispositivo
+## Bloque 7 — 2:31 a 3:02 · La prueba de que la inferencia no sale del dispositivo
 
 ### LOCUCIÓN
 
-La condición del reto es concreta: la inferencia en nube descalifica. Desactivamos la red y hacemos otra pregunta real. Chen responde porque QVAC y los datos están en este dispositivo. No existe respaldo remoto. Si el modelo local no está cargado, Chen lo dice y no responde. La prueba sin red registrada ejecutó nueve preguntas de texto, todas con la intención correcta. También transcribió dos frases con Whisper dentro de QVAC. La medición comprobó la red antes, durante y después de inferir, contra cuatro destinos.
+La condición del reto es clara: la inferencia en la nube descalifica. Desactivamos la red y hacemos otra pregunta real. Chen responde porque QVAC y los datos están en este dispositivo. No existe respaldo en la nube. Si el modelo local no está cargado, Chen lo informa y no responde. La prueba sin red completó nueve preguntas y dos dictados transcritos por Whisper dentro de QVAC. La conectividad se midió antes, durante y después.
 
 ### EN PANTALLA
 
@@ -105,11 +105,11 @@ La condición del reto es concreta: la inferencia en nube descalifica. Desactiva
 5. Abra `evidencia/qvac-check-offline.json` y muestre `network.reachable: false`, las tres tomas contra los cuatro destinos, las nueve respuestas y sus latencias.
 6. Muestre brevemente `evidencia/voice-check-offline.json` como evidencia separada del dictado local.
 
-## Bloque 8 — 4:35 a 4:53 · Cierre
+## Bloque 8 — 3:02 a 3:21 · Cierre
 
 ### LOCUCIÓN
 
-Hoy, este portátil es el dispositivo y el servidor. Express escucha solamente en la dirección local. Chen no es una aplicación oficial del banco ni da asesoría financiera. Es un prototipo auditable: distingue gasto de traslado, organiza el saldo y abre cada respuesta hasta su evidencia, sin enviar la inferencia ni los datos del cliente a la nube. Somos Narukami. Esto es Chen, tu pasiero financiero.
+Chen no es una aplicación oficial del banco ni ofrece asesoría financiera. Es un prototipo auditable. Distingue gasto de traslado, organiza el saldo y abre la evidencia, sin enviar la inferencia ni los datos a la nube. Somos Narukami. Chen, tu pasiero financiero.
 
 ### EN PANTALLA
 
@@ -129,23 +129,33 @@ Hoy, este portátil es el dispositivo y el servidor. Express escucha solamente e
    solo a mitad de la corrida y la prueba deja de valer.
 5. Confirmar que la pregunta del Bloque 4 responde como se espera en esa misma sesión.
 
-## Duración estimada
+## Duración, medida y no estimada
 
-Estimación calculada únicamente sobre la locución, a unas 160 palabras por minuto. Las pausas de inferencia se aceleran o recortan en montaje y no se suman como silencio al metraje final.
+Estas cifras salen de sintetizar la locución con la voz que se va a usar y leer la duración de
+cada archivo. `npm run locucion` las regenera y las vuelve a medir.
 
-| Bloque | Palabras de locución | Duración estimada |
-| --- | ---: | ---: |
-| 1. Equipo y condición central | 62 | 0:23 |
-| 2. Veredicto antes de descargar | 77 | 0:29 |
-| 3. Qué sí fue gasto | 89 | 0:33 |
-| 4. Pregunta y evidencia | 93 | 0:35 |
-| 5. Organizar el saldo | 89 | 0:33 |
-| 6. Escenarios y proyección | 122 | 0:46 |
-| 7. Prueba sin red | 87 | 0:33 |
-| 8. Cierre | 67 | 0:25 |
-| **Total** | **686** | **4:17** |
+La versión anterior de esta tabla estimaba a 160 palabras por minuto y daba 4:17. Al sintetizarla
+duraba **4:55**: esta voz habla a 140 palabras por minuto, no a 160. El guion se recortó de 690 a
+451 palabras con ese dato delante, no con la conjetura.
 
-La locución suma 4:17. El cronograma de bloques termina en 4:53 y el límite duro del reto es de cinco minutos, así que el margen quedó en siete segundos. Es poco: si al montar se pasa, lo primero que se recorta es la enumeración de filtros del Bloque 3, que es la parte más prescindible, y no el Bloque 7, que es el que sostiene la elegibilidad.
+| Bloque | Palabras | Duración | Acumulado |
+| --- | ---: | ---: | ---: |
+| 1. Equipo | 38 | 0:19 | 0:19 |
+| 2. Veredicto de memoria | 46 | 0:20 | 0:40 |
+| 3. Qué sí fue gasto | 62 | 0:26 | 1:05 |
+| 4. Inferencia real | 58 | 0:27 | 1:32 |
+| 5. Organiza | 52 | 0:24 | 1:57 |
+| 6. Proyección y asistente | 78 | 0:34 | 2:31 |
+| 7. Sin red | 74 | 0:31 | 3:02 |
+| 8. Cierre | 43 | 0:20 | 3:21 |
+| **Total** | **451** | **3:21** | |
+
+Los tramos de cada bloque son los de la locución. La acción en pantalla necesita algo más: las
+transiciones y las dos esperas de inferencia. Con eso el video debe cerrar por debajo de cuatro
+minutos, con más de un minuto de margen contra el límite del reto.
+
+Si al montar hiciera falta recortar, lo primero que sale es la enumeración de productos del
+Bloque 3. Lo último, el Bloque 7: es el que sostiene la elegibilidad.
 
 ## Lo que NO se dice
 
