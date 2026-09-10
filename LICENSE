@@ -1,9 +1,11 @@
 Chen — Track 05 Caja de Ahorros
-Copyright (c) 2026 el equipo autor. Todos los derechos reservados.
+Copyright (c) 2026 Jajanken 2.0 — Diego Laverde y Josué Carrillo. Todos los derechos
+reservados.
 
 PROPIEDAD INTELECTUAL
 
-La propiedad intelectual de este trabajo permanece en el equipo autor. Ni la
+La propiedad intelectual de este trabajo permanece en el equipo Jajanken 2.0, formado
+por Diego Laverde y Josué Carrillo. Ni la
 entidad convocante, ni Caja de Ahorros, ni el organizador del evento reciben
 titularidad ni licencia automática sobre este código por el hecho de que sea
 presentado a evaluación. Cualquier uso posterior se negocia por separado y por
@@ -18,8 +20,9 @@ incorporarlo a otro producto ni usarlo con fines comerciales.
 
 BASE PREEXISTENTE
 
-Este trabajo parte de una base recibida de Diego el 9 de septiembre de 2026,
-llamada Rastro, importada sin modificar en el commit 7c02033. Su autoría y su
+Este trabajo parte de una base escrita por Diego Laverde y recibida el 9 de
+septiembre de 2026, llamada Rastro, importada sin modificar en el commit 7c02033.
+Su autoría y su
 historia se conservan en ese commit y su alcance está declarado en el README.
 Los derechos de esa base corresponden a su autor.
 

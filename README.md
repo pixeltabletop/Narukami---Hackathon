@@ -6,6 +6,16 @@ Prototipo para el Track 05 de Caja de Ahorros. Chen une dos recorridos: explica 
 
 **La inferencia está desactivada por defecto y el repositorio no incluye pesos de modelos.** Toda la demostración usa clientes y movimientos sintéticos.
 
+## Equipo
+
+**Jajanken 2.0** — Diego Laverde y Josué Carrillo.
+
+Diego Laverde escribió la base **Rastro**, importada sin modificar en el commit `7c02033` y
+declarada en detalle más abajo. Josué Carrillo construyó sobre ella el producto que se presenta
+aquí: el dominio de cuenta, la planificación y la proyección, el asistente conversacional con
+dictado, la integración real de QVAC y toda la validación. La historia completa de esa
+construcción está en los commits del repositorio, en orden y con lo que se verificó en cada uno.
+
 ## Ejecutar
 
 Requiere Node 24 y npm. En Windows conviene trabajar en un disco local, fuera de carpetas sincronizadas.
@@ -305,7 +315,7 @@ npm run qvac:check
 
 ## Base preexistente declarada
 
-La base recibida de Diego el 9 de septiembre de 2026, llamada **Rastro**, se importó sin modificar en el commit `7c02033`. El producto se renombró a **Chen** el 9 de septiembre de 2026; el código original conserva su autoría y su historia en ese commit.
+La base recibida de Diego Laverde el 9 de septiembre de 2026, llamada **Rastro**, se importó sin modificar en el commit `7c02033`. El producto se renombró a **Chen** el 9 de septiembre de 2026; el código original conserva su autoría y su historia en ese commit.
 
 **Lo que traía esa base:** la experiencia de análisis de tarjeta, React con Vite, Express,
 SQLite, los fixtures sintéticos, las primeras pruebas y un adaptador inicial de QVAC que nunca
