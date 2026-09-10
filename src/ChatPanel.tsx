@@ -30,10 +30,20 @@ export const ChatPanel = ({
   state: ChenState;
   compact?: boolean;
 }) => {
-  const { dashboard, model, showEvidence, load } = state;
-  const [turns, setTurns] = useState<Turn[]>([]);
-  const [question, setQuestion] = useState("");
-  const [thinking, setThinking] = useState(false);
+  // El hilo llega desde arriba: asi sobrevive al cambio de pestaña y la burbuja
+  // flotante y la pestaña muestran la misma conversacion.
+  const {
+    dashboard,
+    model,
+    showEvidence,
+    load,
+    turns,
+    setTurns,
+    question,
+    setQuestion,
+    thinking,
+    setThinking,
+  } = state;
   const thread = useRef<HTMLDivElement>(null);
   // El dictado se transcribe en el mismo equipo con Whisper dentro de QVAC. La
   // API de voz del navegador manda el audio al servidor del fabricante, y eso

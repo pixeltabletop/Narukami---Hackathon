@@ -1,3 +1,6 @@
+import { readdirSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import type { Dashboard } from "./domain";
 import {
   forecastIntents,
@@ -47,6 +50,21 @@ process.env.QVAC_RPC_INIT_TIMEOUT_MS ??= "240000";
 // El SDK reporta "RPC initialization timed out" aunque el worker haya muerto al
 // instante. La causa real viaja en cause.stderrTail; sin leerla el diagnostico
 // apunta al lugar equivocado.
+// ¿Los pesos ya estan en este equipo?
+//
+// Si lo estan, el argumento del veredicto pierde la mitad: no hay descarga de
+// gigabytes que evitar, solo memoria que vigilar. El SDK guarda cada modelo en
+// ~/.qvac/models con el nombre del archivo del catalogo detras de un prefijo.
+const pesosEnCache = (modelId?: string) => {
+  if (!modelId) return false;
+  try {
+    const carpeta = join(homedir(), ".qvac", "models");
+    return readdirSync(carpeta).some((archivo) => archivo.endsWith(modelId));
+  } catch {
+    // Sin carpeta de cache, sin descarga previa. No es un error.
+    return false;
+  }
+};
 // Comparar preguntas y nombres de comercio sin que un acento decida.
 const sinAcentos = (texto: string) =>
   texto
@@ -225,6 +243,7 @@ export class LocalQvac {
         name: string;
         sha256Checksum: string;
         expectedSize?: number;
+        modelId?: string;
       },
     }));
     const assessment = (await sdk.assessModelFit({
@@ -240,6 +259,7 @@ export class LocalQvac {
         key,
         label: MODEL_LABELS[key],
         downloadBytes: constant.expectedSize ?? null,
+        yaDescargado: pesosEnCache(constant.modelId),
       })),
       this.model,
     );
@@ -259,12 +279,27 @@ export class LocalQvac {
     const started = Date.now();
     try {
       // Una etiqueta que no cuadra con la evidencia es un tropiezo del modelo,
-      // no una falla del sistema: se reintenta una vez con otra semilla antes
-      // de devolver la negativa honesta al cliente.
+      // no una falla del sistema: se reintenta una vez antes de devolver la
+      // negativa honesta al cliente.
+      //
+      // El segundo intento cambia la TEMPERATURA, no solo la semilla. Con
+      // `temp: 0` la salida no depende de la semilla: la primera version
+      // reintentaba con otra semilla y producia byte por byte lo mismo, asi que
+      // el reintento solo servia para duplicar la espera, unos treinta segundos
+      // por consulta. Un reintento que no cambia nada no es un reintento.
       let last: unknown = new Error("QVAC no produjo una respuesta válida");
-      for (const seed of [7, 21]) {
+      for (const [seed, temp] of [
+        [7, 0],
+        [21, 0.35],
+      ] as const) {
         try {
-          const answer = await this.attempt(question, dashboard, seed, context);
+          const answer = await this.attempt(
+            question,
+            dashboard,
+            seed,
+            context,
+            temp,
+          );
           return {
             ...answer,
             provider: "qvac-local",
@@ -285,6 +320,7 @@ export class LocalQvac {
     dashboard: Dashboard,
     seed: number,
     context?: AnalyticContext,
+    temp = 0,
   ) {
     // Los comercios que el modelo puede nombrar salen de los datos del propio
     // cliente. Sin esta lista el hueco quedaría abierto y se inventaría uno.
@@ -330,7 +366,7 @@ export class LocalQvac {
           },
         ],
         generationParams: {
-          temp: 0,
+          temp,
           predict: 200,
           seed,
           reasoning_budget: 0,

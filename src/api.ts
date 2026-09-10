@@ -1,4 +1,11 @@
 let csrf = "";
+// Quien quiera enterarse de que la sesion se cayo. La aplicacion se suscribe
+// para volver a la pantalla de seleccion en vez de quedarse en un aviso rojo
+// que no se va sin recargar a mano.
+let alPerderSesion: (() => void) | null = null;
+export const cuandoSePierdaLaSesion = (accion: () => void) => {
+  alPerderSesion = accion;
+};
 export const api = async <T>(
   path: string,
   options: RequestInit = {},
@@ -12,6 +19,12 @@ export const api = async <T>(
     },
   });
   const body = await response.json();
+  if (response.status === 401) {
+    // La sesion ya no existe: normalmente una peticion del cliente anterior que
+    // llego tarde a un cambio de cliente.
+    csrf = "";
+    alPerderSesion?.();
+  }
   if (!response.ok)
     throw new Error(body.error ?? "No se pudo completar la consulta");
   if (body.csrf) csrf = body.csrf;

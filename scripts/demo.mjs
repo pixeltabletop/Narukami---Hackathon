@@ -14,4 +14,6 @@ console.log(
 spawn("npx", ["tsx", "server/index.ts"], {
   stdio: "inherit",
   shell: process.platform === "win32",
-}).on("exit", (code) => process.exit(code ?? 0));
+  // Si el hijo muere por senal, `code` es null y `null ?? 0` reportaba EXITO:
+  // un servidor muerto se veia como un arranque correcto.
+}).on("exit", (code, signal) => process.exit(code ?? (signal ? 1 : 0)));

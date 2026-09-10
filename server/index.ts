@@ -24,6 +24,19 @@ const app = express(),
   qvac = new LocalQvac(),
   voice = new LocalVoice();
 app.disable("x-powered-by");
+// Cabeceras del documento. El bloque de /api ya mandaba no-store y nosniff,
+// pero el HTML no mandaba nada: la aplicacion se podia embeber en un iframe de
+// terceros. La politica es cerrada a proposito, todo sale de este mismo origen.
+app.use((_req, res, next) => {
+  res.set({
+    "X-Frame-Options": "DENY",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+    "Content-Security-Policy":
+      "default-src 'self'; img-src 'self' data:; media-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'",
+  });
+  next();
+});
 app.use(express.json({ limit: "8kb" }));
 app.use(
   session({
@@ -39,7 +52,13 @@ app.use("/api", (req, res, next) => {
     return res
       .status(403)
       .json({ error: "Acceso de demo limitado a localhost" });
-  if (!req.session.csrf) req.session.csrf = randomBytes(24).toString("hex");
+  // Solo se acuna CSRF para una sesion que ya eligio cliente, o para la propia
+  // pantalla de seleccion. Crearlo en cualquier peticion tocaba la sesion, y
+  // tocar la sesion emite cookie nueva: una peticion en vuelo del cliente
+  // anterior bastaba para dejar la aplicacion en un 401 permanente.
+  const eligiendoCliente = req.path === "/session";
+  if (!req.session.csrf && (req.session.customerId || eligiendoCliente))
+    req.session.csrf = randomBytes(24).toString("hex");
   if (req.method !== "GET" && req.get("x-chen-csrf") !== req.session.csrf)
     return res
       .status(403)
@@ -277,9 +296,11 @@ app.use(
     });
   },
 );
-app.get("/favicon.ico", (_req, res) => res.status(204).end());
 if (existsSync("dist/index.html")) {
   app.use(express.static(resolve("dist")));
+  // Despues del estatico, no antes: puesta delante ganaba siempre y el icono
+  // real, que si existe en dist, nunca llegaba a servirse.
+  app.get("/favicon.ico", (_req, res) => res.status(204).end());
   app.get("/{*path}", (_req, res) =>
     res.sendFile("index.html", { root: resolve("dist") }),
   );
@@ -292,9 +313,28 @@ if (existsSync("dist/index.html")) {
   app.use(vite.middlewares);
 }
 const port = Number(process.env.PORT ?? 4173);
-const server = app.listen(port, "127.0.0.1", () =>
-  console.log("Chen listo en http://127.0.0.1:" + port),
-);
+const server = app.listen(port, "127.0.0.1");
+// El anuncio sale del evento "listening" y comprobando que el socket este de
+// verdad escuchando. Anunciarlo antes es lo que hacia creer que la aplicacion
+// habia arrancado cuando el puerto estaba ocupado.
+server.on("listening", () => {
+  if (server.listening)
+    console.log("Chen listo en http://127.0.0.1:" + port);
+});
+// Sin esto, un puerto ocupado mata el proceso en silencio despues de haber
+// impreso "Chen listo". Quien lo arranca se queda con el servidor anterior, que
+// puede ser el que corre SIN inferencia, creyendo que encendio la IA.
+server.on("error", (error: NodeJS.ErrnoException) => {
+  if (error.code === "EADDRINUSE") {
+    console.error(
+      "El puerto " +
+        port +
+        " ya está en uso. Cierra el otro servidor, probablemente un `npm run dev`, y vuelve a intentar.",
+    );
+    process.exit(1);
+  }
+  throw error;
+});
 process.on("SIGINT", () => {
   server.close();
   repository.close();

@@ -1,9 +1,19 @@
 import { useEffect, useState } from "react";
-import { api, type Session, type ModelStatus } from "./api";
+import { api, cuandoSePierdaLaSesion, type Session, type ModelStatus } from "./api";
 import type { Category, Dashboard } from "../server/domain";
 import type { Commitment, PlanningView, PlanInput, Product } from "../server/planning-domain";
 import { fromAccount, fromCard, type LedgerRow } from "./ledger";
 import type { Forecast } from "../server/forecast";
+import type { Fact } from "../server/domain";
+
+export type ChatTurn = {
+  id: number;
+  role: "cliente" | "asistente";
+  text: string;
+  facts?: Fact[];
+  elapsedMs?: number;
+  failed?: boolean;
+};
 export const useChen = () => {
   const [session, setSession] = useState<Session | null>(null),
     [period, setPeriod] = useState("2026-09"),
@@ -15,6 +25,13 @@ export const useChen = () => {
   // guardar un plan o corregir una categoría toca disco y no es instantáneo.
   const [saving, setSaving] = useState(0);
   const [chatOpen, setChatOpen] = useState(false);
+  // El hilo del asistente vive aqui, no dentro del panel. Si vive en el panel se
+  // pierde al cambiar de pestaña, que es justo lo que hace el flujo de abrir la
+  // evidencia y volver; y la burbuja flotante, que monta otro panel, tendria un
+  // hilo distinto al de la pestaña.
+  const [turns, setTurns] = useState<ChatTurn[]>([]);
+  const [question, setQuestion] = useState("");
+  const [thinking, setThinking] = useState(false);
   const track = async <T,>(work: () => Promise<T>) => {
     setSaving((n) => n + 1);
     try {
@@ -34,6 +51,15 @@ export const useChen = () => {
     ),
     [revision, setRevision] = useState(0);
   useEffect(() => {
+    // Si la sesion se cae, se vuelve a la pantalla de seleccion de cliente. Es
+    // la unica salida limpia: el aviso rojo no se iba solo y obligaba a
+    // recargar la pagina a mano en plena demostracion.
+    cuandoSePierdaLaSesion(() => {
+      setSession((prior) => (prior ? { ...prior, customer: null } : prior));
+      setDashboard(null);
+      setEvidence(null);
+      setError("");
+    });
     api<Session>("/session")
       .then(setSession)
       .catch((e) => setError(e.message));
@@ -169,6 +195,12 @@ export const useChen = () => {
     )
     .sort((a, b) => b.date.localeCompare(a.date));
   return {
+    turns,
+    setTurns,
+    question,
+    setQuestion,
+    thinking,
+    setThinking,
     session,
     period,
     setPeriod,

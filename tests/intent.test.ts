@@ -119,3 +119,32 @@ test("una cantidad escrita con letras tambien es una pregunta de ahorro", async 
   ])
     assert.equal(timeframeHint(q), "savings", q);
 });
+
+test("la negativa honesta se entrega aunque el modelo no elija evidencia", () => {
+  // Lo que el modelo devuelve DE VERDAD ante una pregunta fuera de alcance:
+  // {"intent":"unavailable","factIds":[]}. La gramatica lo permite con
+  // minItems 0, asi que la instruccion de elegir el total se puede ignorar y se
+  // ignoraba. Exigir esa evidencia dejaba al cliente con un 503 despues de casi
+  // un minuto, justo en la respuesta que el sistema siempre puede dar.
+  //
+  // Toda la cobertura anterior de coherencia preguntaba "¿rechaza la evidencia
+  // equivocada?". Ninguna preguntaba "¿entrega la respuesta correcta?". El
+  // defecto vivia en la rama sin prueba.
+  const salida = renderIntent(
+    JSON.stringify({ intent: "unavailable", factIds: [] }),
+    facts,
+  );
+  assert.equal(salida.intent, "unavailable");
+  assert.match(salida.summary, /no permiten responder/);
+  assert.ok(salida.facts.length > 0, "debe apoyarse en el total");
+});
+
+test("sigue rechazando una evidencia que no existe", () => {
+  // El arreglo de arriba completa la evidencia vacia; no relaja el guardian.
+  assert.throws(() =>
+    renderIntent(
+      JSON.stringify({ intent: "unavailable", factIds: ["inventado"] }),
+      facts,
+    ),
+  );
+});

@@ -183,6 +183,16 @@ export const renderIntent = (
     };
   }
 
+  // "No puedo responder eso" es la respuesta honesta, y no afirma ningun
+  // importe: no hay nada que la evidencia deba sostener. Exigirsela dejaba al
+  // cliente sin la unica respuesta que el sistema siempre puede dar. El modelo
+  // devuelve `{"intent":"unavailable","factIds":[]}` y la gramatica lo permite
+  // con minItems 0, asi que la instruccion de elegir el total se puede ignorar,
+  // y se ignoraba: tres de tres preguntas fuera de alcance terminaban en un 503
+  // despues de un minuto de espera. Se completa con el total, que es el hecho
+  // que la redaccion usa para decir lo que si se puede confirmar.
+  if (parsed.intent === "unavailable" && parsed.factIds.length === 0)
+    parsed.factIds = facts.some((f) => f.id === "total") ? ["total"] : [];
   if (parsed.factIds.length < 1)
     throw new Error("Falta la evidencia de la respuesta");
   if (new Set(parsed.factIds).size !== parsed.factIds.length)

@@ -26,6 +26,8 @@ export type FitCandidate = {
   label: string;
   /** Tamaño de la descarga inicial, si el catálogo lo declara. */
   downloadBytes: number | null;
+  /** Los pesos ya están en la caché de este equipo. */
+  yaDescargado: boolean;
 };
 
 export type ModelFitReport = {
@@ -40,6 +42,7 @@ export type ModelFitReport = {
     verdict: FitVerdict;
     line: string;
     reasons: string[];
+    yaDescargado: boolean;
   }[];
   /** Solo cuando el elegido no entra y otro candidato sí. */
   suggestion: string | null;
@@ -70,9 +73,13 @@ export function summarizeFit(
   const models = candidates.map((c) => {
     const found = byName.get(c.key);
     const verdict = found?.verdict ?? "unknown";
-    const size = c.downloadBytes
-      ? " · descarga " + formatBytes(c.downloadBytes)
-      : "";
+    // Si los pesos ya estan aqui, la descarga no es un riesgo y no se anuncia
+    // como tal. Era la mitad del argumento del veredicto.
+    const size = c.yaDescargado
+      ? " · ya descargado"
+      : c.downloadBytes
+        ? " · descarga " + formatBytes(c.downloadBytes)
+        : "";
     // Cuando el SDK no se atreve a dar veredicto, el rango estimado es lo
     // unico accionable que queda: con el, el cliente decide por su cuenta.
     const need = found?.estimate
@@ -87,15 +94,23 @@ export function summarizeFit(
       verdict,
       line: c.label + size + need + " · " + verdictWord[verdict],
       reasons: found?.reasons ?? [],
+      yaDescargado: c.yaDescargado,
     };
   });
   const chosen = models.find((m) => m.key === chosenKey) ?? models[0];
   const name = chosen?.label ?? chosenKey;
+  // El veredicto orienta, no cierra la puerta. Se comprobo el 2026-09-10 en dos
+  // maquinas distintas: dijo "no entra" y el modelo cargo y respondio en una, y
+  // cargo pero no pudo responder en la otra. Es una advertencia util y una
+  // prohibicion falsa, asi que se redacta como advertencia.
+  const yaEsta = chosen?.yaDescargado ?? false;
   const headline =
     chosen?.verdict === "likely-fits"
       ? "Este equipo debería con " + name + "."
       : chosen?.verdict === "likely-too-large"
-        ? "Este equipo se queda corto para " + name + "."
+        ? yaEsta
+          ? "Este equipo va justo para " + name + ", pero ya está descargado: puedes intentarlo."
+          : "Este equipo se queda corto para " + name + "."
         : "No hay evidencia para decidir si " + name + " cabe en este equipo.";
   const alternative =
     chosen?.verdict === "likely-too-large"
@@ -118,7 +133,9 @@ export function summarizeFit(
         // liberar memoria. Ya pasó una vez en este proyecto, con otro worker
         // reteniendo cuatro gigabytes.
         chosen?.verdict === "likely-too-large"
-        ? "Cierra las aplicaciones que estén ocupando memoria y vuelve a medir."
+        ? yaEsta
+          ? "Cierra lo que esté ocupando memoria para que vaya holgado. Si ya cargó antes en este equipo, puedes intentarlo igual."
+          : "Cierra las aplicaciones que estén ocupando memoria y vuelve a medir."
         : null,
     reasons: assessment.reasons,
     assumptions: assessment.assumptions,

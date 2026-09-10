@@ -17,6 +17,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { LocalQvac, MODEL_NAME, inferenceEnabled } from "../server/qvac";
 import { analyze } from "../server/analysis";
 import { createFixtures } from "../server/fixtures";
+import { PlanningRepository } from "../server/planning-repository";
 import { probeNetwork, summarize, describe } from "./network-probe";
 
 if (!inferenceEnabled()) {
@@ -90,7 +91,17 @@ try {
 
   const movements = createFixtures();
   const dashboard = analyze(movements, "ana", "2026-09");
-  const context = { movements, customerId: "ana", asOf: "2026-09-09" };
+  // El mismo contexto que arma la ruta real. Sin el plan y la proyeccion, las
+  // preguntas que miran hacia adelante se niegan a responder por diseno, y la
+  // bateria las contaba como fallas de la aplicacion cuando eran suyas.
+  const repositorio = new PlanningRepository();
+  const context = {
+    movements,
+    customerId: "ana",
+    asOf: "2026-09-09",
+    planning: repositorio.get("ana"),
+    forecast: repositorio.forecast("ana"),
+  };
 
   for (const [horizonte, preguntas] of [
     ["pasado", pasado],

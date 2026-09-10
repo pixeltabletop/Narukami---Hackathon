@@ -78,9 +78,9 @@ intenciones serían correctas, escritas por lo que la pregunta significa y no po
 modelo contestó la última vez. Escribirlo al revés convertiría la verificación en un espejo del
 comportamiento actual: pasaría siempre y no detectaría nada. Así fue como apareció el defecto de
 clasificación que se explica más abajo.
-Con veinte categorías el bloque de hechos es más largo y la respuesta tarda entre 11 y 26
-segundos, contra 9 a 14 del catálogo corto: más lenguaje cuesta tiempo, y para grabar conviene
-tener el modelo ya cargado y memoria libre.
+Con veinte categorías el bloque de hechos es más largo y la respuesta tarda entre 11 y 35
+segundos según el equipo, contra 9 a 14 del catálogo corto: más lenguaje cuesta tiempo, y para
+grabar conviene tener el modelo ya cargado y memoria libre.
 
 ### Antes de descargar: ¿aguanta este equipo?
 
@@ -320,7 +320,7 @@ grabación de una persona real metería un dato biométrico en el repositorio.
 ## Guía dentro de la aplicación
 
 La pestaña Guía explica, sección por sección, qué entra en cada cálculo, qué queda fuera a
-propósito y qué la aplicación no hace. Son definiciones cortas, no un manual: veintinueve
+propósito y qué la aplicación no hace. Son definiciones cortas, no un manual: treinta
 términos con salto directo a la pantalla que describen.
 
 ## Cómo se leen tus movimientos
@@ -352,7 +352,7 @@ Cada requisito del Track 05, y dónde se cumple.
 | Datos del cliente no salen del dispositivo | El servidor escucha solo en `127.0.0.1`. El dictado se transcribe con Whisper en el mismo equipo, no con la API de voz del navegador, que enviaría el audio a un tercero. |
 | Solo datos sintéticos o públicos | Dos clientes ficticios generados en `server/fixtures.ts` y `server/planning-fixtures.ts`. No hay datos reales de ninguna entidad ni credenciales bancarias. |
 | Declarar toda base preexistente | Sección «Base preexistente declarada», más abajo, y el archivo `LICENSE`. El commit `57af18a` conserva esa base sin modificar. |
-| Repositorio accesible al jurado | Pendiente de publicar. Ver «Entrega». |
+| Repositorio accesible al jurado | Publicado el 10 de septiembre de 2026 en https://github.com/pixeltabletop/Narukami---Hackathon, público y clonable sin credenciales. |
 | Video de máximo cinco minutos, sin credenciales | Pendiente de grabar. |
 | La propiedad intelectual permanece en el equipo | `LICENSE`: derechos reservados, con permiso de evaluación para la organización y el jurado. |
 

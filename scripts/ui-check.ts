@@ -188,12 +188,39 @@ try {
   await expect(page.locator(".scenario")).toHaveCount(3);
 
   await page.screenshot({ path: "artifacts/mobile.png", fullPage: true });
-  if (
-    await page.evaluate(
-      () => document.documentElement.scrollWidth > window.innerWidth,
-    )
-  )
-    throw new Error("Desbordamiento horizontal móvil");
+  // El desbordamiento se mide en TODAS las pestañas y a 360 px, no solo en la
+  // que este abierta y a 390. La version anterior medía a 390 y donde cayera, y
+  // por eso no vio que Resumen se iba a 387 px y Recurrentes a 406 justo en la
+  // franja de 360, que es el ancho de la mayoria de los Android.
+  for (const ancho of [360, 390]) {
+    await page.setViewportSize({ width: ancho, height: 800 });
+    for (const pestana of [
+      "Resumen",
+      "Movimientos",
+      "Recurrentes",
+      "Organiza",
+      "Escenarios",
+      "Proyección",
+      "Asistente",
+      "Guía",
+    ]) {
+      await page.getByRole("button", { name: pestana, exact: true }).click();
+      const medida = await page.evaluate(() => ({
+        ancho: document.documentElement.scrollWidth,
+        ventana: window.innerWidth,
+      }));
+      if (medida.ancho > medida.ventana)
+        throw new Error(
+          "Desbordamiento horizontal en " +
+            pestana +
+            " a " +
+            ancho +
+            " px: la página mide " +
+            medida.ancho,
+        );
+    }
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
   const isolated = await request.newContext({ baseURL: base });
   const unauthorized = await isolated.get("/api/dashboard");
   expect(unauthorized.status()).toBe(401);

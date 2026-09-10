@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import { summarizeFit, type FitAssessment } from "../server/model-fit";
 
 const candidates = [
-  { key: "QWEN3_4B_INST_Q4_K_M", label: "Qwen3 4B", downloadBytes: 2_500_000_000 },
-  { key: "GEMMA4_2B_MULTIMODAL_Q4_K_M", label: "Gemma4 2B", downloadBytes: 1_600_000_000 },
+  { key: "QWEN3_4B_INST_Q4_K_M", label: "Qwen3 4B", downloadBytes: 2_500_000_000, yaDescargado: false },
+  { key: "GEMMA4_2B_MULTIMODAL_Q4_K_M", label: "Gemma4 2B", downloadBytes: 1_600_000_000, yaDescargado: false },
 ];
 
 const assessment = (
@@ -125,4 +125,43 @@ test("el veredicto no se cachea: preguntar dos veces vuelve a medir", async () =
     false,
     "assessFit no debe devolver un resultado guardado: tiene que volver a medir",
   );
+});
+
+test("con los pesos ya descargados, el veredicto avisa pero no cierra la puerta", () => {
+  // Hallazgo de la auditoria del 2026-09-10: la app decia "se queda corto" y el
+  // modelo cargaba y respondia. El veredicto es una advertencia util y una
+  // prohibicion falsa. Si los pesos ya estan aqui, ademas, no hay descarga que
+  // evitar: la mitad del argumento desaparece.
+  const yaEstan = candidates.map((c) => ({ ...c, yaDescargado: true }));
+  const report = summarizeFit(
+    assessment(
+      [
+        ["QWEN3_4B_INST_Q4_K_M", "likely-too-large"],
+        ["GEMMA4_2B_MULTIMODAL_Q4_K_M", "likely-too-large"],
+      ],
+      2_900_000_000,
+    ),
+    yaEstan,
+    "QWEN3_4B_INST_Q4_K_M",
+  );
+  assert.match(report.headline, /puedes intentarlo/);
+  assert.match(report.models[0].line, /ya descargado/);
+  assert.doesNotMatch(report.models[0].line, /descarga 2,5 GB/);
+  assert.match(report.suggestion ?? "", /puedes intentarlo igual/);
+});
+
+test("sin los pesos, el aviso sigue siendo el fuerte", () => {
+  const report = summarizeFit(
+    assessment(
+      [
+        ["QWEN3_4B_INST_Q4_K_M", "likely-too-large"],
+        ["GEMMA4_2B_MULTIMODAL_Q4_K_M", "likely-too-large"],
+      ],
+      2_900_000_000,
+    ),
+    candidates,
+    "QWEN3_4B_INST_Q4_K_M",
+  );
+  assert.match(report.headline, /se queda corto/);
+  assert.match(report.models[0].line, /descarga 2,5 GB/);
 });

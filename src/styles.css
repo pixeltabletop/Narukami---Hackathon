@@ -619,6 +619,10 @@ h3 {
 }
 .table-scroll {
   overflow-x: auto;
+  /* Sin esto el contenedor no puede encogerse por debajo del ancho de la tabla:
+     el min-width automatico de un hijo de rejilla es min-content, y en un
+     telefono de 360 px la tabla empujaba la pagina entera a 387. */
+  min-width: 0;
 }
 table {
   border-collapse: collapse;
@@ -730,6 +734,9 @@ td select {
   margin-top: 25px;
 }
 .recurring-card {
+  /* Un hijo de rejilla no encoge por debajo de su contenido salvo que se le
+     permita. El importe a 27 px mas el relleno desbordaban la columna. */
+  min-width: 0;
   text-align: left;
   border: 1px solid #dfe6d5;
   border-radius: 8px;
@@ -1686,4 +1693,19 @@ tr.no-cuenta .amount {
   padding: 7px 11px;
   font-size: 11px;
   font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+
+/* Telefonos estrechos. La franja de 360 px es la de la mayoria de los Android y
+   es donde aparecia el desbordamiento: dos columnas de recurrentes no caben con
+   el importe a tamano grande. Medido con la pagina, no calculado. */
+@media (max-width: 400px) {
+  .recurring-grid {
+    grid-template-columns: 1fr;
+  }
+  .recurring-card {
+    padding: 18px;
+  }
+  .recurring-card strong {
+    font-size: 23px;
+  }
 }
