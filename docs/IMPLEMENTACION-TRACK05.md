@@ -2,7 +2,7 @@
 
 ## Incremento funcional
 
-Rastro ya integra análisis de consumo y planificación del dinero disponible en una sola experiencia:
+Chen ya integra análisis de consumo y planificación del dinero disponible en una sola experiencia:
 
 1. **Entiende:** movimientos de tarjeta, gasto neto, categorías, comparación y recurrencias.
 2. **Organiza:** saldo, pendientes, compromisos, gasto variable, reserva y fecha del próximo ingreso.

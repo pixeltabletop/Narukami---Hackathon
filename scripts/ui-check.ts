@@ -113,6 +113,35 @@ try {
   await expect(page.locator("tbody input[list]").first()).toHaveValue(
     "Restaurantes",
   );
+  // Chen tiene que estar a un toque desde cualquier pantalla.
+  await page.getByRole("button", { name: "Abrir el asistente Chen" }).click();
+  await expect(
+    page.getByRole("dialog", { name: "Asistente Chen" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Cerrar el asistente" }).click();
+  await expect(
+    page.getByRole("dialog", { name: "Asistente Chen" }),
+  ).toHaveCount(0);
+  // Proyección: el veredicto tiene que cambiar cuando cambian los supuestos.
+  await page.getByRole("button", { name: "Proyección", exact: true }).click();
+  await expect(page.locator(".forecast-hero")).toBeVisible();
+  await expect(page.locator(".forecast-hero.ok")).toHaveCount(1);
+  await page.screenshot({ path: "artifacts/proyeccion-desktop.png", fullPage: true });
+  await page.getByRole("button", { name: "Organiza", exact: true }).click();
+  await variable.fill("900.00");
+  await save();
+  await page.getByRole("button", { name: "Proyección", exact: true }).click();
+  await expect(page.locator(".forecast-hero.red")).toHaveCount(1);
+  await expect(page.locator(".forecast-hero")).toContainText("No llegas");
+  await page.screenshot({ path: "artifacts/proyeccion-rojo.png", fullPage: true });
+  await page.getByRole("button", { name: "Organiza", exact: true }).click();
+  await variable.fill("140.00");
+  await save();
+  // Guía: cada sección explicada, con salto directo a la pestaña.
+  await page.getByRole("button", { name: "Guía", exact: true }).click();
+  await expect(page.locator(".guide-section")).toHaveCount(8);
+  await page.getByRole("button", { name: "Ir a Proyección ↗" }).click();
+  await expect(page.locator(".forecast-hero")).toBeVisible();
   await page
     .getByRole("combobox", { name: "Cambiar cliente de demo" })
     .selectOption("luis");
@@ -177,12 +206,12 @@ try {
   const login = await (
     await isolated.post("/api/session", {
       data: { customerId: "luis" },
-      headers: { "x-rastro-csrf": session.csrf },
+      headers: { "x-chen-csrf": session.csrf },
     })
   ).json();
   const foreign = await isolated.patch("/api/movements/ana-0001/category", {
     data: { category: "Compras" },
-    headers: { "x-rastro-csrf": login.csrf },
+    headers: { "x-chen-csrf": login.csrf },
   });
   expect(foreign.status()).toBe(404);
 
@@ -190,7 +219,7 @@ try {
     data: "{",
     headers: {
       "Content-Type": "application/json",
-      "x-rastro-csrf": login.csrf,
+      "x-chen-csrf": login.csrf,
     },
   });
   expect(malformed.status()).toBe(400);
@@ -200,7 +229,7 @@ try {
   const modelState = await (await isolated.get("/api/model")).json();
   expect(modelState.status).toBe("disabled");
   const blockedLoad = await isolated.post("/api/model/load", {
-    headers: { "x-rastro-csrf": login.csrf },
+    headers: { "x-chen-csrf": login.csrf },
     data: {},
   });
   expect(blockedLoad.status()).toBe(409);
@@ -236,6 +265,9 @@ try {
           "planning-margin",
           "planning-persistence",
           "product-filter",
+          "chat-bubble",
+          "forecast-verdict",
+          "guide",
           "savings-scenarios",
         ],
         errors,

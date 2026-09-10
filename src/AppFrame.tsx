@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
-import type { RastroState } from "./useRastro";
+import type { ChenState } from "./useChen";
 import { BrandLoader } from "./BrandLoader";
 export const AppFrame = ({
   state,
   children,
 }: {
-  state: RastroState;
+  state: ChenState;
   children: ReactNode;
 }) => {
   const { customer, session, tab, setTab, setEvidence, model, login, saving } = state;
@@ -20,9 +20,9 @@ export const AppFrame = ({
             width={34}
             height={34}
           />
-          rastro<span>●</span>
+          chen<span>●</span>
         </a>
-        <p className="sidebar-caption">TU DINERO, MÁS CLARO.</p>
+        <p className="sidebar-caption">TU CHEN CHEN, CLARO.</p>
         <nav aria-label="Navegación principal">
           {["Resumen", "Movimientos", "Recurrentes", "Organiza", "Proyección", "Escenarios", "Asistente", "Guía"].map((name, i) => (
             <button

@@ -7,7 +7,7 @@ import { analyze } from "../server/analysis";
 import { createFixtures } from "../server/fixtures";
 
 if (!inferenceEnabled()) {
-  console.log("OMITIDO: inferencia desactivada. Definir RASTRO_ENABLE_QVAC=1.");
+  console.log("OMITIDO: inferencia desactivada. Definir CHEN_ENABLE_QVAC=1.");
   process.exit(0);
 }
 

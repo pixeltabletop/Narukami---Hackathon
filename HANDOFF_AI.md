@@ -1,6 +1,6 @@
 # Continuación para otra IA
 ## Solicitud del usuario
-Dejar la estructura de Rastro lista SIN descargar ni ejecutar modelos ahora.
+Dejar la estructura de Chen lista SIN descargar ni ejecutar modelos ahora.
 Continuar en otra laptop con otra IA. No reactivar la inferencia sin una nueva indicación del usuario.
 
 ## Objetivo
@@ -11,7 +11,7 @@ Solo datos sintéticos o públicos; ninguna credencial ni movimiento real.
 
 ## Estado de entrega
 Aplicación web, API, motor determinista, SQLite de correcciones y pruebas implementados.
-Adaptador QVAC preparado, desactivado por RASTRO_ENABLE_QVAC ausente o distinto de 1.
+Adaptador QVAC preparado, desactivado por CHEN_ENABLE_QVAC ausente o distinto de 1.
 No se incluyen modelos, node_modules, caches ni base de datos con estado de uso.
 El motor entrega hallazgos calculados y la interfaz los etiqueta claramente.
 La IA no está declarada terminada ni lista para el concurso.
@@ -27,7 +27,7 @@ La IA no está declarada terminada ni lista para el concurso.
 ## Cuando el usuario autorice continuar con IA
 Revisar server/qvac.ts, server/answer-validator.ts y scripts/qvac-check.ts.
 El adaptador usa SDK 0.19.0 y QWEN3_4B_INST_Q4_K_M como candidato, no como elección obligatoria.
-La variable RASTRO_ENABLE_QVAC=1 habilita la carga explícita. Esta carga puede descargar pesos.
+La variable CHEN_ENABLE_QVAC=1 habilita la carga explícita. Esta carga puede descargar pesos.
 No existe fallback a nube y no debe añadirse.
 No usar las pruebas exploratorias de la laptop anterior como validación de la nueva.
 Evaluar las tres preguntas, el aislamiento entre usuarios, importes y referencias, rechazo de instrucciones maliciosas, tiempos y cancelación.
@@ -50,7 +50,7 @@ server/repository.ts: correcciones por cliente.
 server/qvac.ts: adaptador IA.
 server/answer-validator.ts: contrato de respuestas.
 server/index.ts: API y sesiones.
-src/: componentes de interfaz y useRastro.
+src/: componentes de interfaz y useChen.
 tests/: pruebas del dominio y aislamiento.
 scripts/ui-check.ts: interfaz/API con Edge headless instalado.
 scripts/qvac-check.ts: futuro chequeo de IA, omitido por defecto.

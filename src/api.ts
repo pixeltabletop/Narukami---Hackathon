@@ -7,7 +7,7 @@ export const api = async <T>(
     ...options,
     headers: {
       "Content-Type": "application/json",
-      "x-rastro-csrf": csrf,
+      "x-chen-csrf": csrf,
       ...options.headers,
     },
   });

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
 import { BrandLoader } from "./BrandLoader";
 import type { Fact } from "../server/domain";
-import type { RastroState } from "./useRastro";
+import type { ChenState } from "./useChen";
 
 type Turn = {
   id: number;
@@ -21,7 +21,13 @@ const suggestions = [
   "¿Qué compras todavía no se han contabilizado?",
 ];
 
-export const ChatPanel = ({ state }: { state: RastroState }) => {
+export const ChatPanel = ({
+  state,
+  compact = false,
+}: {
+  state: ChenState;
+  compact?: boolean;
+}) => {
   const { dashboard, model, showEvidence, load } = state;
   const [turns, setTurns] = useState<Turn[]>([]);
   const [question, setQuestion] = useState("");
@@ -77,7 +83,7 @@ export const ChatPanel = ({ state }: { state: RastroState }) => {
 
   const ready = model.status === "ready";
   return (
-    <section className="panel chat-panel">
+    <section className={compact ? "panel chat-panel compact" : "panel chat-panel"}>
       <div className="section-heading">
         <div>
           <span className="eyebrow">ASISTENTE EN ESTE EQUIPO</span>
@@ -85,11 +91,14 @@ export const ChatPanel = ({ state }: { state: RastroState }) => {
         </div>
         <span className="ai-mark">✦ Inferencia local</span>
       </div>
-      <p className="muted">
-        El asistente no redacta libremente: clasifica tu pregunta, elige entre
-        una y tres evidencias y la respuesta se arma con importes ya calculados.
-        Cada afirmación se puede abrir hasta los movimientos que la sostienen.
-      </p>
+      {!compact && (
+        <p className="muted">
+          El asistente no redacta libremente: clasifica tu pregunta, elige entre
+          una y tres evidencias y la respuesta se arma con importes ya
+          calculados. Cada afirmación se puede abrir hasta los movimientos que
+          la sostienen.
+        </p>
+      )}
 
       {!ready && (
         <div className="model-notice">
@@ -159,7 +168,7 @@ export const ChatPanel = ({ state }: { state: RastroState }) => {
       </div>
 
       <div className="suggestions chat-suggestions">
-        {suggestions.map((item) => (
+        {(compact ? suggestions.slice(0, 3) : suggestions).map((item) => (
           <button
             key={item}
             disabled={!ready || thinking}
@@ -193,8 +202,9 @@ export const ChatPanel = ({ state }: { state: RastroState }) => {
         </button>
       </form>
       <p className="table-note">
-        El asistente no mueve dinero, no ejecuta consultas y no da consejo
-        financiero. Si los datos no alcanzan para responder, lo dice.
+        {compact
+          ? "Chen no mueve dinero. Si los datos no alcanzan, lo dice."
+          : "El asistente no mueve dinero, no ejecuta consultas y no da consejo financiero. Si los datos no alcanzan para responder, lo dice."}
       </p>
     </section>
   );

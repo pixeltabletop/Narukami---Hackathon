@@ -1,4 +1,4 @@
-import { useRastro } from "./useRastro";
+import { useChen } from "./useChen";
 import { AppFrame } from "./AppFrame";
 import { LoginScreen } from "./LoginScreen";
 import { SpendingOverview } from "./SpendingOverview";
@@ -9,9 +9,10 @@ import { ScenariosPanel } from "./ScenariosPanel";
 import { ForecastPanel } from "./ForecastPanel";
 import { ChatPanel } from "./ChatPanel";
 import { GuidePanel } from "./GuidePanel";
+import { ChatBubble } from "./ChatBubble";
 import { monthNames } from "./period-labels";
 export const App = () => {
-  const state = useRastro();
+  const state = useChen();
   const { customer, period, setPeriod, dashboard, tab, error } = state;
   if (!customer) return <LoginScreen state={state} />;
   return (
@@ -91,8 +92,9 @@ export const App = () => {
           {tab === "Guía" && <GuidePanel state={state} />}
         </>
       )}
+      <ChatBubble state={state} />
       <footer>
-        Rastro · Prototipo para Caja de Ahorros{" "}
+        Chen · Prototipo para Caja de Ahorros{" "}
         <span>Datos sintéticos · Sin conexión a cuentas reales</span>
       </footer>
     </AppFrame>

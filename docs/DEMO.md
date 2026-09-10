@@ -1,4 +1,4 @@
-# Guion de demostración — Rastro (máximo cinco minutos)
+# Guion de demostración — Chen (máximo cinco minutos)
 
 Regla que no se rompe: no se graba ninguna respuesta preparada como si fuera inferencia.
 Si el modelo local no responde en la toma, se corta y se vuelve a grabar. Nada se recita.
@@ -6,7 +6,7 @@ Si el modelo local no responde en la toma, se corta y se vuelve a grabar. Nada s
 ## Antes de grabar
 
 1. `npm ci && npm run build && npm test` en verde.
-2. `$env:RASTRO_ENABLE_QVAC="1"` y `npm run qvac:check` con `artifacts/qvac-check.json` escrito en esta máquina.
+2. `$env:CHEN_ENABLE_QVAC="1"` y `npm run qvac:check` con `artifacts/qvac-check.json` escrito en esta máquina.
 3. `npm run dev` y el modelo ya cargado, para no gastar minutos de video en la carga.
 4. Adaptador de red listo para desactivarse en cámara.
 5. Cliente Ana Martínez seleccionado, período septiembre 2026.
@@ -15,7 +15,7 @@ Si el modelo local no responde en la toma, se corta y se vuelve a grabar. Nada s
 
 **0:00 – 0:35 · El problema, con nombre y apellido**
 El cliente ve el estado de cuenta y no entiende por qué gastó más. El banco tampoco puede
-mandar esos movimientos a un modelo en la nube. Rastro resuelve las dos cosas: explica el
+mandar esos movimientos a un modelo en la nube. Chen resuelve las dos cosas: explica el
 consumo y organiza el saldo, sin que el dato salga del dispositivo.
 En pantalla: la portada con el logo de Caja de Ahorros y la advertencia de datos ficticios.
 
@@ -25,7 +25,7 @@ Decir en una frase qué es un pendiente: compra autorizada que el comercio no ha
 firme; el banco retiene el dinero pero el importe puede cambiar, así que no entra al consumo.
 Abrir el mapa de categorías y bajar al bloque «No es gasto»: el traspaso a ahorros y el retiro
 de efectivo salieron de la cuenta sin consumirse. Esta es la frase que vende la idea: contar un
-traspaso como gasto es el error que comete cualquier tablero, y Rastro no lo comete.
+traspaso como gasto es el error que comete cualquier tablero, y Chen no lo comete.
 
 **1:25 – 2:20 · La pregunta en lenguaje natural, con el modelo local**
 Preguntar en vivo: «¿en qué se me fue el dinero?» y después «¿por qué gasté más?».
@@ -50,7 +50,13 @@ saldo de hoy. Vaciar el presupuesto variable para llevarlo todo a ahorro y ver s
 Pasar a Escenarios: conservador, sugerido y ambicioso, con el dinero que queda en cada uno.
 Decir la regla en voz alta: el próximo ingreso no se suma antes de recibirse.
 
-**3:50 – 4:30 · La prueba que decide el reto**
+**3:50 – 4:10 · La proyección, que es la pregunta del cliente**
+Abrir Proyección. Chen reconoció que Ana cobra los 15 y los 30 y proyecta día por día.
+Subir el gasto variable en Organiza y volver: el veredicto se pone en rojo, dice el día exacto
+en que se queda corta y cuánto falta. Cambiar a Luis para mostrar el caso de ingresos
+irregulares, donde el prorrateo y la autonomía sin cobrar sustituyen a la fecha fija.
+
+**4:10 – 4:30 · La prueba que decide el reto**
 Desactivar la red en cámara. Volver a preguntar. El modelo responde igual.
 Mostrar `artifacts/qvac-check.json` con el modelo, el tiempo de carga y la latencia medida.
 No hay respaldo en la nube: si QVAC no está, la aplicación lo dice y no responde.

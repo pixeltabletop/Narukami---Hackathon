@@ -1,4 +1,4 @@
-# Arquitectura de Rastro
+# Arquitectura de Chen
 ## Flujo
 Navegador → API de sesión → movimientos del cliente → cálculos → hallazgos y evidencias.
 Una etapa posterior habilitará QVAC local para interpretar preguntas y explicar esos hechos.

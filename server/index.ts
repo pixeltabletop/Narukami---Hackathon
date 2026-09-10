@@ -37,7 +37,7 @@ app.use("/api", (req, res, next) => {
       .status(403)
       .json({ error: "Acceso de demo limitado a localhost" });
   if (!req.session.csrf) req.session.csrf = randomBytes(24).toString("hex");
-  if (req.method !== "GET" && req.get("x-rastro-csrf") !== req.session.csrf)
+  if (req.method !== "GET" && req.get("x-chen-csrf") !== req.session.csrf)
     return res
       .status(403)
       .json({ error: "Sesión desactualizada. Recarga la página." });
@@ -209,7 +209,7 @@ if (existsSync("dist/index.html")) {
 }
 const port = Number(process.env.PORT ?? 4173);
 const server = app.listen(port, "127.0.0.1", () =>
-  console.log("Rastro listo en http://127.0.0.1:" + port),
+  console.log("Chen listo en http://127.0.0.1:" + port),
 );
 process.on("SIGINT", () => {
   server.close();

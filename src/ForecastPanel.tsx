@@ -1,5 +1,5 @@
 import { money } from "../server/domain";
-import type { RastroState } from "./useRastro";
+import type { ChenState } from "./useChen";
 
 const shapeLabel: Record<string, string> = {
   quincenal: "Cobro quincenal",
@@ -8,7 +8,7 @@ const shapeLabel: Record<string, string> = {
   desconocido: "Sin patrón reconocible",
 };
 
-export const ForecastPanel = ({ state }: { state: RastroState }) => {
+export const ForecastPanel = ({ state }: { state: ChenState }) => {
   const { forecast, forecastHorizon, setForecastHorizon } = state;
   if (!forecast) return <p role="status">Proyectando tu saldo…</p>;
   const ok = forecast.nextIncomeDate

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { money } from "../server/domain";
 import { commitmentKindLabels } from "../server/planning-domain";
-import type { RastroState } from "./useRastro";
+import type { ChenState } from "./useChen";
 
-export const OrganizePanel = ({ state }: { state: RastroState }) => {
+export const OrganizePanel = ({ state }: { state: ChenState }) => {
   const { planning, savePlan, setCommitment } = state;
   const [variable, setVariable] = useState("");
   const [reserve, setReserve] = useState("");
@@ -89,7 +89,7 @@ export const OrganizePanel = ({ state }: { state: RastroState }) => {
             de hotel suelen liquidarse por un monto distinto.
           </p>
           <p>
-            Por eso Rastro lo resta del saldo disponible pero no lo suma al
+            Por eso Chen lo resta del saldo disponible pero no lo suma al
             gasto del período. Cuando el comercio lo cobra, el movimiento pasa a
             contabilizado y ahí sí entra en el análisis de consumo.
           </p>

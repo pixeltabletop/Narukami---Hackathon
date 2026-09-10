@@ -2,8 +2,8 @@ import { categories, isTransfer, money } from "../server/domain";
 import { productLabels, type Product } from "../server/planning-domain";
 import { MovementTable } from "./MovementTable";
 import { Combobox } from "./Combobox";
-import type { RastroState } from "./useRastro";
-export const ActivityPanel = ({ state }: { state: RastroState }) => {
+import type { ChenState } from "./useChen";
+export const ActivityPanel = ({ state }: { state: ChenState }) => {
   const {
     rows,
     tab,

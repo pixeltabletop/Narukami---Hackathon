@@ -1,5 +1,5 @@
-import type { RastroState } from "./useRastro";
-export const LoginScreen = ({ state }: { state: RastroState }) => {
+import type { ChenState } from "./useChen";
+export const LoginScreen = ({ state }: { state: ChenState }) => {
   const { session, login, error } = state;
   return (
     <main className="welcome">
@@ -10,7 +10,7 @@ export const LoginScreen = ({ state }: { state: RastroState }) => {
           width={52}
           height={52}
         />
-        rastro<span>●</span>
+        chen<span>●</span>
       </div>
       <span className="eyebrow">INTELIGENCIA QUE SE QUEDA CONTIGO</span>
       <h1>

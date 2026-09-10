@@ -1,6 +1,8 @@
-# Rastro — inteligencia local para entender y organizar el dinero
+# Chen — tu chen chen, claro
 
-Prototipo para el Track 05 de Caja de Ahorros. Rastro une dos recorridos: explica el consumo de tarjeta con evidencia y ayuda a organizar el saldo disponible hasta el próximo ingreso. Los cálculos se realizan en el servidor local y QVAC se usa exclusivamente en el dispositivo para clasificar las preguntas del cliente.
+_Asistente local de Caja de Ahorros para entender y organizar el dinero._
+
+Prototipo para el Track 05 de Caja de Ahorros. Chen une dos recorridos: explica el consumo de tarjeta con evidencia y ayuda a organizar el saldo disponible hasta el próximo ingreso. Los cálculos se realizan en el servidor local y QVAC se usa exclusivamente en el dispositivo para clasificar las preguntas del cliente.
 
 **La inferencia está desactivada por defecto y el repositorio no incluye pesos de modelos.** Toda la demostración usa clientes y movimientos sintéticos.
 
@@ -41,10 +43,10 @@ QVAC recibe la pregunta y hechos ya calculados. Su salida permitida contiene ún
 ## QVAC verificado localmente
 
 El adaptador usa QVAC SDK 0.19.0. El modelo por defecto es `QWEN3_4B_INST_Q4_K_M` y se puede
-cambiar con `RASTRO_QVAC_MODEL`. Para habilitar la inferencia:
+cambiar con `CHEN_QVAC_MODEL`. Para habilitar la inferencia:
 
 ```powershell
-$env:RASTRO_ENABLE_QVAC="1"
+$env:CHEN_ENABLE_QVAC="1"
 npm run qvac:check
 npm run dev
 ```
@@ -96,7 +98,7 @@ comparación y repitió una evidencia.
 ## Dónde corre el modelo y dónde está el cliente
 
 La pregunta que decide este reto no es qué modelo se usa, sino en qué máquina piensa. QVAC
-corre en el dispositivo. Rastro no tiene ni puede tener un respaldo en la nube: si el modelo no
+corre en el dispositivo. Chen no tiene ni puede tener un respaldo en la nube: si el modelo no
 está cargado, la aplicación lo dice y no responde.
 
 **En la demostración.** El portátil es a la vez el dispositivo y el servidor. Express escucha en
@@ -115,7 +117,7 @@ equipo: no hay que desplegar nada ni conectarse a ningún servicio.
 Las bases permiten la nube para hospedar la interfaz y autenticar, no para inferir. Eso encaja
 con el primer camino: el banco sirve la web como hoy y la inferencia ocurre en su propio
 hardware. El segundo camino es la evolución natural y el SDK ya lo contempla: expone un plugin
-de Expo para React Native, así que el mismo dominio de Rastro puede empaquetarse en una app
+de Expo para React Native, así que el mismo dominio de Chen puede empaquetarse en una app
 donde el modelo viva en el teléfono. Este prototipo es web porque un jurado necesita abrirlo
 sin instalar nada, y porque el dominio y las reglas de cálculo se reutilizan tal cual en móvil.
 
@@ -123,12 +125,51 @@ Lo que no cambia en ningún camino: el modelo solo clasifica la intención y esc
 importes salen de motores deterministas. Ese contrato es lo que hace que mover la inferencia de
 un servidor a un teléfono sea una decisión de despliegue y no una reescritura.
 
+## El nombre
+
+**Chen** viene de *chen chen*, la plata en panameño. Es corto, se dice fácil y suena a alguien
+que te ayuda con lo tuyo, no a un tablero. La aplicación se llamaba Rastro cuando se recibió la
+base de Diego; el cambio de nombre está declarado más abajo junto con esa base.
+
+## Proyección: ¿llegas al próximo pago?
+
+La pregunta se decide en un día concreto, así que la proyección simula día por día en vez de
+promediar el mes. Un promedio mensual esconde justo la fecha en que la cuenta se queda corta.
+
+- **Reconoce cómo cobras.** A partir de tus propios ingresos clasifica el patrón en mensual,
+  quincenal o irregular, con el nivel de confianza a la vista. Si son irregulares, reparte el
+  ingreso por día en lugar de apostar a una fecha, y lo dice.
+- **Coloca lo que se repite.** Compromisos en su fecha de vencimiento y gastos recurrentes en el
+  día del mes en que suelen ocurrir. Un compromiso confirmado manda sobre la serie detectada con
+  el mismo nombre, para no descontar el mismo recibo dos veces.
+- **Deja fuera lo que no sale de la cuenta.** Los descuentos de planilla no aparecen como salida
+  porque el empleador los retiene antes de pagar.
+- **Responde con un veredicto.** Si el saldo aguanta, dice con cuánto llegas. Si no, dice el día
+  en que te quedas corto, cuánto falta y qué mover para cruzar el tramo.
+- **Autonomía sin cobrar.** Cuántos días aguanta lo que ya está en la cuenta si no entra ningún
+  cobro más. Para un ingreso irregular esa es la pregunta real, y el prorrateo por sí solo la
+  esconde.
+
+## Asistente
+
+Chen vive en su propia pestaña y en una burbuja disponible desde cualquier pantalla. Mantiene el
+mismo contrato de siempre: el modelo clasifica la pregunta y elige entre una y tres evidencias,
+la aplicación redacta con importes ya calculados, y cada afirmación se abre hasta los movimientos
+que la sostienen. Mientras piensa se reproduce el loop oficial de Caja de Ahorros, que es también
+la espera al cargar el modelo y al guardar cambios.
+
+## Guía dentro de la aplicación
+
+La pestaña Guía explica, sección por sección, qué entra en cada cálculo, qué queda fuera a
+propósito y qué la aplicación no hace. Son definiciones cortas, no un manual: veintinueve
+términos con salto directo a la pantalla que describen.
+
 ## Cómo se leen tus movimientos
 
 - **Categorías.** Veinte categorías que cubren el gasto doméstico y el de quien además factura
   por su cuenta: proveedores, servicios profesionales, marketing, alquileres, seguros, impuestos.
 - **Lo que no es gasto.** Una transferencia entre cuentas propias y un retiro de efectivo mueven
-  saldo sin consumirlo. Rastro los muestra aparte, con su importe, y no los suma al consumo del
+  saldo sin consumirlo. Chen los muestra aparte, con su importe, y no los suma al consumo del
   período. Contarlos como gasto es el error clásico de cualquier tablero bancario.
 - **Productos separados.** La bandeja de movimientos filtra por tarjeta de crédito, cuenta
   corriente y cuenta de ahorros. Las compras de tarjeta alimentan el análisis de consumo; la
@@ -151,7 +192,7 @@ un servidor a un teléfono sea una decisión de despliegue y no una reescritura.
 
 ## Base preexistente declarada
 
-La base de Rastro recibida de Diego el 9 de septiembre de 2026 se importó sin modificar en el commit `7c02033`. Incluía la experiencia de análisis de tarjeta, React/Vite, Express, SQLite, fixtures, pruebas y el adaptador inicial de QVAC. Este incremento agrega el dominio de cuenta, planificación y escenarios; endurece la validación de datos; y cambia la respuesta de QVAC a un contrato de intención tipada con redacción determinista.
+La base recibida de Diego el 9 de septiembre de 2026, llamada **Rastro**, se importó sin modificar en el commit `7c02033`. El producto se renombró a **Chen** el 9 de septiembre de 2026; el código original conserva su autoría y su historia en ese commit. Incluía la experiencia de análisis de tarjeta, React/Vite, Express, SQLite, fixtures, pruebas y el adaptador inicial de QVAC. Este incremento agrega el dominio de cuenta, planificación y escenarios; endurece la validación de datos; y cambia la respuesta de QVAC a un contrato de intención tipada con redacción determinista.
 
 Dependencias declaradas y fijadas en `package-lock.json`: QVAC SDK, React, Vite, Express, express-session, Zod, TypeScript, tsx y Playwright. Documentación de referencia del SDK: https://docs.qvac.tether.io/js-ts-sdk/ y https://docs.qvac.tether.io/ai-capabilities/text-generation/.
 

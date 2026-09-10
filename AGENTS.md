@@ -1,4 +1,4 @@
-# Rastro — reglas de construcción
+# Chen — reglas de construcción
 
 - El Track 05 Caja de Ahorros es un subproyecto independiente del Track 01 Philips.
 - La inferencia bancaria se ejecuta localmente con QVAC; una API de inferencia en nube descalifica la entrega.
@@ -6,7 +6,7 @@
 - El servidor calcula importes en centavos enteros. El modelo no calcula saldos, márgenes ni escenarios.
 - Consumo de tarjeta y flujo de cuenta son dominios separados. Una compra de tarjeta no vuelve a contarse cuando se registra el pago de la tarjeta.
 - Toda recomendación debe mostrar sus supuestos y permitir abrir la evidencia que la respalda.
-- Mantener la identidad visual actual de Rastro hasta recibir el logo y la guía de Caja de Ahorros. Dejar la integración de marca reemplazable.
+- Mantener la identidad visual actual de Chen hasta recibir el logo y la guía de Caja de Ahorros. Dejar la integración de marca reemplazable.
 
 ## Criterios de aceptación
 

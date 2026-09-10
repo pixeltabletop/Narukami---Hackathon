@@ -4,7 +4,7 @@ import type { Category, Dashboard } from "../server/domain";
 import type { Commitment, PlanningView, PlanInput, Product } from "../server/planning-domain";
 import { fromAccount, fromCard, type LedgerRow } from "./ledger";
 import type { Forecast } from "../server/forecast";
-export const useRastro = () => {
+export const useChen = () => {
   const [session, setSession] = useState<Session | null>(null),
     [period, setPeriod] = useState("2026-09"),
     [dashboard, setDashboard] = useState<Dashboard | null>(null);
@@ -14,6 +14,7 @@ export const useRastro = () => {
   // Operaciones en vuelo. Mientras haya alguna se muestra el loop de la marca:
   // guardar un plan o corregir una categoría toca disco y no es instantáneo.
   const [saving, setSaving] = useState(0);
+  const [chatOpen, setChatOpen] = useState(false);
   const track = async <T,>(work: () => Promise<T>) => {
     setSaving((n) => n + 1);
     try {
@@ -175,6 +176,8 @@ export const useRastro = () => {
     planning,
     forecast,
     saving,
+    chatOpen,
+    setChatOpen,
     forecastHorizon,
     setForecastHorizon,
     model,
@@ -200,4 +203,4 @@ export const useRastro = () => {
     rows,
   };
 };
-export type RastroState = ReturnType<typeof useRastro>;
+export type ChenState = ReturnType<typeof useChen>;

@@ -1,15 +1,19 @@
 import type { Dashboard } from "./domain";
 import { intentNames, renderIntent } from "./intent";
-export const inferenceEnabled = () => process.env.RASTRO_ENABLE_QVAC === "1";
+// El producto pasó a llamarse Chen; la base recibida se llamaba Rastro. Se
+// aceptan las dos variables para que los comandos ya escritos sigan sirviendo.
+const flag = (name: string) =>
+  process.env["CHEN_" + name] ?? process.env["RASTRO_" + name];
+export const inferenceEnabled = () => flag("ENABLE_QVAC") === "1";
 // Los dos candidatos medidos para el reto. El equipo de demostracion puede
-// cambiarlo con RASTRO_QVAC_MODEL sin tocar codigo.
+// cambiarlo con CHEN_QVAC_MODEL sin tocar codigo.
 export const MODEL_KEYS = [
   "QWEN3_4B_INST_Q4_K_M",
   "GEMMA4_2B_MULTIMODAL_Q4_K_M",
 ] as const;
 export type ModelKey = (typeof MODEL_KEYS)[number];
 export const modelKey = (): ModelKey => {
-  const requested = process.env.RASTRO_QVAC_MODEL as ModelKey | undefined;
+  const requested = flag("QVAC_MODEL") as ModelKey | undefined;
   return requested && MODEL_KEYS.includes(requested)
     ? requested
     : MODEL_KEYS[0];
@@ -36,7 +40,7 @@ function describeLoadError(error: unknown): string {
   return parts.join(" · ");
 }
 const instructions = [
-  "You are Rastro, a bank-card spending analyst. Answer in Spanish.",
+  "You are Chen, a bank-card spending analyst. Answer in Spanish.",
   "Classify the question into one allowed intent and select one to three relevant factIds.",
   "Intents, and when each one applies:",
   "spending_summary: the client asks where the money went overall.",
@@ -72,7 +76,7 @@ export class LocalQvac {
     try {
       this.sdk = await import("@qvac/sdk");
       const onProgress = (p: { percentage: number }) => {
-        if (process.env.RASTRO_DEBUG === "1" && p.percentage >= progress + 10) {
+        if (flag("DEBUG") === "1" && p.percentage >= progress + 10) {
           progress = Math.floor(p.percentage);
           console.log("Modelo: " + progress + "%");
         }
@@ -167,7 +171,7 @@ export class LocalQvac {
         responseFormat: {
           type: "json_schema",
           json_schema: {
-            name: "rastro_intent",
+            name: "chen_intent",
             schema: {
               type: "object",
               properties: {
@@ -205,7 +209,7 @@ export class LocalQvac {
         }
       }
       if (timedOut) throw new Error("Tiempo de inferencia agotado");
-      if (process.env.RASTRO_DEBUG === "1") console.log("QVAC raw:", raw);
+      if (flag("DEBUG") === "1") console.log("QVAC raw:", raw);
       return renderIntent(raw, dashboard.facts);
     } finally {
       if (timer) clearTimeout(timer);

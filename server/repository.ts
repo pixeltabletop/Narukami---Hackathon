@@ -5,7 +5,7 @@ import type { Category, Movement } from "./domain";
 export class MovementRepository {
   private db: DatabaseSync;
   private rows = createFixtures();
-  constructor(path = "data/rastro.sqlite") {
+  constructor(path = "data/chen.sqlite") {
     if (path !== ":memory:") mkdirSync("data", { recursive: true });
     this.db = new DatabaseSync(path);
     this.db.exec(

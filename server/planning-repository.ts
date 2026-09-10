@@ -7,7 +7,7 @@ import type { Commitment, PlanInput, PlanningView } from "./planning-domain";
 
 export class PlanningRepository {
   private db: DatabaseSync;
-  constructor(path = "data/rastro.sqlite") {
+  constructor(path = "data/chen.sqlite") {
     if (path !== ":memory:") mkdirSync("data", { recursive: true });
     this.db = new DatabaseSync(path);
     this.db.exec(`

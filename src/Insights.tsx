@@ -81,7 +81,7 @@ export const Insights = ({
           <span className="eyebrow">TU DINERO, CON CONTEXTO</span>
           <h2>Conecta los puntos.</h2>
         </div>
-        <span className="ai-mark">✦ Rastro AI</span>
+        <span className="ai-mark">✦ Chen AI</span>
       </div>
       <p className="muted">
         Pregunta por tus gastos. Abre los movimientos detrás de cada

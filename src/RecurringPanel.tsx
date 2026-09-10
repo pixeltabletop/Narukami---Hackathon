@@ -1,6 +1,6 @@
 import { money } from "../server/domain";
-import type { RastroState } from "./useRastro";
-export const RecurringPanel = ({ state }: { state: RastroState }) => {
+import type { ChenState } from "./useChen";
+export const RecurringPanel = ({ state }: { state: ChenState }) => {
   const { dashboard, showEvidence } = state;
   if (!dashboard) return null;
   return (

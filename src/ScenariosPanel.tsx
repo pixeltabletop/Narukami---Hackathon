@@ -1,7 +1,7 @@
 import { money } from "../server/domain";
-import type { RastroState } from "./useRastro";
+import type { ChenState } from "./useChen";
 
-export const ScenariosPanel = ({ state }: { state: RastroState }) => {
+export const ScenariosPanel = ({ state }: { state: ChenState }) => {
   const { planning, setTab } = state;
   if (!planning) return <p role="status">Calculando escenarios…</p>;
   return <div className="planning-stack">

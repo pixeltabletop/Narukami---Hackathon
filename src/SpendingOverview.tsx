@@ -1,8 +1,8 @@
 import { money } from "../server/domain";
 import { monthNames } from "./period-labels";
 import { Insights } from "./Insights";
-import type { RastroState } from "./useRastro";
-export const SpendingOverview = ({ state }: { state: RastroState }) => {
+import type { ChenState } from "./useChen";
+export const SpendingOverview = ({ state }: { state: ChenState }) => {
   const {
     dashboard,
     customer,

@@ -1,4 +1,4 @@
-import type { RastroState } from "./useRastro";
+import type { ChenState } from "./useChen";
 
 const sections: { title: string; lead: string; items: [string, string][] }[] = [
   {
@@ -149,13 +149,13 @@ const sections: { title: string; lead: string; items: [string, string][] }[] = [
   },
 ];
 
-export const GuidePanel = ({ state }: { state: RastroState }) => {
+export const GuidePanel = ({ state }: { state: ChenState }) => {
   const { setTab } = state;
   return (
     <div className="guide-stack">
       <section className="panel guide-intro">
         <span className="eyebrow">CÓMO SE USA</span>
-        <h2>Guía de Rastro</h2>
+        <h2>Guía de Chen</h2>
         <p className="muted">
           Cada número de esta aplicación se puede rastrear hasta los movimientos
           que lo producen. Esta guía explica qué hace cada sección, qué entra en

@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { MovementRepository } from "../server/repository";
 test("las correcciones sobreviven al cierre y reapertura de SQLite", () => {
-  const folder = mkdtempSync(join(tmpdir(), "rastro-persistence-")),
+  const folder = mkdtempSync(join(tmpdir(), "chen-persistence-")),
     file = join(folder, "corrections.sqlite");
   let repository: MovementRepository | undefined;
   try {
