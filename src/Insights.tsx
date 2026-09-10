@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Dashboard, Fact } from "../server/domain";
+import type { ModelFitReport } from "../server/model-fit";
 import { api, type ModelStatus } from "./api";
 type Answer = {
   summary: string;
@@ -22,6 +23,22 @@ export const Insights = ({
     [answer, setAnswer] = useState<Answer | null>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
+  // Veredicto de memoria. Se pide a mano y no al abrir la pantalla: levantar el
+  // worker de QVAC cuesta segundos y nadie lo pidió todavía.
+  const [fit, setFit] = useState<ModelFitReport | null>(null),
+    [fitBusy, setFitBusy] = useState(false),
+    [fitError, setFitError] = useState("");
+  const checkFit = async () => {
+    setFitBusy(true);
+    setFitError("");
+    try {
+      setFit(await api<ModelFitReport>("/model/fit"));
+    } catch (e) {
+      setFitError((e as Error).message);
+    } finally {
+      setFitBusy(false);
+    }
+  };
   const ask = async (text: string) => {
     setBusy(true);
     setError("");
@@ -128,6 +145,31 @@ export const Insights = ({
               ? "Reintentar carga"
               : "Cargar modelo local"}
           </button>
+          {fit ? (
+            <div className="fit-verdict">
+              <strong>{fit.headline}</strong>
+              <ul>
+                {fit.models.map((m) => (
+                  <li key={m.key}>{m.line}</li>
+                ))}
+              </ul>
+              {fit.freeLabel && (
+                <p>Memoria estimada disponible: {fit.freeLabel}.</p>
+              )}
+              {fit.suggestion && <p>{fit.suggestion}</p>}
+            </div>
+          ) : (
+            <button
+              className="fit-check"
+              disabled={fitBusy || model.status === "loading"}
+              onClick={() => void checkFit()}
+            >
+              {fitBusy
+                ? "Midiendo este equipo…"
+                : "¿Aguanta este equipo el modelo?"}
+            </button>
+          )}
+          {fitError && <p className="fit-error">{fitError}</p>}
         </div>
       )}
       <form

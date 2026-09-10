@@ -66,6 +66,19 @@ segundos, contra 9 a 14 del catálogo corto: más lenguaje cuesta tiempo, y para
 tener el modelo ya cargado y memoria libre. `npm run model:bench` compara los dos
 modelos candidatos sobre el mismo corpus y escribe `artifacts/model-bench.json`.
 
+### Antes de descargar: ¿aguanta este equipo?
+
+`npm run fit:check` pregunta al SDK si cada candidato cabe en la memoria de esta máquina **sin
+bajar un solo byte de pesos**, y escribe `artifacts/fit-check.json`. La misma respuesta está en la
+aplicación, detrás de «¿Aguanta este equipo el modelo?», junto al botón de carga.
+
+El veredicto puede ser que entra, que no entra o que no hay evidencia para decidirlo, y esa
+tercera respuesta se muestra tal cual: afirmar que entra sin sustento invita a una descarga de
+gigabytes que puede terminar en un cuelgue. En los tres casos se ven el tamaño de la descarga, el
+rango de memoria que el modelo pide y la memoria disponible, que es lo que permite decidir a mano.
+Si ningún candidato entra, el consejo es liberar memoria, no cambiar de modelo: ya pasó en este
+proyecto, con otro proceso reteniendo cuatro gigabytes.
+
 Tres detalles que cuestan horas si no se conocen, y que ya están resueltos en el adaptador:
 
 - El worker de QVAC tarda más de treinta segundos en arrancar en Windows en frío. Sin subir

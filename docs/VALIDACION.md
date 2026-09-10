@@ -7,7 +7,7 @@ no estimado. Los artefactos citados se generan con los comandos indicados.
 
 | Qué | Resultado |
 | --- | --- |
-| `npm test` | 42 de 42 |
+| `npm test` | 48 de 48 |
 | `npm run build` | TypeScript y Vite sin errores |
 | `npm run ui:check` | Recorrido en Edge, escritorio y móvil |
 
@@ -15,7 +15,17 @@ Cubierto por las pruebas: importes en centavos enteros, deduplicación, período
 ausencia de historial, traslados que no suman al gasto, descuentos de planilla que no reducen el
 saldo, proyección día a día que cuadra con sus propios eventos, historial por rubro y por
 comercio, coherencia entre la etiqueta del modelo y su evidencia, aislamiento entre clientes,
-sesiones y CSRF, y la cerca contra inferencia en nube.
+sesiones y CSRF, la cerca contra inferencia en nube, y el veredicto de memoria, que no puede
+afirmar que un modelo entra cuando el SDK no lo sostiene.
+
+## Veredicto de memoria, contra el SDK real
+
+`npm run fit:check` corrió en este equipo en cinco segundos, sin descargar pesos. Devolvió las dos
+respuestas posibles según la memoria libre del momento, que es justo lo que se quería comprobar:
+con 4,5 GB libres el SDK no se comprometió y dio «sin veredicto» con el rango estimado a la vista;
+con 331 MB libres dijo que ninguno de los dos candidatos entra. La misma respuesta llegó por la
+ruta HTTP real, con sesión y CSRF, y se ve en la aplicación junto al botón de carga. Evidencia en
+`artifacts/fit-check.json` y `artifacts/fit-panel.png`.
 
 El recorrido de interfaz no depende del estado guardado: fija los valores del plan antes de
 medir, y elige un destino de categoría distinto del actual antes de guardarlo.
@@ -61,7 +71,7 @@ haría el jurado y no lo que funciona en la máquina donde se escribió el códi
 | --- | --- |
 | `npm ci` | Sin vulnerabilidades |
 | `npm run build` | TypeScript y Vite sin errores |
-| `npm test` | 42 de 42 |
+| `npm test` | 48 de 48 |
 | `npm run demo` y recorrer las ocho pestañas | Todas renderizan, ninguna con error |
 | Cargar el modelo desde la interfaz | Listo, «Modelo disponible» en pantalla |
 | Dictado por la ruta HTTP real, con sesión y CSRF | Whisper listo y transcripción correcta en 2.4 s |

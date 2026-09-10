@@ -175,6 +175,27 @@ app.get("/api/model", (_req, res) =>
       : null,
   }),
 );
+// Veredicto de memoria antes de descargar. No baja pesos ni carga el modelo:
+// solo evita que el cliente arranque una descarga de gigabytes que su equipo
+// no va a sostener.
+app.get("/api/model/fit", async (_req, res) => {
+  if (!inferenceEnabled())
+    return res.status(409).json({
+      error:
+        "Inferencia desactivada para esta entrega. Configurar QVAC en el equipo de destino.",
+    });
+  try {
+    res.json(await qvac.assessFit());
+  } catch (error) {
+    console.error(
+      "QVAC fit:",
+      error instanceof Error ? error.message : "error",
+    );
+    res
+      .status(503)
+      .json({ error: "No fue posible estimar la memoria en este equipo." });
+  }
+});
 app.post("/api/model/load", (_req, res) => {
   if (!inferenceEnabled())
     return res.status(409).json({

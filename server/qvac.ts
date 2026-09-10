@@ -3,6 +3,7 @@ import { intentNames, renderIntent, savingsHorizons, type AnalyticContext } from
 import { categories } from "./domain";
 import { buildHistory, merchantChoices } from "./history";
 import { timeframeHint } from "./timeframe";
+import { summarizeFit, type FitAssessment, type ModelFitReport } from "./model-fit";
 // El producto pasó a llamarse Chen; la base recibida se llamaba Rastro. Se
 // aceptan las dos variables para que los comandos ya escritos sigan sirviendo.
 const flag = (name: string) =>
@@ -15,6 +16,17 @@ export const MODEL_KEYS = [
   "GEMMA4_2B_MULTIMODAL_Q4_K_M",
 ] as const;
 export type ModelKey = (typeof MODEL_KEYS)[number];
+// Nombre corto para la pantalla. El identificador tecnico sigue siendo el que
+// se escribe en CHEN_QVAC_MODEL, asi que se muestra tal cual en la sugerencia.
+export const MODEL_LABELS: Record<ModelKey, string> = {
+  QWEN3_4B_INST_Q4_K_M: "Qwen3 4B",
+  GEMMA4_2B_MULTIMODAL_Q4_K_M: "Gemma4 2B",
+};
+// El contexto por defecto del SDK es 1024 y el bloque de hechos mas la pregunta
+// lo desbordan en cuanto el cliente tiene varias categorias. El mismo valor se
+// usa para cargar y para estimar: preguntar por un contexto que no es el real
+// daria un veredicto que no corresponde a esta aplicacion.
+const CTX_SIZE = 4096;
 export const modelKey = (): ModelKey => {
   const requested = flag("QVAC_MODEL") as ModelKey | undefined;
   return requested && MODEL_KEYS.includes(requested)
@@ -107,9 +119,7 @@ export class LocalQvac {
           console.log("Modelo: " + progress + "%");
         }
       };
-      // El contexto por defecto es 1024 y el bloque de hechos mas la pregunta
-      // lo desbordan en cuanto el cliente tiene varias categorias.
-      const modelConfig = { ctx_size: 4096 };
+      const modelConfig = { ctx_size: CTX_SIZE };
       // Una sola llamada con el modelSrc elegido en un ternario ensancha el
       // tipo y TypeScript deja de reconocer la sobrecarga de texto. Cada rama
       // se escribe completa a proposito.
@@ -131,6 +141,48 @@ export class LocalQvac {
       this.lastError = describeLoadError(error);
       throw new Error(this.lastError, { cause: error });
     }
+  }
+  private fit: ModelFitReport | undefined;
+  /**
+   * Estima si este equipo aguanta cada candidato ANTES de descargar pesos.
+   * El SDK no baja nada en esta llamada y admite contestar que no sabe; esa
+   * respuesta se propaga tal cual en vez de convertirla en un "si". Se cachea
+   * porque el veredicto no cambia dentro de una corrida y levantar el worker
+   * cuesta segundos en frio.
+   */
+  async assessFit(): Promise<ModelFitReport> {
+    if (!inferenceEnabled())
+      throw new Error(
+        "Inferencia desactivada. Configurar QVAC en el equipo de destino.",
+      );
+    if (this.fit) return this.fit;
+    this.sdk ??= await import("@qvac/sdk");
+    const sdk = this.sdk;
+    const catalog = MODEL_KEYS.map((key) => ({
+      key,
+      constant: sdk[key] as unknown as {
+        name: string;
+        sha256Checksum: string;
+        expectedSize?: number;
+      },
+    }));
+    const assessment = (await sdk.assessModelFit({
+      models: catalog.map(({ constant }) => ({
+        model: { sha256Checksum: constant.sha256Checksum, name: constant.name },
+        workload: { kind: "llm", contextTokens: CTX_SIZE },
+      })),
+      execution: "sequential",
+    })) as FitAssessment;
+    this.fit = summarizeFit(
+      assessment,
+      catalog.map(({ key, constant }) => ({
+        key,
+        label: MODEL_LABELS[key],
+        downloadBytes: constant.expectedSize ?? null,
+      })),
+      this.model,
+    );
+    return this.fit;
   }
   async explain(
     question: string,
