@@ -65,6 +65,24 @@ Tres detalles que cuestan horas si no se conocen, y que ya están resueltos en e
 Una intención que no cuadra con la evidencia elegida se rechaza antes de redactar y se
 reintenta una vez con otra semilla. Si vuelve a fallar, la aplicación lo dice y no responde.
 
+### Comparativo de modelos, 9 de septiembre de 2026
+
+Ocho preguntas bancarias, la misma máquina, el mismo corpus sintético:
+
+| | QWEN3 4B Q4_K_M | GEMMA4 2B Q4_K_M |
+| --- | --- | --- |
+| Carga desde caché | 58.5 s | 36.6 s |
+| Preguntas respondidas | 8 de 8 | 7 de 8 |
+| Intención correcta | 8 de 8 | 6 de 8 |
+| Evidencia correcta | 8 de 8 | 7 de 8 |
+| Latencia mediana | 10.6 s | 6.6 s |
+| Latencia máxima | 22.1 s | 7.4 s |
+
+Queda Qwen3 4B como modelo por defecto: en banca importa más que la evidencia sostenga la
+respuesta que ganar cuatro segundos. Gemma 2B queda documentado como alternativa para equipos
+con menos memoria, con la advertencia de que confundió una pregunta de resumen con una de
+comparación y repitió una evidencia.
+
 ## Privacidad y límites
 
 - No contiene datos reales ni solicita credenciales bancarias.

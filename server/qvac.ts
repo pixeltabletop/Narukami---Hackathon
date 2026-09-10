@@ -178,6 +178,9 @@ export class LocalQvac {
                   },
                   minItems: 1,
                   maxItems: 3,
+                  // Gemma 2B repitió una evidencia y perdió la respuesta en el
+                  // comparativo del 2026-09-09. La gramática lo impide antes.
+                  uniqueItems: true,
                 },
                 intent: { type: "string", enum: [...intentNames] },
               },
