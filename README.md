@@ -1,4 +1,4 @@
-# Chen — tu chen chen, claro
+# Chen, tu pasiero financiero
 
 _Asistente local de Caja de Ahorros para entender y organizar el dinero._
 
@@ -227,6 +227,11 @@ justamente lo que demuestra la corrida de arriba.
 **Chen** viene de *chen chen*, la plata en panameño. Es corto, se dice fácil y suena a alguien
 que te ayuda con lo tuyo, no a un tablero. La aplicación se llamaba Rastro cuando se recibió la
 base de Diego; el cambio de nombre está declarado más abajo junto con esa base.
+
+El lema de presentación es **«Chen, tu pasiero financiero»**: un pasiero es con quien uno anda, el
+que te acompaña. Es lo que se quiere que sea la herramienta, alguien de confianza que te dice las
+cosas claras sobre tu plata y no un producto que te habla desde arriba. Bajo el logotipo se
+conserva *tu chen chen, claro*, que es lo que explica de dónde sale el nombre.
 
 ## Proyección: ¿llegas al próximo pago?
 
