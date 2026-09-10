@@ -8,6 +8,5 @@ artifacts/
 .claude/
 start-preview*.cmd
 
-# La locucion se regenera con `npm run locucion` desde el guion, que es la
-# fuente de verdad. Son 25 MB de WAV que no aportan nada al repositorio.
+# Voz en off del video: 25 MB de WAV que no aportan nada al repositorio.
 audio/locucion/

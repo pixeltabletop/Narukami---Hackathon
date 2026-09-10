@@ -80,8 +80,7 @@ comportamiento actual: pasaría siempre y no detectaría nada. Así fue como apa
 clasificación que se explica más abajo.
 Con veinte categorías el bloque de hechos es más largo y la respuesta tarda entre 11 y 26
 segundos, contra 9 a 14 del catálogo corto: más lenguaje cuesta tiempo, y para grabar conviene
-tener el modelo ya cargado y memoria libre. `npm run model:bench` compara los dos
-modelos candidatos sobre el mismo corpus y escribe `artifacts/model-bench.json`.
+tener el modelo ya cargado y memoria libre.
 
 ### Antes de descargar: ¿aguanta este equipo?
 
@@ -354,7 +353,7 @@ Cada requisito del Track 05, y dónde se cumple.
 | Solo datos sintéticos o públicos | Dos clientes ficticios generados en `server/fixtures.ts` y `server/planning-fixtures.ts`. No hay datos reales de ninguna entidad ni credenciales bancarias. |
 | Declarar toda base preexistente | Sección «Base preexistente declarada», más abajo, y el archivo `LICENSE`. El commit `57af18a` conserva esa base sin modificar. |
 | Repositorio accesible al jurado | Pendiente de publicar. Ver «Entrega». |
-| Video de máximo cinco minutos, sin credenciales | Pendiente de grabar. Guion minuto a minuto en `docs/DEMO.md`. |
+| Video de máximo cinco minutos, sin credenciales | Pendiente de grabar. |
 | La propiedad intelectual permanece en el equipo | `LICENSE`: derechos reservados, con permiso de evaluación para la organización y el jurado. |
 
 ## Entrega
@@ -362,8 +361,8 @@ Cada requisito del Track 05, y dónde se cumple.
 Lo que falta antes del cierre, en orden:
 
 1. **Publicar el repositorio** y confirmar que el jurado puede clonarlo y ejecutarlo.
-2. **Grabar el video** siguiendo `docs/DEMO.md`, con el modelo ya cargado y memoria libre, y
-   publicar el enlace aquí: _(pendiente)_.
+2. **Grabar el video** con el modelo ya cargado y memoria libre, y publicar el enlace aquí:
+   _(pendiente)_.
 3. **Leer los Términos y Condiciones generales**, en particular pertenencia simultánea a equipos.
 4. **Confirmar el canal y el horario de entrega** con la organización.
 
@@ -423,11 +422,9 @@ No se presupone aval de Caja de Ahorros ni titularidad sobre su marca.
 
 ## Archivos importantes
 
-- `evidencia/`: salidas reales de los comandos de verificación, con su índice.
 - `LICENSE`: propiedad intelectual, permiso de evaluación y declaración de la base preexistente.
-- `AGENTS.md`: reglas de construcción para cualquier agente que toque este repositorio.
 - `docs/ARQUITECTURA.md`: cómo está armado y cuál es el contrato con el modelo.
-- `docs/VALIDACION.md`: qué se verificó, con qué resultado y qué falta.
-- `docs/DEMO.md`: guion de la demostración en vivo, minuto a minuto.
-- `docs/GUION-VIDEO.md`: guion narrado del video, con la locución separada de la acción en pantalla y la regla de montaje: se acelera la espera, nunca se sustituye una respuesta del modelo.
-- `audio/`: dos frases sintéticas en español para poder correr la prueba de dictado sin grabar nada. La voz en off del video se genera con `npm run locucion` desde el propio guion.
+- `audio/`: dos frases sintéticas en español para poder correr la prueba de dictado sin grabar nada.
+
+Las salidas de los comandos de verificación no viajan en el repositorio: se regeneran
+corriendo los comandos de arriba, que las escriben en `artifacts/`.
