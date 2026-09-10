@@ -353,6 +353,7 @@ No se presupone aval de Caja de Ahorros ni titularidad sobre su marca.
 
 ## Archivos importantes
 
+- `evidencia/`: salidas reales de los comandos de verificación, con su índice.
 - `LICENSE`: propiedad intelectual, permiso de evaluación y declaración de la base preexistente.
 - `AGENTS.md`: reglas de construcción para cualquier agente que toque este repositorio.
 - `docs/ARQUITECTURA.md`: cómo está armado y cuál es el contrato con el modelo.

@@ -1,0 +1,326 @@
+{
+  "passed": true,
+  "timestamp": "2026-09-10T03:26:40.743Z",
+  "model": "QWEN3_4B_INST_Q4_K_M",
+  "loadMs": 55603,
+  "network": {
+    "reachable": true,
+    "detail": "HTTP 200"
+  },
+  "latencyMs": {
+    "min": 15142,
+    "max": 19929
+  },
+  "results": [
+    {
+      "question": "¿En qué se me fue el dinero?",
+      "intent": "changes",
+      "factIds": [
+        "total",
+        "category-1",
+        "category-12"
+      ],
+      "summary": "Estos son los cambios que muestran tus movimientos: Gasto neto contabilizado: USD 794.98. Período comparado: USD 617.93. Diferencia: USD 177.05. Restaurantes: USD 120.55 frente a USD 27.50. Diferencia: USD 93.05. Proveedores: USD 86.00 frente a USD 74.00. Diferencia: USD 12.00.",
+      "facts": [
+        {
+          "id": "total",
+          "text": "Gasto neto contabilizado: USD 794.98. Período comparado: USD 617.93. Diferencia: USD 177.05.",
+          "cents": [
+            79498,
+            61793,
+            17705
+          ],
+          "movementIds": [
+            "ana-0047",
+            "ana-0048",
+            "ana-0049",
+            "ana-0050",
+            "ana-0051",
+            "ana-0052",
+            "ana-0053",
+            "ana-0054",
+            "ana-0055",
+            "ana-0056",
+            "ana-0057",
+            "ana-0058",
+            "ana-0059",
+            "ana-0062",
+            "ana-0063",
+            "ana-0064",
+            "ana-0065",
+            "ana-0066",
+            "ana-0070",
+            "ana-0071",
+            "ana-0024",
+            "ana-0025",
+            "ana-0026",
+            "ana-0027",
+            "ana-0028",
+            "ana-0029",
+            "ana-0030",
+            "ana-0031",
+            "ana-0032",
+            "ana-0033",
+            "ana-0034",
+            "ana-0035",
+            "ana-0036"
+          ]
+        },
+        {
+          "id": "category-1",
+          "text": "Restaurantes: USD 120.55 frente a USD 27.50. Diferencia: USD 93.05.",
+          "cents": [
+            12055,
+            2750,
+            9305
+          ],
+          "movementIds": [
+            "ana-0049",
+            "ana-0054",
+            "ana-0062",
+            "ana-0063",
+            "ana-0064",
+            "ana-0026",
+            "ana-0031"
+          ],
+          "category": "Restaurantes"
+        },
+        {
+          "id": "category-12",
+          "text": "Proveedores: USD 86.00 frente a USD 74.00. Diferencia: USD 12.00.",
+          "cents": [
+            8600,
+            7400,
+            1200
+          ],
+          "movementIds": [
+            "ana-0056",
+            "ana-0033"
+          ],
+          "category": "Proveedores"
+        }
+      ],
+      "provider": "qvac-local",
+      "model": "QWEN3_4B_INST_Q4_K_M",
+      "elapsedMs": 18461
+    },
+    {
+      "question": "¿Por qué gasté más?",
+      "intent": "changes",
+      "factIds": [
+        "total",
+        "category-1"
+      ],
+      "summary": "Estos son los cambios que muestran tus movimientos: Gasto neto contabilizado: USD 794.98. Período comparado: USD 617.93. Diferencia: USD 177.05. Restaurantes: USD 120.55 frente a USD 27.50. Diferencia: USD 93.05.",
+      "facts": [
+        {
+          "id": "total",
+          "text": "Gasto neto contabilizado: USD 794.98. Período comparado: USD 617.93. Diferencia: USD 177.05.",
+          "cents": [
+            79498,
+            61793,
+            17705
+          ],
+          "movementIds": [
+            "ana-0047",
+            "ana-0048",
+            "ana-0049",
+            "ana-0050",
+            "ana-0051",
+            "ana-0052",
+            "ana-0053",
+            "ana-0054",
+            "ana-0055",
+            "ana-0056",
+            "ana-0057",
+            "ana-0058",
+            "ana-0059",
+            "ana-0062",
+            "ana-0063",
+            "ana-0064",
+            "ana-0065",
+            "ana-0066",
+            "ana-0070",
+            "ana-0071",
+            "ana-0024",
+            "ana-0025",
+            "ana-0026",
+            "ana-0027",
+            "ana-0028",
+            "ana-0029",
+            "ana-0030",
+            "ana-0031",
+            "ana-0032",
+            "ana-0033",
+            "ana-0034",
+            "ana-0035",
+            "ana-0036"
+          ]
+        },
+        {
+          "id": "category-1",
+          "text": "Restaurantes: USD 120.55 frente a USD 27.50. Diferencia: USD 93.05.",
+          "cents": [
+            12055,
+            2750,
+            9305
+          ],
+          "movementIds": [
+            "ana-0049",
+            "ana-0054",
+            "ana-0062",
+            "ana-0063",
+            "ana-0064",
+            "ana-0026",
+            "ana-0031"
+          ],
+          "category": "Restaurantes"
+        }
+      ],
+      "provider": "qvac-local",
+      "model": "QWEN3_4B_INST_Q4_K_M",
+      "elapsedMs": 15142
+    },
+    {
+      "question": "¿Qué me cobran seguido?",
+      "intent": "recurring",
+      "factIds": [
+        "recurring-1",
+        "recurring-2"
+      ],
+      "summary": "Estos cargos podrían ser recurrentes; dos períodos no confirman una suscripción: Posible cargo recurrente de Nube Música: USD 9.99; cargo anterior USD 9.99. Dos períodos no confirman una suscripción. Posible cargo recurrente de Cine en casa: USD 15.99; cargo anterior USD 12.99. Dos períodos no confirman una suscripción.",
+      "facts": [
+        {
+          "id": "recurring-1",
+          "text": "Posible cargo recurrente de Nube Música: USD 9.99; cargo anterior USD 9.99. Dos períodos no confirman una suscripción.",
+          "cents": [
+            999,
+            999
+          ],
+          "movementIds": [
+            "ana-0048",
+            "ana-0025"
+          ]
+        },
+        {
+          "id": "recurring-2",
+          "text": "Posible cargo recurrente de Cine en casa: USD 15.99; cargo anterior USD 12.99. Dos períodos no confirman una suscripción.",
+          "cents": [
+            1599,
+            1299
+          ],
+          "movementIds": [
+            "ana-0051",
+            "ana-0028"
+          ]
+        }
+      ],
+      "provider": "qvac-local",
+      "model": "QWEN3_4B_INST_Q4_K_M",
+      "elapsedMs": 17961
+    },
+    {
+      "question": "¿Cuánto moví a mi cuenta de ahorros?",
+      "intent": "transfers",
+      "factIds": [
+        "transfers"
+      ],
+      "summary": "Esto no es gasto: es dinero tuyo que cambió de lugar: USD 280.00 se movió entre cuentas propias o salió como efectivo. No es gasto: es dinero tuyo en otro lugar.",
+      "facts": [
+        {
+          "id": "transfers",
+          "text": "USD 280.00 se movió entre cuentas propias o salió como efectivo. No es gasto: es dinero tuyo en otro lugar.",
+          "cents": [
+            28000
+          ],
+          "movementIds": [
+            "ana-0060",
+            "ana-0061"
+          ]
+        }
+      ],
+      "provider": "qvac-local",
+      "model": "QWEN3_4B_INST_Q4_K_M",
+      "elapsedMs": 15932
+    },
+    {
+      "question": "¿Cuánto llevo gastado en Restaurantes?",
+      "intent": "category_history",
+      "factIds": [
+        "history"
+      ],
+      "summary": "En Restaurantes llevas USD 263.15 de julio 2026 a septiembre 2026 (septiembre 2026 va hasta el día 9). Es 9.6% de tu gasto del período y un promedio de USD 87.72 al mes.",
+      "facts": [
+        {
+          "id": "history",
+          "text": "En Restaurantes llevas USD 263.15 de julio 2026 a septiembre 2026 (septiembre 2026 va hasta el día 9). Es 9.6% de tu gasto del período y un promedio de USD 87.72 al mes.",
+          "cents": [],
+          "movementIds": [
+            "ana-0003",
+            "ana-0008",
+            "ana-0016",
+            "ana-0017",
+            "ana-0026",
+            "ana-0031",
+            "ana-0039",
+            "ana-0040",
+            "ana-0049",
+            "ana-0054",
+            "ana-0062",
+            "ana-0063",
+            "ana-0064"
+          ]
+        }
+      ],
+      "provider": "qvac-local",
+      "model": "QWEN3_4B_INST_Q4_K_M",
+      "elapsedMs": 17380
+    },
+    {
+      "question": "¿En qué rubro he gastado más en los últimos tres meses?",
+      "intent": "top_categories_history",
+      "factIds": [
+        "history"
+      ],
+      "summary": "Tu gasto de julio 2026 a septiembre 2026 (septiembre 2026 va hasta el día 9) suma USD 2,734.44 y se concentra en Supermercado con USD 610.30 (22.3%), Pago de préstamo con USD 555.00 (20.3%), Servicios profesionales con USD 375.00 (13.7%). El primero promedia USD 203.43 al mes.",
+      "facts": [
+        {
+          "id": "history",
+          "text": "Tu gasto de julio 2026 a septiembre 2026 (septiembre 2026 va hasta el día 9) suma USD 2,734.44 y se concentra en Supermercado con USD 610.30 (22.3%), Pago de préstamo con USD 555.00 (20.3%), Servicios profesionales con USD 375.00 (13.7%). El primero promedia USD 203.43 al mes.",
+          "cents": [],
+          "movementIds": [
+            "ana-0001",
+            "ana-0006",
+            "ana-0015",
+            "ana-0018",
+            "ana-0024",
+            "ana-0029",
+            "ana-0038",
+            "ana-0041",
+            "ana-0047",
+            "ana-0052",
+            "ana-0013",
+            "ana-0036",
+            "ana-0059",
+            "ana-0011",
+            "ana-0034",
+            "ana-0057"
+          ]
+        }
+      ],
+      "provider": "qvac-local",
+      "model": "QWEN3_4B_INST_Q4_K_M",
+      "elapsedMs": 18552
+    },
+    {
+      "question": "Si aparto cien dólares al mes, ¿cuánto junto hasta fin de año?",
+      "intent": "savings_projection",
+      "factIds": [],
+      "summary": "Apartando USD 100.00 cada mes juntarías USD 300.00 hasta fin de año: son 3 meses de aportes. Equivale al 11% de lo que gastas en un mes promedio. Es aritmética sobre el monto que dijiste, no una promesa de rendimiento.",
+      "facts": [],
+      "provider": "qvac-local",
+      "model": "QWEN3_4B_INST_Q4_K_M",
+      "elapsedMs": 19929
+    }
+  ]
+}

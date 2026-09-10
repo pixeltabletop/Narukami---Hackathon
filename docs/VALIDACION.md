@@ -3,6 +3,12 @@
 Corte: 10 de septiembre de 2026. Todo lo que sigue fue ejecutado en la máquina de desarrollo,
 no estimado. Los artefactos citados se generan con los comandos indicados.
 
+## Dónde está la evidencia
+
+Cada afirmación de este documento tiene detrás la salida de un comando. Esas salidas viajan en
+el repositorio, en `evidencia/`, con un índice que dice qué comando produjo cada archivo y qué
+demuestra. La carpeta `artifacts/` es donde los comandos las regeneran y no se versiona.
+
 ## Determinista, sin modelos
 
 | Qué | Resultado |
@@ -25,7 +31,7 @@ respuestas posibles según la memoria libre del momento, que es justo lo que se 
 con 4,5 GB libres el SDK no se comprometió y dio «sin veredicto» con el rango estimado a la vista;
 con 331 MB libres dijo que ninguno de los dos candidatos entra. La misma respuesta llegó por la
 ruta HTTP real, con sesión y CSRF, y se ve en la aplicación junto al botón de carga. Evidencia en
-`artifacts/fit-check.json` y `artifacts/fit-panel.png`.
+`evidencia/fit-check.json` y `evidencia/fit-panel.png`.
 
 El recorrido de interfaz no depende del estado guardado: fija los valores del plan antes de
 medir, y elige un destino de categoría distinto del actual antes de guardarlo.

@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "model": "WHISPER_BASE_Q8_0",
+  "timestamp": "2026-09-10T03:56:23.559Z",
+  "loadMs": 16838,
+  "results": [
+    {
+      "file": "dictado-restaurantes.wav",
+      "text": "Cuanto llevo gastado en restaurantes.",
+      "elapsedMs": 1390
+    },
+    {
+      "file": "dictado-ahorro.wav",
+      "text": "Si aparto 100 dólares al mes, Cuanto junto hasta fin de ano.",
+      "elapsedMs": 1324
+    }
+  ]
+}
