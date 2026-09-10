@@ -30,7 +30,7 @@ npm run demo
 Abrir `http://127.0.0.1:4173` y seleccionar un cliente ficticio.
 
 `npm run demo` enciende la inferencia local. `npm run dev` levanta la misma aplicación **sin
-IA**, que es el modo por defecto a propósito: encender QVAC descarga 2.33 GB del modelo la
+IA**, que es el modo por defecto a propósito: encender QVAC descarga unos 2,5 GB del modelo la
 primera vez y eso no se hace sin que la persona lo decida. Si abres la aplicación y el asistente
 aparece apagado, estás en ese modo y la pantalla te dice el comando.
 
@@ -68,8 +68,9 @@ npm run qvac:check
 npm run dev
 ```
 
-`npm run qvac:check` carga el modelo, corre cuatro preguntas reales (resumen, comparación,
-recurrencias y traslados) y escribe `artifacts/qvac-check.json` con el modelo, el tiempo de
+`npm run qvac:check` carga el modelo, corre siete preguntas reales (resumen, comparación,
+recurrencias, traslados y las tres de historial) y escribe `artifacts/qvac-check.json` con el
+modelo, el tiempo de
 carga, la latencia de cada respuesta y si la máquina tenía salida a internet durante la prueba.
 Con veinte categorías el bloque de hechos es más largo y la respuesta tarda entre 11 y 26
 segundos, contra 9 a 14 del catálogo corto: más lenguaje cuesta tiempo, y para grabar conviene
@@ -100,7 +101,7 @@ Tres detalles que cuestan horas si no se conocen, y que ya están resueltos en e
 Una intención que no cuadra con la evidencia elegida se rechaza antes de redactar y se
 reintenta una vez con otra semilla. Si vuelve a fallar, la aplicación lo dice y no responde.
 
-### Prueba sin red, 9 de septiembre de 2026
+### Prueba sin red, primera corrida del 9 de septiembre de 2026
 
 Con el Wi-Fi desconectado y `1.1.1.1:443` inalcanzable, el modelo cargó desde caché en 16.9 s y
 respondió las tres preguntas con la intención y la evidencia correctas, entre 9.0 y 10.6 s cada
@@ -162,9 +163,12 @@ Tres capas, no una promesa:
 1. **Auditoría del código.** Ningún archivo de `server/` ni de `src/` contacta un host externo.
    Las únicas llamadas del navegador son a rutas relativas del propio servidor, que escucha solo
    en `127.0.0.1`. No hay claves de API en el repositorio ni en el ejemplo de entorno.
-2. **Una prueba que lo mantiene así.** `tests/no-cloud.test.ts` falla si aparece una URL externa
-   en código de ejecución, si la inferencia entra por algo que no sea el SDK de QVAC, o si se
-   agrega otro motor de IA a las dependencias. Es una cerca, no una declaración.
+2. **Una prueba que lo mantiene así.** `tests/no-cloud.test.ts` recorre `server/`, `src/` y
+   `scripts/`, y falla si aparece una URL externa, si la inferencia entra por algo que no sea el
+   SDK de QVAC, o si se agrega otro motor de IA a las dependencias. Tiene una sola excepción, y
+   está escrita con nombre y dirección exacta en la propia prueba: el sondeo de conectividad de
+   `qvac:check`, que existe justamente para poder demostrar que no había red. Cualquier otro
+   destino rompe la suite. Es una cerca, no una declaración.
 3. **La corrida sin red, con todo encendido.** Con el Wi-Fi desconectado y `1.1.1.1:443`
    inalcanzable: el modelo de texto carga desde caché en 36 s y responde las siete preguntas,
    incluidas las tres de historial, entre 14 y 19 s cada una; Whisper carga en 17 s y transcribe
@@ -243,7 +247,7 @@ frase en 1.5 s. Lo dictado se deja en el campo para que el cliente lo revise ant
 se corrige en silencio, porque colapsar sinónimos cambia la pregunta.
 
 ```powershell
-npm run voice:check -- rutaludio.wav
+npm run voice:check -- ./audio/consulta.wav
 ```
 
 ## Guía dentro de la aplicación
@@ -301,9 +305,12 @@ Para reproducir la evaluación completa desde cero:
 npm ci
 npm run build
 npm test
-npm run demo
 npm run qvac:check
+npm run demo
 ```
+
+`npm run demo` deja el servidor corriendo y no devuelve la terminal, así que va al final. Si
+quieres correrlo antes, abre `qvac:check` en otra terminal.
 
 ## Privacidad y límites
 
@@ -337,7 +344,8 @@ El logotipo y el video de marca provienen de la carpeta oficial del hackatón (`
 | Archivo entregado | Formato real | Qué se hizo |
 | --- | --- | --- |
 | `caja_de_ahorros_logo.png` | WebP 696×698 con alfa, con extensión `.png` | Convertido a PNG real en `public/brand/logo-ca.png` más escalas de 512, 192, 64 y 32 px y `public/favicon.ico` |
-| `caja-de-ahorros-panama-30s-loop.webm` | VP9 720×720, 872 cuadros, sin duración ni fps en el contenedor | Metadatos reparados y transcodificado a H.264 en `public/brand/ca-loop.mp4` (659 KB frente a 8.9 MB), con `ca-loop-poster.png` |
+| `caja-de-ahorros-panama-30s-loop.webm` | VP9 720×720, 872 cuadros, sin duración ni fps en el contenedor | Primera versión del loop: metadatos reparados y transcodificado a H.264 |
+| `Caja_de_Ahorros_transparente_solo_logo_30s.webm` | VP9 1080×1080 con canal alfa | Versión vigente del loop. Compuesto sobre el mismo `#0b1c30` que la hoja de estilo pone detrás del video, y transcodificado a H.264 720×720 en `public/brand/ca-loop.mp4` (360 KB), con su cuadro de espera en `ca-loop-poster.png` |
 
 El color institucional `#1858A0` se tomó del propio logotipo y define la barra lateral, los acentos primarios y `theme-color`. El video se reproduce mientras el modelo local se carga.
 

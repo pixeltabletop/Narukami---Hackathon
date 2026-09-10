@@ -7,16 +7,25 @@ Si el modelo local no responde en la toma, se corta y se vuelve a grabar. Nada s
 
 1. `npm ci && npm run build && npm test` en verde.
 2. `$env:CHEN_ENABLE_QVAC="1"` y `npm run qvac:check` con `artifacts/qvac-check.json` escrito en esta máquina.
-3. `npm run dev` y el modelo ya cargado, para no gastar minutos de video en la carga.
-4. Adaptador de red listo para desactivarse en cámara.
-5. Cliente Ana Martínez seleccionado, período septiembre 2026.
+3. `npm run fit:check` antes de nada: dice si la máquina de grabación aguanta el modelo. Si
+   contesta que no entra, cerrar aplicaciones y volver a medir en vez de arrancar la descarga a
+   ciegas.
+4. `npm run demo` y, ya en la aplicación, pulsar **Cargar modelo local** y esperar a que el
+   estado diga que el modelo está listo. Esto no es opcional ni automático: `qvac:check`
+   descarga el modelo de la memoria al terminar, así que el servidor nuevo arranca sin él. La
+   primera carga desde caché tarda entre 35 y 60 segundos, y eso no se graba.
+5. Adaptador de red listo para desactivarse en cámara.
+6. Cliente Ana Martínez seleccionado, período septiembre 2026.
 
 ## Minuto a minuto
 
-**0:00 – 0:35 · El problema, con nombre y apellido**
-El cliente ve el estado de cuenta y no entiende por qué gastó más. El banco tampoco puede
-mandar esos movimientos a un modelo en la nube. Chen resuelve las dos cosas: explica el
-consumo y organiza el saldo, sin que el dato salga del dispositivo.
+**0:00 – 0:35 · Quiénes somos y el problema, con nombre y apellido**
+Abrir presentándose: **Jajanken 2.0, Diego Laverde y Josué Carrillo**, con Chen para el Track 05
+de Caja de Ahorros. Decir en la misma frase que la base del análisis de consumo la escribió
+Diego y que sobre ella se construyó todo lo demás; esa declaración también está en el README.
+Después, el problema: el cliente ve el estado de cuenta y no entiende por qué gastó más. El
+banco tampoco puede mandar esos movimientos a un modelo en la nube. Chen resuelve las dos
+cosas: explica el consumo y organiza el saldo, sin que el dato salga del dispositivo.
 En pantalla: la portada con el logo de Caja de Ahorros y la advertencia de datos ficticios.
 
 **0:35 – 1:25 · Entiende, y lo que no es gasto**
@@ -72,7 +81,8 @@ Decirlo sin rodeos: hoy el portátil es a la vez dispositivo y servidor. En un b
 inferencia corre en la infraestructura del banco y la web se sirve como hoy; el paso siguiente
 es el teléfono, y el SDK ya trae el plugin de Expo para eso. Como el modelo solo clasifica y
 elige evidencia, mover la inferencia es una decisión de despliegue, no una reescritura.
-Aislamiento por cliente, sesión y CSRF ya están. Falta identidad del banco, TLS,
+Aislamiento por cliente, sesión y CSRF ya están. La identidad visual del banco ya está
+integrada; lo que falta es la identidad y la autenticación bancarias de producción, TLS,
 autorización, retención y auditoría. Cerrar con la base de Diego declarada y el repositorio.
 
 ## Lo que no se dice

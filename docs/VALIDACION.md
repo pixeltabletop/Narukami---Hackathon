@@ -33,8 +33,14 @@ medir, y elige un destino de categoría distinto del actual antes de guardarlo.
 ## Inferencia local con QVAC
 
 `npm run qvac:check` carga el modelo, corre siete preguntas reales y escribe
-`artifacts/qvac-check.json`. Última corrida con red disponible: 7 de 7 con intención y evidencia
-correctas.
+`artifacts/qvac-check.json`. Última corrida con red disponible: 7 de 7 respondidas, con la
+evidencia y la redacción correctas.
+
+Conviene ser exacto sobre qué comprueba solo el comando y qué se revisó a mano. El script exige
+automáticamente que la evidencia elegida corresponda a lo preguntado, que la respuesta hable del
+rubro o del comercio consultado y que no devuelva otra pregunta; no compara la intención contra
+una lista esperada. La intención de cada una de las siete se revisó leyendo el artefacto de la
+corrida. Añadir esa comparación al script es una mejora pendiente y anotada.
 
 `npm run model:bench` compara los dos candidatos sobre ocho preguntas y escribe
 `artifacts/model-bench.json`.
@@ -59,8 +65,11 @@ Wi-Fi desconectado y `1.1.1.1:443` inalcanzable, verificado antes de empezar.
 | Voz, dos frases dictadas en español | Transcritas correctamente, 1.4 s cada una |
 | Carga de Whisper desde caché | 17 s |
 
-Artefactos: `artifacts/qvac-check-offline.json` y `artifacts/voice-check-offline.json`, ambos con
-`network.reachable: false` junto a las respuestas.
+Artefactos: `artifacts/qvac-check-offline.json` y `artifacts/voice-check-offline.json`. El de
+texto es el que sondea la red y guarda `network.reachable: false` junto a las respuestas. El de
+voz no lleva ese campo: registra el modelo, el tiempo de carga y las transcripciones, y su
+condición sin red consta en el log de la corrida, no dentro del archivo. Corregir el generador de
+voz para que capture el estado de red es una mejora pendiente y anotada.
 
 ## Punta a punta desde un clon limpio
 

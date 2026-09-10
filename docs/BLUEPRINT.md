@@ -58,7 +58,7 @@ QVAC interpreta preguntas abiertas dentro de seis intenciones. No hace aritméti
 
 ## 3. Carpetas y responsabilidad de módulos
 
-Raíz de trabajo futura: `C:/Users/Josue Carrillo/Documents/Codex/2026-09-09/hola-sabes-que-estamos-haciendo-un/work/chen-build`. Crear copia fresca desde `E:/Chen`, nunca trabajar encima del original ni de Philips. No usar la copia de revisión como fuente inadvertidamente: contiene sondas y artefactos.
+Raíz de trabajo: repositorio aislado en un disco local. Crear copia fresca desde la base recibida, nunca trabajar encima del original. No usar la copia de revisión como fuente inadvertidamente: contiene sondas y artefactos.
 
 ```text
 chen-build/
