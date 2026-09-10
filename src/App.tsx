@@ -6,6 +6,9 @@ import { RecurringPanel } from "./RecurringPanel";
 import { ActivityPanel } from "./ActivityPanel";
 import { OrganizePanel } from "./OrganizePanel";
 import { ScenariosPanel } from "./ScenariosPanel";
+import { ForecastPanel } from "./ForecastPanel";
+import { ChatPanel } from "./ChatPanel";
+import { GuidePanel } from "./GuidePanel";
 import { monthNames } from "./period-labels";
 export const App = () => {
   const state = useRastro();
@@ -27,7 +30,13 @@ export const App = () => {
                   ? "Reconoce lo que se repite."
                   : tab === "Organiza"
                     ? "Haz que el saldo llegue contigo."
-                    : "Prueba antes de decidir."}
+                    : tab === "Proyección"
+                      ? "¿Llegas al próximo pago?"
+                      : tab === "Asistente"
+                        ? "Habla con tu dinero."
+                        : tab === "Guía"
+                          ? "Cómo leer cada número."
+                          : "Prueba antes de decidir."}
           </h1>
           <p className="muted">
             {tab === "Resumen"
@@ -36,10 +45,12 @@ export const App = () => {
                 ? "Ordena lo comprometido, lo variable y lo que quieres proteger."
                 : tab === "Escenarios"
                   ? "Compara cuánto ahorrar y cuánto conservarías disponible."
-                  : "Cada importe conserva su contexto y su origen."}
+                  : tab === "Proyección"
+                    ? "Día a día, con tus cobros y tus gastos de siempre."
+                    : "Cada importe conserva su contexto y su origen."}
           </p>
         </div>
-        {!["Organiza", "Escenarios"].includes(tab) && <label className="period">
+        {!["Organiza", "Escenarios", "Proyección", "Asistente", "Guía"].includes(tab) && <label className="period">
           Período
           <select
             aria-label="Período"
@@ -75,6 +86,9 @@ export const App = () => {
           {tab === "Recurrentes" && <RecurringPanel state={state} />}
           {tab === "Organiza" && <OrganizePanel state={state} />}
           {tab === "Escenarios" && <ScenariosPanel state={state} />}
+          {tab === "Proyección" && <ForecastPanel state={state} />}
+          {tab === "Asistente" && <ChatPanel state={state} />}
+          {tab === "Guía" && <GuidePanel state={state} />}
         </>
       )}
       <footer>

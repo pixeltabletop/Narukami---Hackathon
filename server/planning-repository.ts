@@ -2,6 +2,7 @@ import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { createAccountMovements, createCommitments, currentBalance, defaultPlan, grossNextIncome } from "./planning-fixtures";
 import { calculatePlanning } from "./planning";
+import { buildForecast, type Forecast } from "./forecast";
 import type { Commitment, PlanInput, PlanningView } from "./planning-domain";
 
 export class PlanningRepository {
@@ -64,6 +65,19 @@ export class PlanningRepository {
       movements: createAccountMovements(customerId),
       commitments,
       plan: { nextIncomeDate: row.next_income_date, variableBudgetCents: row.variable_budget_cents, reserveCents: row.reserve_cents },
+    });
+  }
+  /** Proyección día a día sobre el plan vigente del cliente. */
+  forecast(customerId: string, horizon?: string): Forecast {
+    const view = this.get(customerId);
+    return buildForecast({
+      asOf: view.asOf,
+      balanceCents: view.balanceCents,
+      pendingCents: view.pendingCents,
+      variableBudgetCents: view.variableBudgetCents,
+      movements: createAccountMovements(customerId),
+      commitments: view.commitments,
+      horizon,
     });
   }
   savePlan(customerId: string, plan: PlanInput): PlanningView {

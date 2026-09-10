@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { RastroState } from "./useRastro";
+import { BrandLoader } from "./BrandLoader";
 export const AppFrame = ({
   state,
   children,
@@ -7,7 +8,7 @@ export const AppFrame = ({
   state: RastroState;
   children: ReactNode;
 }) => {
-  const { customer, session, tab, setTab, setEvidence, model, login } = state;
+  const { customer, session, tab, setTab, setEvidence, model, login, saving } = state;
   if (!customer || !session) return null;
   return (
     <div className="app-shell">
@@ -23,7 +24,7 @@ export const AppFrame = ({
         </a>
         <p className="sidebar-caption">TU DINERO, MÁS CLARO.</p>
         <nav aria-label="Navegación principal">
-          {["Resumen", "Movimientos", "Recurrentes", "Organiza", "Escenarios"].map((name, i) => (
+          {["Resumen", "Movimientos", "Recurrentes", "Organiza", "Proyección", "Escenarios", "Asistente", "Guía"].map((name, i) => (
             <button
               className={tab === name ? "active" : ""}
               key={name}
@@ -32,7 +33,7 @@ export const AppFrame = ({
                 setEvidence(null);
               }}
             >
-              <span aria-hidden="true">{["◫", "≡", "↻", "◎", "◇"][i]}</span>
+              <span aria-hidden="true">{["◫", "≡", "↻", "◎", "◴", "◇", "✦", "?"][i]}</span>
               {name}
             </button>
           ))}
@@ -117,6 +118,11 @@ export const AppFrame = ({
           </span>
         </header>
         <div className="page-content">{children}</div>
+        {saving > 0 && (
+          <div className="saving-toast">
+            <BrandLoader label="Guardando en este equipo…" size={30} />
+          </div>
+        )}
       </main>
     </div>
   );

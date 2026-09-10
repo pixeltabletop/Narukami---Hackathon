@@ -102,6 +102,13 @@ app.get("/api/planning", (req, res) =>
 app.put("/api/planning", (req, res) =>
   res.json(planningRepository.savePlan(req.session.customerId!, planSchema.parse(req.body))),
 );
+app.get("/api/forecast", (req, res) => {
+  const horizon = z
+    .object({ horizon: z.string().date().optional() })
+    .strict()
+    .parse(req.query).horizon;
+  res.json(planningRepository.forecast(req.session.customerId!, horizon));
+});
 app.patch("/api/commitments/:id", (req, res) => {
   const { state } = z.object({ state: z.enum(["confirmed", "excluded"]) }).strict().parse(req.body);
   const view = planningRepository.setCommitment(req.session.customerId!, String(req.params.id), state);

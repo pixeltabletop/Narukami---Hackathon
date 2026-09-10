@@ -1,6 +1,7 @@
 import { categories, money, type Category } from "../server/domain";
 import { productLabels } from "../server/planning-domain";
 import type { LedgerRow } from "./ledger";
+import { Combobox } from "./Combobox";
 const shortProduct: Record<LedgerRow["product"], string> = {
   "credit-card": "Tarjeta",
   checking: "Corriente",
@@ -48,15 +49,16 @@ export const MovementTable = ({
             </td>
             <td>
               {m.editable ? (
-                <select
-                  aria-label={"Categoría de " + m.title + " " + m.id}
+                <Combobox
+                  className="category-input"
+                  label={"Categoría de " + m.title + " " + m.id}
                   value={m.category}
-                  onChange={(e) => onCorrect(m.id, e.target.value as Category)}
-                >
-                  {categories.map((c) => (
-                    <option key={c}>{c}</option>
-                  ))}
-                </select>
+                  options={categories}
+                  onChange={(value) => {
+                    if ((categories as readonly string[]).includes(value))
+                      onCorrect(m.id, value as Category);
+                  }}
+                />
               ) : (
                 <span className="static-category">{m.category}</span>
               )}

@@ -1,6 +1,7 @@
 import { categories, isTransfer, money } from "../server/domain";
 import { productLabels, type Product } from "../server/planning-domain";
 import { MovementTable } from "./MovementTable";
+import { Combobox } from "./Combobox";
 import type { RastroState } from "./useRastro";
 export const ActivityPanel = ({ state }: { state: RastroState }) => {
   const {
@@ -67,16 +68,13 @@ export const ActivityPanel = ({ state }: { state: RastroState }) => {
             </option>
           ))}
         </select>
-        <select
-          aria-label="Filtrar categoría"
+        <Combobox
+          label="Filtrar categoría"
           value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
-          <option>Todas</option>
-          {categories.map((c) => (
-            <option key={c}>{c}</option>
-          ))}
-        </select>
+          options={["Todas", ...categories]}
+          onChange={setCategory}
+          placeholder="Escribe una categoría…"
+        />
         <span>{rows.length} movimientos</span>
       </div>
       <MovementTable

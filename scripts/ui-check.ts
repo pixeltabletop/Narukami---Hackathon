@@ -73,7 +73,15 @@ try {
     .getByRole("textbox", { name: "Buscar movimientos" })
     .fill("Entrega Express");
   await expect(page.locator("tbody tr")).toHaveCount(3);
-  const select = page.locator("tbody select").first();
+  // La categoría se escribe: hay que probar que solo se aplica cuando el texto
+  // coincide con el catálogo, y que a medio escribir no cambia nada.
+  const categoryCell = page.locator("tbody input[list]").first();
+  // El valor de partida depende de corridas anteriores, asi que el destino se
+  // elige distinto del actual. Si no, el campo no cambia y no hay que guardar.
+  const current = await categoryCell.inputValue();
+  const target = current === "Compras" ? "Salud" : "Compras";
+  await categoryCell.fill(target.slice(0, 4));
+  await expect(categoryCell).toHaveValue(target.slice(0, 4));
   await Promise.all([
     page.waitForResponse(
       (r) =>
@@ -81,14 +89,18 @@ try {
         r.request().method() === "PATCH" &&
         r.status() === 200,
     ),
-    select.selectOption("Compras"),
+    categoryCell.fill(target),
   ]);
   await page.reload();
   await page.getByRole("button", { name: "Movimientos", exact: true }).click();
   await page
     .getByRole("textbox", { name: "Buscar movimientos" })
     .fill("Entrega Express");
-  await expect(page.locator("tbody select").first()).toHaveValue("Compras");
+  await expect(page.locator("tbody input[list]").first()).toHaveValue(target);
+  // El filtro de categoría también se escribe.
+  await page.getByLabel("Filtrar categoría").fill("Restaurantes");
+  await expect(page.locator("tbody tr")).toHaveCount(0);
+  await page.getByLabel("Filtrar categoría").fill("Todas");
   await Promise.all([
     page.waitForResponse(
       (r) =>
@@ -96,9 +108,9 @@ try {
         r.request().method() === "PATCH" &&
         r.status() === 200,
     ),
-    page.locator("tbody select").first().selectOption("Restaurantes"),
+    page.locator("tbody input[list]").first().fill("Restaurantes"),
   ]);
-  await expect(page.locator("tbody select").first()).toHaveValue(
+  await expect(page.locator("tbody input[list]").first()).toHaveValue(
     "Restaurantes",
   );
   await page

@@ -1160,3 +1160,330 @@ tr.no-cuenta .amount {
   font-size: 11px;
   color: #55635a;
 }
+
+/* El filtro y la corrección de categoría se escriben, no solo se eligen. */
+.filters input[list],
+.category-input {
+  border: 1px solid #dce2d7;
+  background: #fff;
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: #334c3d;
+  font-size: 12px;
+}
+.category-input {
+  padding: 7px 9px;
+  font-size: 11px;
+  width: 100%;
+  min-width: 150px;
+}
+
+/* Proyección. El veredicto manda: verde si el saldo aguanta el tramo, rojo si
+   la cuenta se queda corta antes del próximo cobro. */
+.forecast-hero {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 30px;
+  border-radius: 12px;
+  padding: 30px;
+  color: #eaf2fb;
+  margin-bottom: 24px;
+}
+.forecast-hero.ok {
+  background: #0e3a6b;
+}
+.forecast-hero.red {
+  background: #6d2230;
+}
+.forecast-hero > div:first-child > strong {
+  display: block;
+  font-size: 27px;
+  letter-spacing: -0.8px;
+  font-weight: 550;
+  margin: 12px 0;
+  line-height: 1.25;
+}
+.forecast-hero p {
+  color: #cbd9e8;
+  line-height: 1.65;
+  margin: 0;
+  font-size: 12px;
+}
+.forecast-hero.red p {
+  color: #ecd0d4;
+}
+.forecast-hero .balance-breakdown {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.16);
+  align-self: start;
+}
+.forecast-hero .balance-breakdown span {
+  background: rgba(0, 0, 0, 0.22);
+  gap: 5px;
+}
+.forecast-hero .balance-breakdown small {
+  color: #b9cbdd;
+}
+.income-facts {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0;
+}
+.income-facts span {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 14px;
+  border-bottom: 1px solid #eef1ec;
+  padding-bottom: 10px;
+}
+.income-facts small {
+  font-size: 10px;
+  color: #8a968c;
+}
+.income-facts b {
+  font-size: 12px;
+  font-weight: 550;
+}
+.horizon-picker {
+  display: grid;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.6px;
+  color: #8a968c;
+  margin-top: 8px;
+}
+.horizon-picker input {
+  border: 1px solid #dce2d7;
+  background: #fff;
+  padding: 11px 13px;
+  border-radius: 6px;
+  color: #334c3d;
+  font-size: 12px;
+}
+/* Silueta del saldo. Barra por día; lo que cae bajo cero se pinta en rojo. */
+.forecast-track {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 92px;
+  margin: 18px 0 20px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #dfe4dc;
+}
+.forecast-bar {
+  flex: 1;
+  background: #9fc0e2;
+  border-radius: 2px 2px 0 0;
+  min-width: 3px;
+}
+.forecast-bar.neg {
+  background: #c0697a;
+}
+.forecast-list {
+  display: grid;
+  gap: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.forecast-day {
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  gap: 12px;
+  align-items: baseline;
+  font-size: 11px;
+  border-bottom: 1px solid #eef1ec;
+  padding-bottom: 9px;
+}
+.forecast-day.negative b {
+  color: #a0364a;
+}
+.forecast-date {
+  color: #8a968c;
+  font-size: 10px;
+}
+.forecast-events {
+  display: grid;
+  gap: 4px;
+}
+.forecast-events em {
+  font-style: normal;
+  color: #5d6b64;
+}
+.forecast-day b {
+  font-weight: 550;
+}
+@media (max-width: 900px) {
+  .forecast-hero {
+    grid-template-columns: 1fr;
+    padding: 23px;
+  }
+  .forecast-hero > div:first-child > strong {
+    font-size: 21px;
+  }
+}
+
+/* Espera con marca: el mismo loop del banco en todas las operaciones lentas. */
+.brand-loader {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  font-size: 11px;
+  color: #5d6b64;
+}
+.brand-loader.block {
+  flex-direction: column;
+  text-align: center;
+  gap: 16px;
+  padding: 30px 0;
+}
+.brand-loader video {
+  border-radius: 50%;
+  background: #0b1c30;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+.saving-toast {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  background: #fff;
+  border: 1px solid #dfe4dc;
+  border-radius: 40px;
+  padding: 9px 18px 9px 9px;
+  box-shadow: 0 10px 30px rgba(16, 69, 127, 0.14);
+  z-index: 20;
+}
+
+/* Asistente. La conversación es el producto, así que ocupa el alto disponible
+   y el hilo se desplaza solo, sin arrastrar toda la página. */
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+}
+.chat-thread {
+  display: grid;
+  gap: 18px;
+  margin: 22px 0;
+  padding: 20px;
+  background: #fbfcf9;
+  border: 1px solid #e6ebe3;
+  border-radius: 10px;
+  min-height: 220px;
+  max-height: 46vh;
+  overflow-y: auto;
+}
+.chat-empty {
+  color: #8a968c;
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 0;
+  align-self: center;
+  text-align: center;
+  max-width: 46ch;
+  justify-self: center;
+}
+.chat-turn {
+  display: grid;
+  gap: 6px;
+  max-width: 84%;
+}
+.chat-turn.cliente {
+  justify-self: end;
+  text-align: right;
+}
+.chat-role {
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  color: #8a968c;
+}
+.chat-bubble {
+  background: #fff;
+  border: 1px solid #e2e7df;
+  border-radius: 12px;
+  padding: 15px 17px;
+  display: grid;
+  gap: 10px;
+  text-align: left;
+}
+.chat-turn.cliente .chat-bubble {
+  background: #10457f;
+  border-color: #10457f;
+  color: #eaf2fb;
+}
+.chat-bubble.failed {
+  border-color: #e3c3c8;
+  background: #fdf6f6;
+}
+.chat-bubble p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.chat-bubble small {
+  font-size: 10px;
+  color: #8a968c;
+}
+.chat-suggestions {
+  margin: 0 0 16px;
+}
+
+/* Guía. Definiciones, no párrafos: el usuario viene a buscar un término. */
+.guide-stack {
+  display: grid;
+  gap: 20px;
+}
+.guide-intro h2 {
+  font-size: 27px;
+}
+.guide-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.guide-jump button {
+  border: 1px solid #cfdcec;
+  background: #e8f0f9;
+  color: #10457f;
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-size: 11px;
+}
+.guide-section h2 {
+  font-size: 16px;
+  max-width: 70ch;
+  line-height: 1.5;
+}
+.guide-section dl {
+  margin: 18px 0 0;
+  display: grid;
+  gap: 14px;
+}
+.guide-section dl > div {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 20px;
+  border-top: 1px solid #eef1ec;
+  padding-top: 13px;
+}
+.guide-section dt {
+  font-weight: 550;
+  font-size: 12px;
+}
+.guide-section dd {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #5d6b64;
+  max-width: 78ch;
+}
+@media (max-width: 900px) {
+  .guide-section dl > div {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .chat-turn {
+    max-width: 95%;
+  }
+}

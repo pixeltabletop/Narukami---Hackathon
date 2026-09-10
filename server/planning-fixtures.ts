@@ -16,8 +16,9 @@ export const defaultPlan = (id: string): PlanInput => ({
   reserveCents: Math.round(10000 * customerFactor(id)),
 });
 
-// El salario bruto del que se descuenta lo de planilla antes de llegar.
-export const grossNextIncome = (id: string) => Math.round(125000 * customerFactor(id));
+// Ana cobra por quincena; Luis factura por proyecto. El bruto del próximo
+// ingreso es lo que entra en el siguiente evento, no el total del mes.
+export const grossNextIncome = (id: string) => (id === "ana" ? 62500 : 65000);
 
 type CommitmentSeed = [
   string,
@@ -37,9 +38,14 @@ export const createCommitments = (customerId: string): Commitment[] => {
     ["card", "Pago de tarjeta", 12000, "2026-09-14", "tarjeta", "cuenta", ""],
     ["insurance", "Seguro vehicular Delta", 3800, "2026-09-14", "seguro", "cuenta", "cuota 7 de 12"],
     // Estos dos nunca tocan la cuenta: el empleador los retiene del salario.
-    ["payroll-loan", "Préstamo personal por planilla", 18500, "2026-09-15", "prestamo", "planilla", "cuota 9 de 24"],
-    ["payroll-coop", "Aporte a cooperativa", 6000, "2026-09-15", "otro", "planilla", ""],
   ];
+  // Solo quien está en planilla tiene descuentos de planilla. Luis factura por
+  // su cuenta: darle un préstamo descontado del salario sería inventar un dato.
+  if (customerId === "ana")
+    seeds.push(
+      ["payroll-loan", "Préstamo personal por planilla", 9250, "2026-09-15", "prestamo", "planilla", "cuota 9 de 24"],
+      ["payroll-coop", "Aporte a cooperativa", 3000, "2026-09-15", "otro", "planilla", ""],
+    );
   return seeds.map(([id, name, cents, dueDate, kind, settlement, installment]) => ({
     id: customerId + "-" + id,
     customerId,
@@ -79,8 +85,23 @@ export const createAccountMovements = (customerId: string): AccountMovement[] =>
       category,
       status,
     });
+  // Dos formas de cobrar, para que la proyección tenga que reconocer las dos.
+  if (customerId === "ana")
+    for (const month of ["06", "07", "08"]) {
+      add(`2026-${month}-15`, "Salario quincenal", 62500, "income", "salary", "checking", "Sin clasificar");
+      add(`2026-${month}-30`, "Salario quincenal", 62500, "income", "salary", "checking", "Sin clasificar");
+    }
+  else
+    for (const [date, cents] of [
+      ["2026-06-08", 48000],
+      ["2026-06-22", 91000],
+      ["2026-07-05", 32000],
+      ["2026-07-19", 120000],
+      ["2026-08-11", 26000],
+      ["2026-08-27", 74000],
+    ] as [string, number][])
+      add(date, "Cobro de proyecto", cents / f, "income", "salary", "checking", "Sin clasificar");
   for (const month of ["06", "07", "08"]) {
-    add(`2026-${month}-15`, "Salario neto", 125000, "income", "salary", "checking", "Sin clasificar");
     add(`2026-${month}-02`, "Alquiler", 42000, "expense", "bill", "checking", "Alquiler y arriendos");
     add(`2026-${month}-05`, "Servicios del hogar", 11800, "expense", "bill", "checking", "Servicios básicos");
     add(`2026-${month}-08`, "Pago de tarjeta", month === "08" ? 46500 : 42000, "expense", "card-payment", "checking", "Sin clasificar");

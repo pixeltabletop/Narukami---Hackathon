@@ -3,11 +3,25 @@ import { api, type Session, type ModelStatus } from "./api";
 import type { Category, Dashboard } from "../server/domain";
 import type { Commitment, PlanningView, PlanInput, Product } from "../server/planning-domain";
 import { fromAccount, fromCard, type LedgerRow } from "./ledger";
+import type { Forecast } from "../server/forecast";
 export const useRastro = () => {
   const [session, setSession] = useState<Session | null>(null),
     [period, setPeriod] = useState("2026-09"),
     [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [planning, setPlanning] = useState<PlanningView | null>(null);
+  const [forecast, setForecast] = useState<Forecast | null>(null);
+  const [forecastHorizon, setForecastHorizon] = useState("");
+  // Operaciones en vuelo. Mientras haya alguna se muestra el loop de la marca:
+  // guardar un plan o corregir una categoría toca disco y no es instantáneo.
+  const [saving, setSaving] = useState(0);
+  const track = async <T,>(work: () => Promise<T>) => {
+    setSaving((n) => n + 1);
+    try {
+      return await work();
+    } finally {
+      setSaving((n) => n - 1);
+    }
+  };
   const [model, setModel] = useState<ModelStatus>({ status: "disabled" }),
     [tab, setTab] = useState("Resumen"),
     [error, setError] = useState("");
@@ -42,6 +56,17 @@ export const useRastro = () => {
       active = false;
     };
   }, [session?.customer?.id, period, revision]);
+  // La proyección depende del plan: si cambia el presupuesto variable o un
+  // compromiso, el veredicto tiene que moverse en la misma pantalla.
+  useEffect(() => {
+    if (!session?.customer) return;
+    let active = true;
+    setForecast(null);
+    api<Forecast>("/forecast" + (forecastHorizon ? "?horizon=" + forecastHorizon : ""))
+      .then((f) => { if (active) setForecast(f); })
+      .catch((e) => { if (active) setError(e.message); });
+    return () => { active = false; };
+  }, [session?.customer?.id, forecastHorizon, planning?.variableBudgetCents, planning?.committedCents]);
   useEffect(() => {
     if (!session?.customer) return;
     let active = true;
@@ -83,10 +108,12 @@ export const useRastro = () => {
   };
   const correct = async (id: string, c: Category) => {
     try {
-      await api("/movements/" + id + "/category", {
-        method: "PATCH",
-        body: JSON.stringify({ category: c }),
-      });
+      await track(() =>
+        api("/movements/" + id + "/category", {
+          method: "PATCH",
+          body: JSON.stringify({ category: c }),
+        }),
+      );
       setError("");
       setRevision((n) => n + 1);
     } catch (e) {
@@ -100,13 +127,13 @@ export const useRastro = () => {
   };
   const savePlan = async (plan: PlanInput) => {
     try {
-      setPlanning(await api<PlanningView>("/planning", { method: "PUT", body: JSON.stringify(plan) }));
+      setPlanning(await track(() => api<PlanningView>("/planning", { method: "PUT", body: JSON.stringify(plan) })));
       setError("");
     } catch (e) { setError((e as Error).message); }
   };
   const setCommitment = async (id: string, state: Commitment["state"]) => {
     try {
-      setPlanning(await api<PlanningView>("/commitments/" + id, { method: "PATCH", body: JSON.stringify({ state }) }));
+      setPlanning(await track(() => api<PlanningView>("/commitments/" + id, { method: "PATCH", body: JSON.stringify({ state }) })));
       setError("");
     } catch (e) { setError((e as Error).message); }
   };
@@ -146,6 +173,10 @@ export const useRastro = () => {
     setPeriod,
     dashboard,
     planning,
+    forecast,
+    saving,
+    forecastHorizon,
+    setForecastHorizon,
     model,
     tab,
     setTab,
