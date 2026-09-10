@@ -10,7 +10,7 @@ Prototipo para el Track 05 de Caja de Ahorros. Chen une dos recorridos: explica 
 
 **Jajanken 2.0** — Diego Laverde y Josué Carrillo.
 
-Diego Laverde escribió la base **Rastro**, importada sin modificar en el commit `7c02033` y
+Diego Laverde escribió la base **Rastro**, importada sin modificar en el commit `57af18a` y
 declarada en detalle más abajo. Josué Carrillo construyó sobre ella el producto que se presenta
 aquí: el dominio de cuenta, la planificación y la proyección, el asistente conversacional con
 dictado, la integración real de QVAC y toda la validación. La historia completa de esa
@@ -284,7 +284,7 @@ Cada requisito del Track 05, y dónde se cumple.
 | Inferencia en el dispositivo; la nube descalifica | Todo corre en la máquina que sirve la aplicación. No hay respaldo remoto: sin modelo local, Chen lo dice y no responde. Comprobado con el equipo desconectado. |
 | Datos del cliente no salen del dispositivo | El servidor escucha solo en `127.0.0.1`. El dictado se transcribe con Whisper en el mismo equipo, no con la API de voz del navegador, que enviaría el audio a un tercero. |
 | Solo datos sintéticos o públicos | Dos clientes ficticios generados en `server/fixtures.ts` y `server/planning-fixtures.ts`. No hay datos reales de ninguna entidad ni credenciales bancarias. |
-| Declarar toda base preexistente | Sección «Base preexistente declarada», más abajo, y el archivo `LICENSE`. El commit `7c02033` conserva esa base sin modificar. |
+| Declarar toda base preexistente | Sección «Base preexistente declarada», más abajo, y el archivo `LICENSE`. El commit `57af18a` conserva esa base sin modificar. |
 | Repositorio accesible al jurado | Pendiente de publicar. Ver «Entrega». |
 | Video de máximo cinco minutos, sin credenciales | Pendiente de grabar. Guion minuto a minuto en `docs/DEMO.md`. |
 | La propiedad intelectual permanece en el equipo | `LICENSE`: derechos reservados, con permiso de evaluación para la organización y el jurado. |
@@ -322,7 +322,9 @@ quieres correrlo antes, abre `qvac:check` en otra terminal.
 
 ## Base preexistente declarada
 
-La base recibida de Diego Laverde el 9 de septiembre de 2026, llamada **Rastro**, se importó sin modificar en el commit `7c02033`. El producto se renombró a **Chen** el 9 de septiembre de 2026; el código original conserva su autoría y su historia en ese commit.
+La base recibida de Diego Laverde el 9 de septiembre de 2026, llamada **Rastro**, se importó sin modificar en el commit `57af18a`, que figura a su nombre. El producto se renombró a **Chen** el 9 de septiembre de 2026.
+
+Ese commit es una instantánea, no el historial anterior de Rastro: la base llegó como carpeta y se importó tal cual, así que aquí no vive la historia previa de Diego, sino el punto exacto desde el que se construyó. Comparar ese commit con cualquiera posterior muestra sin ambigüedad qué es base y qué se agregó encima.
 
 **Lo que traía esa base:** la experiencia de análisis de tarjeta, React con Vite, Express,
 SQLite, los fixtures sintéticos, las primeras pruebas y un adaptador inicial de QVAC que nunca

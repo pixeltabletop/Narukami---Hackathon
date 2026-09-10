@@ -21,10 +21,11 @@ incorporarlo a otro producto ni usarlo con fines comerciales.
 BASE PREEXISTENTE
 
 Este trabajo parte de una base escrita por Diego Laverde y recibida el 9 de
-septiembre de 2026, llamada Rastro, importada sin modificar en el commit 7c02033.
-Su autoría y su
-historia se conservan en ese commit y su alcance está declarado en el README.
-Los derechos de esa base corresponden a su autor.
+septiembre de 2026, llamada Rastro, importada sin modificar en el commit 57af18a.
+Ese commit
+figura a nombre de Diego Laverde y es una instantánea de la base, no el
+historial anterior de Rastro. Su alcance está declarado en el README y los
+derechos de esa base corresponden a su autor.
 
 RECURSOS DE MARCA
 
