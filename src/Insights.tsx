@@ -64,10 +64,11 @@ export const Insights = ({
           </button>
         ))}
         <div className="model-notice">
-          <strong>IA pendiente de configurar</strong>
+          <strong>El asistente local está apagado</strong>
           <p>
-            La estructura está preparada para conectar QVAC en el equipo de
-            destino. No se cargan ni descargan modelos en este modo.
+            Este servidor arrancó sin inferencia, así que no se descarga ningún
+            modelo. Para verlo funcionando, levanta la aplicación con{" "}
+            <code>npm run demo</code>: QVAC corre en este mismo equipo.
           </p>
         </div>
       </section>

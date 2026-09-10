@@ -171,9 +171,12 @@ export const ChatPanel = ({
             {model.status === "loading"
               ? "El modelo se está cargando en este equipo. Puedes seguir explorando mientras tanto."
               : model.status === "disabled"
-                ? "Esta entrega corre sin modelos cargados. Habilita QVAC en el equipo de demostración para conversar."
-                : "El primer inicio puede descargar el modelo. Después todo ocurre en este equipo, sin salir a internet."}
+                ? "El servidor arrancó sin inferencia. Ciérralo y levántalo con npm run demo: enciende QVAC en este mismo equipo."
+                : "El primer inicio descarga 2.33 GB del modelo. Después todo ocurre en este equipo, sin salir a internet."}
           </p>
+          {model.status === "disabled" && (
+            <code className="run-hint">npm run demo</code>
+          )}
           {model.status !== "disabled" && (
             <button
               className="primary"

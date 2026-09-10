@@ -14,10 +14,17 @@ Requiere Node 24 y npm. En Windows conviene trabajar en un disco local, fuera de
 npm ci
 npm run build
 npm test
-npm run dev
+npm run demo
 ```
 
-Abrir `http://127.0.0.1:4173` y seleccionar un cliente ficticio. Con el servidor activo, `npm run ui:check` recorre la experiencia en Edge para escritorio y móvil.
+Abrir `http://127.0.0.1:4173` y seleccionar un cliente ficticio.
+
+`npm run demo` enciende la inferencia local. `npm run dev` levanta la misma aplicación **sin
+IA**, que es el modo por defecto a propósito: encender QVAC descarga 2.33 GB del modelo la
+primera vez y eso no se hace sin que la persona lo decida. Si abres la aplicación y el asistente
+aparece apagado, estás en ese modo y la pantalla te dice el comando.
+
+Con el servidor activo, `npm run ui:check` recorre la experiencia en Edge para escritorio y móvil.
 
 ## Qué funciona
 
@@ -124,6 +131,24 @@ sin instalar nada, y porque el dominio y las reglas de cálculo se reutilizan ta
 Lo que no cambia en ningún camino: el modelo solo clasifica la intención y escoge evidencia. Los
 importes salen de motores deterministas. Ese contrato es lo que hace que mover la inferencia de
 un servidor a un teléfono sea una decisión de despliegue y no una reescritura.
+
+## Que nada salga del equipo, comprobado
+
+Tres capas, no una promesa:
+
+1. **Auditoría del código.** Ningún archivo de `server/` ni de `src/` contacta un host externo.
+   Las únicas llamadas del navegador son a rutas relativas del propio servidor, que escucha solo
+   en `127.0.0.1`. No hay claves de API en el repositorio ni en el ejemplo de entorno.
+2. **Una prueba que lo mantiene así.** `tests/no-cloud.test.ts` falla si aparece una URL externa
+   en código de ejecución, si la inferencia entra por algo que no sea el SDK de QVAC, o si se
+   agrega otro motor de IA a las dependencias. Es una cerca, no una declaración.
+3. **La corrida sin red.** Con el Wi-Fi desconectado y `1.1.1.1:443` inalcanzable, el modelo
+   carga desde caché y responde. El artefacto guarda `network.reachable: false` junto a las
+   respuestas.
+
+Lo único que sí necesita red es la **descarga inicial del modelo**, que ocurre una sola vez y no
+es inferencia. Después de eso la aplicación funciona con el equipo desconectado, y eso es
+justamente lo que demuestra la corrida de arriba.
 
 ## El nombre
 

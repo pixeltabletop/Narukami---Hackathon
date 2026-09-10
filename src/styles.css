@@ -1633,3 +1633,16 @@ tr.no-cuenta .amount {
     animation: none;
   }
 }
+
+/* El jurado que solo hace `npm run dev` ve la aplicación sin IA. El comando
+   exacto va en pantalla, no enterrado en el README. */
+.run-hint {
+  display: inline-block;
+  margin-top: 10px;
+  background: #10457f;
+  color: #eaf2fb;
+  border-radius: 5px;
+  padding: 7px 11px;
+  font-size: 11px;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+}
