@@ -142,9 +142,11 @@ Tres capas, no una promesa:
 2. **Una prueba que lo mantiene así.** `tests/no-cloud.test.ts` falla si aparece una URL externa
    en código de ejecución, si la inferencia entra por algo que no sea el SDK de QVAC, o si se
    agrega otro motor de IA a las dependencias. Es una cerca, no una declaración.
-3. **La corrida sin red.** Con el Wi-Fi desconectado y `1.1.1.1:443` inalcanzable, el modelo
-   carga desde caché y responde. El artefacto guarda `network.reachable: false` junto a las
-   respuestas.
+3. **La corrida sin red, con todo encendido.** Con el Wi-Fi desconectado y `1.1.1.1:443`
+   inalcanzable: el modelo de texto carga desde caché en 36 s y responde las siete preguntas,
+   incluidas las tres de historial, entre 14 y 19 s cada una; Whisper carga en 17 s y transcribe
+   dos frases dictadas en español en 1.4 s. Los artefactos guardan `network.reachable: false`
+   junto a las respuestas. Ni el texto ni la voz necesitan internet.
 
 Lo único que sí necesita red es la **descarga inicial del modelo**, que ocurre una sola vez y no
 es inferencia. Después de eso la aplicación funciona con el equipo desconectado, y eso es
