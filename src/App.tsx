@@ -94,7 +94,7 @@ export const App = () => {
       )}
       <ChatBubble state={state} />
       <footer>
-        Chen · Prototipo para Caja de Ahorros · Equipo Jajanken 2.0{" "}
+        Chen · Prototipo para Caja de Ahorros · Equipo Narukami{" "}
         <span>
           Diego Laverde y Josué Carrillo · Datos sintéticos · Sin conexión a
           cuentas reales

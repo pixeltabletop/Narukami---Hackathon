@@ -1,6 +1,6 @@
 # Guion narrado del video de entrega — Chen
 
-**Equipo:** Jajanken 2.0 — Diego Laverde y Josué Carrillo
+**Equipo:** Narukami — Diego Laverde y Josué Carrillo
 **Reto:** Track 05, Caja de Ahorros — Hackatón ISD/QVAC 2026
 **Duración objetivo:** menos de 4 minutos 45 segundos
 
@@ -8,11 +8,11 @@
 
 ### LOCUCIÓN
 
-Chen, tu pasiero financiero. Somos Jajanken 2.0: Diego Laverde y Josué Carrillo. Diego escribió la base Rastro para analizar consumo. Josué construyó sobre ella Chen: el dominio de cuenta, la organización del saldo, la proyección, el asistente y la integración verificada de QVAC. Chen nace para el Track 05 de Caja de Ahorros. Toda esta demostración usa clientes y movimientos sintéticos.
+Chen, tu pasiero financiero. Somos Narukami: Diego Laverde y Josué Carrillo. Diego escribió la base Rastro para analizar consumo. Josué construyó sobre ella Chen: el dominio de cuenta, la organización del saldo, la proyección, el asistente y la integración verificada de QVAC. Chen nace para el Track 05 de Caja de Ahorros. Toda esta demostración usa clientes y movimientos sintéticos.
 
 ### EN PANTALLA
 
-1. Muestre una placa limpia con “Jajanken 2.0”, los nombres Diego Laverde y Josué Carrillo, y “Track 05 — Caja de Ahorros”.
+1. Muestre una placa limpia con “Narukami”, los nombres Diego Laverde y Josué Carrillo, y “Track 05 — Caja de Ahorros”.
 2. Abra Chen en la portada.
 3. Mantenga visibles el logotipo y la advertencia de datos ficticios.
 
@@ -109,13 +109,13 @@ La condición del reto es concreta: la inferencia en nube descalifica. Desactiva
 
 ### LOCUCIÓN
 
-Hoy, este portátil es el dispositivo y el servidor. Express escucha solamente en la dirección local. Chen no es una aplicación oficial del banco ni da asesoría financiera. Es un prototipo auditable: distingue gasto de traslado, organiza el saldo y abre cada respuesta hasta su evidencia, sin enviar la inferencia ni los datos del cliente a la nube. Somos Jajanken 2.0. Esto es Chen, tu pasiero financiero.
+Hoy, este portátil es el dispositivo y el servidor. Express escucha solamente en la dirección local. Chen no es una aplicación oficial del banco ni da asesoría financiera. Es un prototipo auditable: distingue gasto de traslado, organiza el saldo y abre cada respuesta hasta su evidencia, sin enviar la inferencia ni los datos del cliente a la nube. Somos Narukami. Esto es Chen, tu pasiero financiero.
 
 ### EN PANTALLA
 
 1. Vuelva al resumen de Chen.
 2. Muestre en una secuencia breve “Entiende”, “Organiza”, “Proyección” y “Asistente”.
-3. Cierre con una placa que diga “Chen, tu pasiero financiero”, debajo “Jajanken 2.0 — Diego Laverde y Josué Carrillo” y “Track 05 — Caja de Ahorros”.
+3. Cierre con una placa que diga “Chen, tu pasiero financiero”, debajo “Narukami — Diego Laverde y Josué Carrillo” y “Track 05 — Caja de Ahorros”.
 4. Mantenga visible la leyenda “Prototipo con datos sintéticos. No es una aplicación oficial de Caja de Ahorros”.
 
 ## Antes de grabar, en este orden

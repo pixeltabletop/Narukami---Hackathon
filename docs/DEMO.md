@@ -20,7 +20,7 @@ Si el modelo local no responde en la toma, se corta y se vuelve a grabar. Nada s
 ## Minuto a minuto
 
 **0:00 – 0:35 · Quiénes somos y el problema, con nombre y apellido**
-Abrir presentándose: **Jajanken 2.0, Diego Laverde y Josué Carrillo**, con Chen para el Track 05
+Abrir presentándose: **Narukami, Diego Laverde y Josué Carrillo**, con Chen para el Track 05
 de Caja de Ahorros. Decir en la misma frase que la base del análisis de consumo la escribió
 Diego y que sobre ella se construyó todo lo demás; esa declaración también está en el README.
 Después, el problema: el cliente ve el estado de cuenta y no entiende por qué gastó más. El

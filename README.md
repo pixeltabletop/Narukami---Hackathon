@@ -8,7 +8,7 @@ Prototipo para el Track 05 de Caja de Ahorros. Chen une dos recorridos: explica 
 
 ## Equipo
 
-**Jajanken 2.0** — Diego Laverde y Josué Carrillo.
+**Narukami** — Diego Laverde y Josué Carrillo.
 
 Diego Laverde escribió la base **Rastro**, importada sin modificar en el commit `57af18a` y
 declarada en detalle más abajo. Josué Carrillo construyó sobre ella el producto que se presenta
