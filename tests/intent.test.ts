@@ -106,3 +106,16 @@ test("sin algo que comparar, 'changes' sale del menu del modelo", async () => {
   ])
     assert.equal(comparesPeriods(q), false, q);
 });
+
+test("una cantidad escrita con letras tambien es una pregunta de ahorro", async () => {
+  const { timeframeHint } = await import("../server/timeframe");
+  // La lista corta se quedaba en "cien" y "mil". "Cincuenta" caia en historial y
+  // el modelo contestaba el gasto de un rubro en vez de la proyeccion.
+  for (const q of [
+    "Si aparto cincuenta dólares al mes, ¿cuánto tengo en seis meses?",
+    "Si guardo ochenta dólares al mes, ¿cuánto junto en tres meses?",
+    "Si aparto doscientos dólares al mes, ¿cuánto junto en un año?",
+    "Si ahorro cien dólares al mes, ¿cuánto junto hasta fin de año?",
+  ])
+    assert.equal(timeframeHint(q), "savings", q);
+});

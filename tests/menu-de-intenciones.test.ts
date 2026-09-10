@@ -94,3 +94,50 @@ test("sin historial cargado no se ofrece ninguna intención de varios meses", ()
   ])
     assert.ok(!menu.includes(historia), historia + " no debería estar");
 });
+
+// Los tres casos siguientes salieron de la bateria de preguntas reales del
+// 2026-09-10, no de la imaginacion: el modelo fallo en los tres y la regla que
+// lo permitia estaba escrita demasiado ancha.
+
+test("un superlativo dentro del mes no es una comparacion entre meses", () => {
+  const menu = allowedIntentsFor(
+    "¿En qué categoría se me va más el dinero?",
+    comercios,
+    "unclear",
+    true,
+  );
+  // "mas" a secas no compara nada: aqui la respuesta correcta es cual pesa mas.
+  assert.ok(menu.includes("largest_categories"));
+  assert.ok(!menu.includes("changes"));
+});
+
+test("comparar de verdad sigue abriendo la intencion de comparacion", () => {
+  for (const q of [
+    "¿Gasté más que el mes pasado?",
+    "¿Por qué gasté más?",
+    "¿Gasté menos que antes?",
+  ])
+    assert.ok(
+      allowedIntentsFor(q, comercios, "unclear", true).includes("changes"),
+      q,
+    );
+});
+
+test("\"todos los meses\" es repeticion, no historial de varios meses", async () => {
+  const { timeframeHint } = await import("../server/timeframe");
+  const q = "¿Qué me están cobrando todos los meses?";
+  assert.equal(timeframeHint(q), "unclear", q);
+  const menu = allowedIntentsFor(q, comercios, timeframeHint(q), true);
+  assert.ok(menu.includes("recurring"));
+  assert.ok(!menu.includes("merchant_history"));
+});
+
+test("un historial de verdad sigue siendo historial", async () => {
+  const { timeframeHint } = await import("../server/timeframe");
+  for (const q of [
+    "¿Cuánto he gastado en Restaurantes en los últimos tres meses?",
+    "¿Cuál es mi promedio de gasto mensual?",
+    "¿Cuánto llevo gastado en Supermercado?",
+  ])
+    assert.equal(timeframeHint(q), "history", q);
+});
