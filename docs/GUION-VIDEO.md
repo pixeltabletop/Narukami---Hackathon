@@ -74,11 +74,11 @@ Chen no se queda en explicar el pasado. En Organiza, parte del saldo que existe 
 5. Muestre por separado un descuento directo de planilla y su efecto sobre el próximo ingreso.
 6. Ajuste el presupuesto variable y muestre nuevamente el margen.
 
-## Bloque 6 — 3:08 a 3:42 · Escenarios y proyección día a día
+## Bloque 6 — 3:08 a 3:57 · Escenarios, proyección y la pregunta que decide
 
 ### LOCUCIÓN
 
-En Escenarios, el cliente compara una reserva conservadora, una sugerida y una ambiciosa, siempre viendo cuánto dinero queda. Ningún escenario altera sus movimientos. En Proyección, Chen avanza día por día porque un promedio mensual puede esconder la fecha en que la cuenta se queda corta. Reconoce patrones de ingreso mensuales, quincenales o irregulares. Coloca compromisos y cargos recurrentes en sus fechas. Si el saldo no alcanza, muestra el día y el faltante. También calcula cuántos días aguanta el saldo sin otro ingreso.
+En Escenarios, el cliente compara una reserva conservadora, una sugerida y una ambiciosa, siempre viendo cuánto dinero queda. Ningún escenario altera sus movimientos. En Proyección, Chen avanza día por día porque un promedio mensual puede esconder la fecha en que la cuenta se queda corta. Reconoce patrones de ingreso mensuales, quincenales o irregulares. Coloca compromisos y cargos recurrentes en sus fechas. Si el saldo no alcanza, muestra el día y el faltante. También calcula cuántos días aguanta el saldo sin otro ingreso. Y esa misma respuesta se puede pedir hablando. Le preguntamos al asistente si alcanza hasta el próximo pago, y contesta con el mismo veredicto y los mismos números que muestra la pestaña. La pregunta más natural sobre el dinero se responde por donde el cliente la haría.
 
 ### EN PANTALLA
 
@@ -86,8 +86,11 @@ En Escenarios, el cliente compara una reserva conservadora, una sugerida y una a
 2. Abra Proyección con Ana Martínez y muestre el patrón quincenal de los días 15 y 30.
 3. Muestre el estado donde el saldo no alcanza, con el día y el faltante visibles.
 4. Cambie a Luis Rodríguez y muestre el patrón irregular y la autonomía sin cobrar.
+5. Vuelva a Ana Martínez, abra el Asistente Chen y escriba exactamente: “¿me alcanza hasta el próximo pago?”.
+6. Conserve el envío y la llegada de la respuesta real; acelere solamente la espera.
+7. Ponga la respuesta del asistente al lado del veredicto de la pestaña para que se vea que dicen lo mismo.
 
-## Bloque 7 — 3:42 a 4:20 · La prueba de que la inferencia no sale del dispositivo
+## Bloque 7 — 3:57 a 4:35 · La prueba de que la inferencia no sale del dispositivo
 
 ### LOCUCIÓN
 
@@ -102,7 +105,7 @@ La condición del reto es concreta: la inferencia en nube descalifica. Desactiva
 5. Abra `evidencia/qvac-check-offline.json` y muestre `network.reachable: false`, las tres tomas contra los cuatro destinos, las nueve respuestas y sus latencias.
 6. Muestre brevemente `evidencia/voice-check-offline.json` como evidencia separada del dictado local.
 
-## Bloque 8 — 4:20 a 4:38 · Cierre
+## Bloque 8 — 4:35 a 4:53 · Cierre
 
 ### LOCUCIÓN
 
@@ -137,12 +140,12 @@ Estimación calculada únicamente sobre la locución, a unas 160 palabras por mi
 | 3. Qué sí fue gasto | 89 | 0:33 |
 | 4. Pregunta y evidencia | 93 | 0:35 |
 | 5. Organizar el saldo | 89 | 0:33 |
-| 6. Escenarios y proyección | 82 | 0:31 |
+| 6. Escenarios y proyección | 122 | 0:46 |
 | 7. Prueba sin red | 87 | 0:33 |
 | 8. Cierre | 67 | 0:25 |
-| **Total** | **646** | **4:02** |
+| **Total** | **686** | **4:17** |
 
-La locución deja aproximadamente 46 segundos frente al objetivo máximo de 4:45. El cronograma de bloques reserva 39 de esos segundos para transiciones, respiraciones y aperturas de evidencia; termina en 4:38 y deja siete segundos adicionales de seguridad. El límite duro del reto sigue siendo cinco minutos.
+La locución suma 4:17. El cronograma de bloques termina en 4:53 y el límite duro del reto es de cinco minutos, así que el margen quedó en siete segundos. Es poco: si al montar se pasa, lo primero que se recorta es la enumeración de filtros del Bloque 3, que es la parte más prescindible, y no el Bloque 7, que es el que sostiene la elegibilidad.
 
 ## Lo que NO se dice
 
