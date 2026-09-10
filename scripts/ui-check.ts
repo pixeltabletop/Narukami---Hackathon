@@ -226,13 +226,25 @@ try {
   expect((await isolated.get("/api/dashboard?period=2026-13")).status()).toBe(
     400,
   );
+  // El recorrido corre contra las dos formas de arrancar: `npm run dev` deja la
+  // inferencia apagada y `npm run demo` la enciende. Antes exigía la apagada y
+  // fallaba justo después de la secuencia que recomienda el README.
   const modelState = await (await isolated.get("/api/model")).json();
-  expect(modelState.status).toBe("disabled");
+  const inferenceOff = modelState.status === "disabled";
+  expect(
+    ["disabled", "unloaded", "loading", "ready", "error"].includes(
+      modelState.status,
+    ),
+  ).toBe(true);
   const blockedLoad = await isolated.post("/api/model/load", {
     headers: { "x-chen-csrf": login.csrf },
     data: {},
   });
-  expect(blockedLoad.status()).toBe(409);
+  // Apagada, cargar el modelo tiene que estar bloqueado. Encendida, la ruta
+  // responde, pero nunca debe fallar con un error del servidor.
+  expect(inferenceOff ? blockedLoad.status() === 409 : blockedLoad.ok()).toBe(
+    true,
+  );
   const d = await (
     await isolated.get("/api/dashboard?period=2026-09&customerId=ana")
   ).json();

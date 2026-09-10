@@ -52,6 +52,25 @@ Wi-Fi desconectado y `1.1.1.1:443` inalcanzable, verificado antes de empezar.
 Artefactos: `artifacts/qvac-check-offline.json` y `artifacts/voice-check-offline.json`, ambos con
 `network.reachable: false` junto a las respuestas.
 
+## Punta a punta desde un clon limpio
+
+Ejecutado el 10 de septiembre de 2026 sobre un `git clone` recién hecho, para reproducir lo que
+haría el jurado y no lo que funciona en la máquina donde se escribió el código.
+
+| Paso | Resultado |
+| --- | --- |
+| `npm ci` | Sin vulnerabilidades |
+| `npm run build` | TypeScript y Vite sin errores |
+| `npm test` | 42 de 42 |
+| `npm run demo` y recorrer las ocho pestañas | Todas renderizan, ninguna con error |
+| Cargar el modelo desde la interfaz | Listo, «Modelo disponible» en pantalla |
+| Dictado por la ruta HTTP real, con sesión y CSRF | Whisper listo y transcripción correcta en 2.4 s |
+| El texto dictado enviado al asistente | Intención `category_history`, respuesta con 13 movimientos de respaldo |
+| `npm run ui:check` con inferencia encendida y apagada | Pasa en ambos casos |
+
+El recorrido de interfaz exigía antes que la inferencia estuviera apagada, así que fallaba justo
+después de la secuencia que recomienda el README. Ahora acepta las dos formas de arrancar.
+
 ## Modelos descartados por el camino
 
 - **Llama 3.2 1B**: cargaba, pero no producía explicaciones fiables.
