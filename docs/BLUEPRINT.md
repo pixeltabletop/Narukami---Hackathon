@@ -2,7 +2,10 @@
 
 > The Architect · 2026-09-09 · v1.0 · Codex GPT-6 · America/Panama.
 > Arquetipo: aplicación web local de demostración bancaria, con dashboard y API; modo auditoría/ampliación de sistema existente.
-> Estado: diseño listo para iniciar las pruebas del bloque 1. Inferencia, modelo ganador, offline y entrega final todavía no aprobados. Este documento no representa implementación ejecutada.
+> Estado: **documento histórico**. Es el diseño con el que se construyó Chen, congelado el
+> 2026-09-09 antes de escribir código. Lo que efectivamente se implementó, incluidos los cambios
+> que el diseño no previó, vive en el README y en `docs/ARQUITECTURA.md`; lo que se verificó, en
+> `docs/VALIDACION.md`. Donde este blueprint y el README discrepen, manda el README.
 
 ## 1. Visión, alcance y decisiones
 

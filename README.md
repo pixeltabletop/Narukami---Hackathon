@@ -247,6 +247,41 @@ términos con salto directo a la pantalla que describen.
   retiene el dinero, así que se resta del saldo disponible, pero no entra al gasto del período
   porque su importe final puede cambiar.
 
+## Cumplimiento del reto
+
+Cada requisito del Track 05, y dónde se cumple.
+
+| Requisito | Cómo se cumple |
+| --- | --- |
+| Construir con el SDK de QVAC | `@qvac/sdk` 0.19.0 es dependencia declarada. Texto en `server/qvac.ts`, voz en `server/voice.ts`. Son los dos únicos puntos de entrada de inferencia y una prueba lo verifica. |
+| Inferencia en el dispositivo; la nube descalifica | Todo corre en la máquina que sirve la aplicación. No hay respaldo remoto: sin modelo local, Chen lo dice y no responde. Comprobado con el equipo desconectado. |
+| Datos del cliente no salen del dispositivo | El servidor escucha solo en `127.0.0.1`. El dictado se transcribe con Whisper en el mismo equipo, no con la API de voz del navegador, que enviaría el audio a un tercero. |
+| Solo datos sintéticos o públicos | Dos clientes ficticios generados en `server/fixtures.ts` y `server/planning-fixtures.ts`. No hay datos reales de ninguna entidad ni credenciales bancarias. |
+| Declarar toda base preexistente | Sección «Base preexistente declarada», más abajo, y el archivo `LICENSE`. El commit `7c02033` conserva esa base sin modificar. |
+| Repositorio accesible al jurado | Pendiente de publicar. Ver «Entrega». |
+| Video de máximo cinco minutos, sin credenciales | Pendiente de grabar. Guion minuto a minuto en `docs/DEMO.md`. |
+| La propiedad intelectual permanece en el equipo | `LICENSE`: derechos reservados, con permiso de evaluación para la organización y el jurado. |
+
+## Entrega
+
+Lo que falta antes del cierre, en orden:
+
+1. **Publicar el repositorio** y confirmar que el jurado puede clonarlo y ejecutarlo.
+2. **Grabar el video** siguiendo `docs/DEMO.md`, con el modelo ya cargado y memoria libre, y
+   publicar el enlace aquí: _(pendiente)_.
+3. **Leer los Términos y Condiciones generales**, en particular pertenencia simultánea a equipos.
+4. **Confirmar el canal y el horario de entrega** con la organización.
+
+Para reproducir la evaluación completa desde cero:
+
+```powershell
+npm ci
+npm run build
+npm test
+npm run demo
+npm run qvac:check
+```
+
 ## Privacidad y límites
 
 - No contiene datos reales ni solicita credenciales bancarias.
@@ -257,7 +292,18 @@ términos con salto directo a la pantalla que describen.
 
 ## Base preexistente declarada
 
-La base recibida de Diego el 9 de septiembre de 2026, llamada **Rastro**, se importó sin modificar en el commit `7c02033`. El producto se renombró a **Chen** el 9 de septiembre de 2026; el código original conserva su autoría y su historia en ese commit. Incluía la experiencia de análisis de tarjeta, React/Vite, Express, SQLite, fixtures, pruebas y el adaptador inicial de QVAC. Este incremento agrega el dominio de cuenta, planificación y escenarios; endurece la validación de datos; y cambia la respuesta de QVAC a un contrato de intención tipada con redacción determinista.
+La base recibida de Diego el 9 de septiembre de 2026, llamada **Rastro**, se importó sin modificar en el commit `7c02033`. El producto se renombró a **Chen** el 9 de septiembre de 2026; el código original conserva su autoría y su historia en ese commit.
+
+**Lo que traía esa base:** la experiencia de análisis de tarjeta, React con Vite, Express,
+SQLite, los fixtures sintéticos, las primeras pruebas y un adaptador inicial de QVAC que nunca
+se había ejecutado contra un modelo.
+
+**Lo que se construyó encima:** el dominio de cuenta con productos separados; planificación,
+escenarios y proyección día a día; el catálogo de veinte categorías con la distinción entre
+gasto y traslado; el historial por rubro y por comercio; el asistente conversacional con su
+burbuja y su guía; el dictado local con Whisper; la identidad de Caja de Ahorros; el contrato
+de intención tipada con redacción determinista, su guardián de coherencia y la gramática que
+impide inventar entidades; y la validación real de QVAC, incluida la corrida sin red.
 
 Dependencias declaradas y fijadas en `package-lock.json`: QVAC SDK, React, Vite, Express, express-session, Zod, TypeScript, tsx y Playwright. Documentación de referencia del SDK: https://docs.qvac.tether.io/js-ts-sdk/ y https://docs.qvac.tether.io/ai-capabilities/text-generation/.
 
@@ -276,8 +322,9 @@ No se presupone aval de Caja de Ahorros ni titularidad sobre su marca.
 
 ## Archivos importantes
 
-- `blueprint.md`: arquitectura completa y criterios de aceptación.
-- `AGENTS.md`: reglas de construcción para cualquier agente.
-- `docs/ARQUITECTURA.md`: arquitectura de la base recibida.
-- `docs/VALIDACION.md`: validación previa sin modelos.
-- `scripts/ui-check.ts`: recorrido funcional reproducible.
+- `LICENSE`: propiedad intelectual, permiso de evaluación y declaración de la base preexistente.
+- `AGENTS.md`: reglas de construcción para cualquier agente que toque este repositorio.
+- `docs/ARQUITECTURA.md`: cómo está armado y cuál es el contrato con el modelo.
+- `docs/VALIDACION.md`: qué se verificó, con qué resultado y qué falta.
+- `docs/DEMO.md`: guion de cinco minutos, minuto a minuto.
+- `docs/BLUEPRINT.md`: el diseño original, congelado antes de escribir código. Documento histórico.

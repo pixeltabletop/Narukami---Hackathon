@@ -1,37 +1,53 @@
 # Arquitectura de Chen
+
 ## Flujo
-Navegador → API de sesión → movimientos del cliente → cálculos → hallazgos y evidencias.
-Una etapa posterior habilitará QVAC local para interpretar preguntas y explicar esos hechos.
+
+Navegador → API local de sesión → movimientos del cliente → motores deterministas → hechos con
+su evidencia. Sobre esos hechos, QVAC clasifica la pregunta y elige qué citar; la aplicación
+redacta con importes ya calculados.
+
+Todo ocurre en la misma máquina. El servidor escucha solo en `127.0.0.1` y no existe fallback a
+un servicio remoto: si el modelo local no está, la aplicación lo dice y no responde.
 
 ## Componentes
-- React y TypeScript; componentes separados para navegación, resumen, actividad, recurrencias y preguntas.
-- Express y express-session: sesiones seleccionables de demo, autorización por cliente y protección CSRF.
-- Motor propio: centavos enteros, deduplicación, períodos equivalentes y estados de movimientos.
-- SQLite: correcciones por cliente/comercio.
-- QVAC SDK 0.19.0: importación dinámica; no se importa ni carga el motor en modo desactivado.
-- Zod: solicitudes y respuestas estructuradas.
-- Validador numérico: normalización Unicode y comparación de importes con evidencia seleccionada.
 
-## Estado de IA
-Inferencia desactivada por defecto. No se distribuyen modelos.
-El endpoint de carga rechaza la operación en este modo.
-El script de pruebas IA informa OMITIDO y no inicia descargas.
-El adaptador conserva un candidato de modelo para que otra IA continúe después de autorización.
-Los hallazgos visibles son cálculos, no respuestas simuladas de QVAC.
+- **React y TypeScript.** Componentes separados por pantalla: resumen, movimientos, recurrentes,
+  organiza, proyección, escenarios, asistente y guía.
+- **Express y express-session.** Sesiones de demostración seleccionables, autorización por
+  cliente y protección CSRF.
+- **Motores deterministas.** Centavos enteros en todo el recorrido.
+  - `analysis.ts`: gasto del período, categorías, comparación y recurrencias.
+  - `planning.ts`: margen hasta el próximo ingreso, compromisos y escenarios.
+  - `forecast.ts`: proyección día a día, patrón de cobro y autonomía sin ingresos.
+  - `history.ts`: acumulados por rubro y por comercio sobre varios meses.
+- **SQLite.** Correcciones de categoría y planes, por cliente.
+- **QVAC SDK 0.19.0.** Importación dinámica: en modo desactivado el motor no se importa ni se
+  carga. `qvac.ts` para texto, `voice.ts` para dictado con Whisper.
+- **Zod.** Valida las solicitudes de la API y la salida del modelo.
 
-## Casos contables
-Compras + comisiones - devoluciones - reversos, solo contabilizados.
-Pagos de tarjeta no son compras. Pendientes y anulados no suman al gasto.
-Solo USD. Ausencia de historial no se interpreta como cero.
-Recurrencias requieren dos cargos de servicios con fechas cercanas; son posibilidades, no contratos confirmados.
+## El contrato con el modelo
 
-## Límites de la entrega
-Datos exclusivamente sintéticos. No hay core bancario ni identidad de producción.
-Servidor restringido a localhost. Persistencia de sesión en memoria para demo.
-La validación estructural no garantiza toda la semántica de una futura explicación.
-Se requiere evaluación de hardware, rendimiento y salida de red en el equipo de destino.
+El modelo devuelve un único objeto JSON restringido por gramática: una intención de una lista
+cerrada y, según el caso, hasta tres referencias de evidencia o campos tipados como el rubro, el
+comercio, los meses o el monto a apartar.
 
-## Decisiones
-La copia de ejecución se creó en disco local por errores de Google Drive con npm.
-El ZIP contiene código y documentación, sin dependencias, modelos ni caches.
-No hay servicios de IA externos. La integración bancaria futura permanece dentro de infraestructura autorizada.
+Tres reglas sostienen todo lo demás:
+
+1. **No calcula.** Ni importes, ni promedios, ni porcentajes. La aritmética es del servidor.
+2. **No inventa entidades.** La gramática solo admite rubros y comercios que existan en los datos
+   de ese cliente.
+3. **La etiqueta tiene que cuadrar con la evidencia.** Si la intención no la sostiene, la
+   respuesta se rechaza y se reintenta una vez con otra semilla.
+
+Cuando una parte de la decisión es trivial por regla, como saber si la pregunta abarca varios
+meses, se resuelve en código y se usa para recortar el enum del esquema. Una instrucción se
+puede ignorar; una gramática no.
+
+## Separación de dominios
+
+El consumo de tarjeta y el flujo de la cuenta son motores distintos a propósito. Una compra de
+tarjeta pertenece al análisis de consumo; el pago de esa tarjeta es una salida de la cuenta. Sin
+esa separación el mismo dinero se cuenta dos veces.
+
+Por la misma razón, una transferencia entre cuentas propias o un retiro de efectivo salen de la
+cuenta pero no son gasto: se muestran aparte con su importe.

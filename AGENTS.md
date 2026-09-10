@@ -6,7 +6,9 @@
 - El servidor calcula importes en centavos enteros. El modelo no calcula saldos, márgenes ni escenarios.
 - Consumo de tarjeta y flujo de cuenta son dominios separados. Una compra de tarjeta no vuelve a contarse cuando se registra el pago de la tarjeta.
 - Toda recomendación debe mostrar sus supuestos y permitir abrir la evidencia que la respalda.
-- Mantener la identidad visual actual de Chen hasta recibir el logo y la guía de Caja de Ahorros. Dejar la integración de marca reemplazable.
+- La identidad de Caja de Ahorros ya está integrada: logotipo oficial, azul `#1858A0` tomado del propio logotipo y el loop de marca como espera de toda la aplicación. No sustituirla ni presentar la aplicación como producto oficial del banco.
+- La voz también es un dato del cliente: el dictado se transcribe con Whisper dentro de QVAC, nunca con la API de voz del navegador.
+- El modelo clasifica y llena campos tipados. No calcula, no redacta libre y no puede nombrar un rubro o comercio que no exista en los datos de ese cliente.
 
 ## Criterios de aceptación
 

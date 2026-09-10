@@ -1,0 +1,42 @@
+Chen — Track 05 Caja de Ahorros
+Copyright (c) 2026 el equipo autor. Todos los derechos reservados.
+
+PROPIEDAD INTELECTUAL
+
+La propiedad intelectual de este trabajo permanece en el equipo autor. Ni la
+entidad convocante, ni Caja de Ahorros, ni el organizador del evento reciben
+titularidad ni licencia automática sobre este código por el hecho de que sea
+presentado a evaluación. Cualquier uso posterior se negocia por separado y por
+escrito.
+
+PERMISO DE EVALUACIÓN
+
+Se concede a la organización del hackatón y a su jurado, exclusivamente para
+evaluar esta entrega, permiso para acceder al repositorio, clonarlo, ejecutarlo
+y revisar su código. Ese permiso no incluye redistribuirlo, publicarlo,
+incorporarlo a otro producto ni usarlo con fines comerciales.
+
+BASE PREEXISTENTE
+
+Este trabajo parte de una base recibida de Diego el 9 de septiembre de 2026,
+llamada Rastro, importada sin modificar en el commit 7c02033. Su autoría y su
+historia se conservan en ese commit y su alcance está declarado en el README.
+Los derechos de esa base corresponden a su autor.
+
+RECURSOS DE MARCA
+
+El logotipo y el video de marca de Caja de Ahorros provienen del material
+oficial del hackatón y pertenecen a Caja de Ahorros. Se usan aquí solo para
+identificar el reto al que responde esta entrega. Chen no es una aplicación
+oficial del banco ni cuenta con su aval.
+
+MODELOS
+
+Este repositorio no incluye pesos de modelos. Los modelos se obtienen a través
+del SDK de QVAC y se rigen por sus propias licencias.
+
+SIN GARANTÍA
+
+El software se entrega tal cual, sin garantía de ningún tipo. No es asesoría
+financiera. Los clientes y movimientos incluidos son sintéticos y no
+corresponden a ninguna persona real ni a ninguna entidad financiera.

@@ -6,3 +6,4 @@ data/*.sqlite*
 *.log
 artifacts/
 .claude/
+start-preview*.cmd
