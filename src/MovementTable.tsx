@@ -1,26 +1,16 @@
-import {
-  categories,
-  money,
-  type Movement,
-  type Category,
-} from "../server/domain";
-const kind = (m: Movement) =>
-  m.status === "pending"
-    ? "Pendiente"
-    : m.status === "void"
-      ? "Anulado"
-      : m.type === "payment"
-        ? "Pago de tarjeta"
-        : m.type === "refund"
-          ? "Devolución"
-          : m.type === "reversal"
-            ? "Reverso"
-            : "Compra";
+import { categories, money, type Category } from "../server/domain";
+import { productLabels } from "../server/planning-domain";
+import type { LedgerRow } from "./ledger";
+const shortProduct: Record<LedgerRow["product"], string> = {
+  "credit-card": "Tarjeta",
+  checking: "Corriente",
+  savings: "Ahorros",
+};
 export const MovementTable = ({
   rows,
   onCorrect,
 }: {
-  rows: Movement[];
+  rows: LedgerRow[];
   onCorrect: (id: string, c: Category) => void;
 }) => (
   <div className="table-scroll">
@@ -28,6 +18,7 @@ export const MovementTable = ({
       <thead>
         <tr>
           <th>Comercio / descripción</th>
+          <th>Producto</th>
           <th>Fecha</th>
           <th>Categoría</th>
           <th>Estado</th>
@@ -36,44 +27,47 @@ export const MovementTable = ({
       </thead>
       <tbody>
         {rows.map((m) => (
-          <tr key={m.id}>
+          <tr key={m.id} className={m.counts ? "" : "no-cuenta"}>
             <td>
-              <span className="merchant-icon">{m.merchant.slice(0, 1)}</span>
+              <span className="merchant-icon">{m.title.slice(0, 1)}</span>
               <span className="merchant-name">
-                {m.merchant}
-                <small>{m.description}</small>
+                {m.title}
+                <small>{m.detail}</small>
+              </span>
+            </td>
+            <td>
+              <span
+                className={"product-pill " + m.product}
+                title={productLabels[m.product]}
+              >
+                {shortProduct[m.product]}
               </span>
             </td>
             <td className="date">
               {m.date.slice(8)}/{m.date.slice(5, 7)}
             </td>
             <td>
-              <select
-                aria-label={"Categoría de " + m.merchant + " " + m.id}
-                value={m.category}
-                onChange={(e) => onCorrect(m.id, e.target.value as Category)}
-              >
-                {categories.map((c) => (
-                  <option key={c}>{c}</option>
-                ))}
-              </select>
+              {m.editable ? (
+                <select
+                  aria-label={"Categoría de " + m.title + " " + m.id}
+                  value={m.category}
+                  onChange={(e) => onCorrect(m.id, e.target.value as Category)}
+                >
+                  {categories.map((c) => (
+                    <option key={c}>{c}</option>
+                  ))}
+                </select>
+              ) : (
+                <span className="static-category">{m.category}</span>
+              )}
             </td>
             <td>
-              <span
-                className={"pill " + (m.status === "pending" ? "amber" : "")}
-              >
-                {kind(m)}
+              <span className={"pill " + (m.pending ? "amber" : "")}>
+                {m.state}
               </span>
             </td>
-            <td
-              className={
-                "right amount " +
-                (["refund", "reversal", "payment"].includes(m.type)
-                  ? "credit"
-                  : "")
-              }
-            >
-              {["refund", "reversal", "payment"].includes(m.type) ? "−" : ""}
+            <td className={"right amount " + (m.credit ? "credit" : "")}>
+              {m.sign}
               {money(m.amountCents)}
             </td>
           </tr>

@@ -54,8 +54,11 @@ export const SpendingOverview = ({ state }: { state: RastroState }) => {
         <article className="stat">
           <span>Pendiente de contabilizar</span>
           <strong>{money(dashboard.pending)}</strong>
-          <small>Separado del gasto neto</small>
-          <span className="pending-line">◷ Aún puede cambiar</span>
+          <small>
+            Compras ya autorizadas que el comercio todavía no cobró en firme. El
+            banco retiene el dinero, pero el importe final aún puede cambiar.
+          </small>
+          <span className="pending-line">◷ No suma al gasto del período</span>
         </article>
       </section>
       <div className="overview-grid">
@@ -129,6 +132,23 @@ export const SpendingOverview = ({ state }: { state: RastroState }) => {
                 </button>
               ))}
           </div>
+          {dashboard.transfersTotal > 0 && (
+            <div className="transfer-block">
+              <span className="eyebrow">NO ES GASTO</span>
+              <p>
+                {money(dashboard.transfersTotal)} salieron de la cuenta sin
+                consumirse: sigue siendo tu dinero, solo cambió de lugar.
+              </p>
+              <ul>
+                {dashboard.transfers.map((row) => (
+                  <li key={row.name}>
+                    <span>{row.name}</span>
+                    <b>{money(row.amount)}</b>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </section>
       </div>
     </>

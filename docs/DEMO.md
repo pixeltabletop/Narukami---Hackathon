@@ -19,26 +19,34 @@ mandar esos movimientos a un modelo en la nube. Rastro resuelve las dos cosas: e
 consumo y organiza el saldo, sin que el dato salga del dispositivo.
 En pantalla: la portada con el logo de Caja de Ahorros y la advertencia de datos ficticios.
 
-**0:35 – 1:20 · Entiende**
+**0:35 – 1:25 · Entiende, y lo que no es gasto**
 Resumen: gasto neto contabilizado, período anterior comparable y pendiente de contabilizar.
-Señalar que el pendiente se muestra aparte y no se mezcla con el gasto cerrado.
-Abrir el mapa de categorías y bajar a los movimientos que lo sostienen.
+Decir en una frase qué es un pendiente: compra autorizada que el comercio no ha cobrado en
+firme; el banco retiene el dinero pero el importe puede cambiar, así que no entra al consumo.
+Abrir el mapa de categorías y bajar al bloque «No es gasto»: el traspaso a ahorros y el retiro
+de efectivo salieron de la cuenta sin consumirse. Esta es la frase que vende la idea: contar un
+traspaso como gasto es el error que comete cualquier tablero, y Rastro no lo comete.
 
-**1:20 – 2:20 · La pregunta en lenguaje natural, con el modelo local**
+**1:25 – 2:20 · La pregunta en lenguaje natural, con el modelo local**
 Preguntar en vivo: «¿en qué se me fue el dinero?» y después «¿por qué gasté más?».
 Decir lo que realmente hace el modelo: clasifica la intención y escoge entre una y tres
 evidencias. La aplicación redacta la respuesta desde los hechos ya calculados. El modelo no
 suma, no inventa cifras y no ejecuta consultas.
 Abrir la evidencia de una respuesta para mostrar el movimiento exacto.
 
-**2:20 – 2:55 · Recurrentes y correcciones**
-Mostrar los cargos que se repiten y uno que cambió de importe. Corregir la categoría de un
-movimiento y recargar para probar que la corrección persiste por cliente.
+**2:20 – 3:00 · Productos, recurrentes y correcciones**
+En la bandeja de movimientos, cambiar el filtro de producto entre tarjeta de crédito, cuenta
+corriente y cuenta de ahorros. Señalar que el pago de tarjeta aparece en la cuenta y no vuelve
+a contarse como consumo. Mostrar los cargos que se repiten y uno que cambió de importe.
+Corregir la categoría de un movimiento y recargar para probar que la corrección persiste.
 
-**2:55 – 3:50 · Organiza y Escenarios**
+**3:00 – 3:50 · Organiza y Escenarios**
 Este es el diferenciador frente a un lector de estados de cuenta.
-Margen hasta el próximo ingreso: saldo menos pendientes, menos compromisos confirmados,
+Margen hasta el próximo ingreso: saldo menos pendientes, menos compromisos de la cuenta,
 menos gasto variable, menos reserva. Excluir un compromiso y ver el margen recalcularse.
+Bajar a los descuentos directos de planilla y explicar por qué están separados: nunca tocan la
+cuenta, el empleador los retiene antes de pagar, así que reducen el próximo ingreso y no el
+saldo de hoy. Vaciar el presupuesto variable para llevarlo todo a ahorro y ver subir el margen.
 Pasar a Escenarios: conservador, sugerido y ambicioso, con el dinero que queda en cada uno.
 Decir la regla en voz alta: el próximo ingreso no se suma antes de recibirse.
 
@@ -47,7 +55,11 @@ Desactivar la red en cámara. Volver a preguntar. El modelo responde igual.
 Mostrar `artifacts/qvac-check.json` con el modelo, el tiempo de carga y la latencia medida.
 No hay respaldo en la nube: si QVAC no está, la aplicación lo dice y no responde.
 
-**4:30 – 5:00 · Qué falta para que esto sea del banco**
+**4:30 – 5:00 · Dónde viviría esto**
+Decirlo sin rodeos: hoy el portátil es a la vez dispositivo y servidor. En un banco, la
+inferencia corre en la infraestructura del banco y la web se sirve como hoy; el paso siguiente
+es el teléfono, y el SDK ya trae el plugin de Expo para eso. Como el modelo solo clasifica y
+elige evidencia, mover la inferencia es una decisión de despliegue, no una reescritura.
 Aislamiento por cliente, sesión y CSRF ya están. Falta identidad del banco, TLS,
 autorización, retención y auditoría. Cerrar con la base de Diego declarada y el repositorio.
 

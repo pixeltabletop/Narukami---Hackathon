@@ -51,10 +51,10 @@ export const createFixtures = (): Movement[] => {
         );
       };
       expense(1, "Mercado del barrio", 7850, "Supermercado");
-      expense(2, "Nube Música", 999, "Servicios");
+      expense(2, "Nube Música", 999, "Suscripciones");
       expense(3, "Café del parque", 650, "Restaurantes");
       expense(4, "Movilidad urbana", 1250, "Transporte");
-      expense(5, "Cine en casa", month === "09" ? 1599 : 1299, "Servicios");
+      expense(5, "Cine en casa", month === "09" ? 1599 : 1299, "Suscripciones");
       expense(6, "Mercado del barrio", 4320, "Supermercado");
       expense(7, "Farmacia Central", 1875, "Salud");
       expense(
@@ -64,12 +64,28 @@ export const createFixtures = (): Movement[] => {
         "Restaurantes",
       );
       expense(9, "Movilidad urbana", 850, "Transporte");
+      // Perfil de quien ademas factura por su cuenta: proveedores, honorarios y
+      // pauta conviven con el gasto domestico en la misma tarjeta.
+      expense(2, "Suministros Ipsa", month === "09" ? 8600 : 7400, "Proveedores");
+      expense(4, "Contadora Rivas", 12500, "Servicios profesionales");
+      expense(6, "Pauta en redes", month === "09" ? 4500 : 2200, "Marketing y publicidad");
+      expense(8, "Cuota préstamo personal", 18500, "Pago de préstamo");
       expense(10, "Librería Horizonte", 2500, "Compras");
       expense(13, "Mercado del barrio", 6830, "Supermercado");
       expense(17, "Café del parque", 780, "Restaurantes");
       expense(22, "Almuerzos La Mesa", 3600, "Restaurantes");
       expense(27, "Mercado del barrio", 5430, "Supermercado");
+      // Un traslado no es consumo: sale de la cuenta y sigue siendo dinero del
+      // cliente. Va en los fixtures para que la distincion se vea en la demo.
+      expense(11, "Traspaso a mi cuenta de ahorros", 15000, "Transferencia entre cuentas");
+      expense(12, "Retiro cajero automático", 6000, "Retiro de efectivo");
+      expense(14, "Seguro vehicular Delta", 3800, "Seguros");
+      expense(16, "Colegio San Marcos", 9500, "Educación");
+      expense(19, "Ferretería del sur", 2740, "Hogar");
       if (month === "09") {
+        // Traslados del mes en curso: el cliente los ve, pero no suman gasto.
+        expense(5, "Traspaso a mi cuenta de ahorros", 20000, "Transferencia entre cuentas");
+        expense(7, "Retiro cajero automático", 8000, "Retiro de efectivo");
         expense(3, "Entrega Express", 2350, "Restaurantes");
         expense(5, "Entrega Express", 2875, "Restaurantes");
         expense(8, "Entrega Express", 1980, "Restaurantes");

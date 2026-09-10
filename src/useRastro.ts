@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { api, type Session, type ModelStatus } from "./api";
 import type { Category, Dashboard } from "../server/domain";
-import type { Commitment, PlanningView, PlanInput } from "../server/planning-domain";
+import type { Commitment, PlanningView, PlanInput, Product } from "../server/planning-domain";
+import { fromAccount, fromCard, type LedgerRow } from "./ledger";
 export const useRastro = () => {
   const [session, setSession] = useState<Session | null>(null),
     [period, setPeriod] = useState("2026-09"),
@@ -11,6 +12,7 @@ export const useRastro = () => {
     [tab, setTab] = useState("Resumen"),
     [error, setError] = useState("");
   const [search, setSearch] = useState(""),
+    [product, setProduct] = useState<Product | "Todos">("Todos"),
     [category, setCategory] = useState("Todas"),
     [evidence, setEvidence] = useState<{ ids: string[]; title: string } | null>(
       null,
@@ -116,18 +118,28 @@ export const useRastro = () => {
   };
 
   const customer = session?.customer;
-  const rows = dashboard
+  // La evidencia siempre apunta a movimientos de tarjeta: cuando esta activa se
+  // muestra solo eso, sin que el filtro de producto la esconda.
+  const cardRows: LedgerRow[] = dashboard
     ? (evidence
         ? dashboard.evidence.filter((m) => evidence.ids.includes(m.id))
         : dashboard.movements
-      ).filter(
-        (m) =>
-          (category === "Todas" || m.category === category) &&
-          (m.merchant + " " + m.description)
-            .toLowerCase()
-            .includes(search.toLowerCase()),
-      )
+      ).map(fromCard)
     : [];
+  const accountRows: LedgerRow[] =
+    evidence || !planning
+      ? []
+      : planning.accountMovements
+          .filter((m) => m.date.startsWith(period))
+          .map(fromAccount);
+  const rows = [...cardRows, ...accountRows]
+    .filter(
+      (r) =>
+        (evidence || product === "Todos" || r.product === product) &&
+        (category === "Todas" || r.category === category) &&
+        (r.title + " " + r.detail).toLowerCase().includes(search.toLowerCase()),
+    )
+    .sort((a, b) => b.date.localeCompare(a.date));
   return {
     session,
     period,
@@ -142,6 +154,8 @@ export const useRastro = () => {
     setSearch,
     category,
     setCategory,
+    product,
+    setProduct,
     evidence,
     setEvidence,
     revision,

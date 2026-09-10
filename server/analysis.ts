@@ -1,6 +1,8 @@
 import {
   categories,
   contribution,
+  isTransfer,
+  transferCategories,
   money,
   type Dashboard,
   type Movement,
@@ -54,6 +56,7 @@ export const analyze = (
     previousTotal = sum(previous);
   const hasComparison = previous.length > 0;
   const amounts = categories
+    .filter((name) => !isTransfer(name))
     .map((name) => {
       const a = current.filter((m) => m.category === name),
         b = previous.filter((m) => m.category === name);
@@ -139,7 +142,8 @@ export const analyze = (
       Math.abs(Number(a[0].date.slice(8)) - Number(b[0].date.slice(8))) > 3
     )
       continue;
-    if (a[0].category !== "Servicios") continue;
+    if (!["Suscripciones", "Servicios básicos"].includes(a[0].category))
+      continue;
     const item = {
       merchant,
       amount: a[0].amountCents,
@@ -204,7 +208,34 @@ export const analyze = (
         .filter((m) => m.type === "payment" && m.status === "posted")
         .map((m) => m.id),
     });
+  // Los traslados se miden en bruto: su contribucion al gasto es cero, asi que
+  // sumarlos con contribution() daria siempre cero y el cliente no los veria.
+  const transfers = transferCategories
+    .map((name) => {
+      const rows = current.filter(
+        (m) =>
+          m.category === name && m.status === "posted" && m.type !== "payment",
+      );
+      return {
+        name,
+        amount: rows.reduce((n, m) => n + m.amountCents, 0),
+        movementIds: rows.map((m) => m.id),
+      };
+    })
+    .filter((row) => row.amount > 0);
+  const transfersTotal = transfers.reduce((n, row) => n + row.amount, 0);
+  if (transfersTotal)
+    facts.push({
+      id: "transfers",
+      text:
+        money(transfersTotal) +
+        " se movió entre cuentas propias o salió como efectivo. No es gasto: es dinero tuyo en otro lugar.",
+      cents: [transfersTotal],
+      movementIds: transfers.flatMap((row) => row.movementIds),
+    });
   return {
+    transfers,
+    transfersTotal,
     period,
     previousPeriod,
     hasComparison,

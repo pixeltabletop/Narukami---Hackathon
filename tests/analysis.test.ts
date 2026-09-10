@@ -4,12 +4,13 @@ import { analyze, uniqueMovements } from "../server/analysis";
 import { createFixtures } from "../server/fixtures";
 import { MovementRepository } from "../server/repository";
 import { validateAnswer } from "../server/answer-validator";
+import { contribution } from "../server/domain";
 const source = createFixtures();
 test("gasto neto y comparación MTD con importes conocidos", () => {
   const d = analyze(source, "ana", "2026-09");
-  assert.equal(d.total, 35398);
-  assert.equal(d.previousTotal, 21193);
-  assert.equal(d.difference, 14205);
+  assert.equal(d.total, 79498);
+  assert.equal(d.previousTotal, 61793);
+  assert.equal(d.difference, 17705);
   assert.equal(d.pending, 3200);
   assert.equal(d.payments, 50000);
   assert.equal(d.refunds, 4000);
@@ -82,7 +83,7 @@ test("corrección persiste, respeta cliente y no cambia gasto total", () => {
         .filter((m) => m.merchant === "Entrega Express")
         .every((m) => m.category === "Restaurantes"),
     );
-    assert.equal(analyze(repo.list("ana"), "ana", "2026-09").total, 35398);
+    assert.equal(analyze(repo.list("ana"), "ana", "2026-09").total, 79498);
   } finally {
     repo.close();
   }
@@ -139,4 +140,33 @@ test("normaliza dígitos Unicode y valida importes contra evidencias", () => {
       facts,
     ),
   );
+});
+
+test("un traslado entre cuentas propias no es gasto pero sigue visible", () => {
+  const d = analyze(createFixtures(), "ana", "2026-09");
+  // El dinero salió de la cuenta y sigue siendo del cliente. Contarlo como
+  // consumo es el error que infla el gasto de cualquier tablero bancario.
+  assert.ok(d.transfersTotal > 0, "los fixtures deben incluir traslados");
+  assert.equal(
+    d.categories.some((c) => c.name === "Transferencia entre cuentas"),
+    false,
+    "un traslado no puede aparecer en el desglose de gasto",
+  );
+  assert.equal(
+    d.categories.reduce((n, c) => n + c.current, 0),
+    d.total,
+    "el total debe seguir cuadrando con sus categorías",
+  );
+  const traslados = d.movements.filter(
+    (m) => m.category === "Transferencia entre cuentas",
+  );
+  assert.ok(traslados.length > 0, "el traslado debe seguir en movimientos");
+  assert.equal(
+    traslados.reduce((n, m) => n + contribution(m), 0),
+    0,
+    "un traslado no aporta al gasto neto",
+  );
+  const hecho = d.facts.find((f) => f.id === "transfers");
+  assert.ok(hecho, "debe existir el hecho de traslados para que la IA lo cite");
+  assert.match(hecho!.text, /No es gasto/);
 });

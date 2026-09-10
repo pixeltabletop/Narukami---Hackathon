@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { Fact } from "./domain";
 
-export const intentNames = ["spending_summary", "largest_categories", "changes", "recurring", "pending", "unavailable"] as const;
+export const intentNames = ["spending_summary", "largest_categories", "changes", "recurring", "pending", "transfers", "unavailable"] as const;
 const intentSchema = z.object({
   intent: z.enum(intentNames),
   factIds: z.array(z.string()).min(1).max(3),
@@ -26,6 +26,7 @@ export const renderIntent = (raw: string, facts: Fact[]) => {
     changes: holds("category") || holds("total"),
     recurring: parsed.factIds.every((id) => id.startsWith("recurring-")),
     pending: holds("pending"),
+    transfers: holds("transfers"),
     unavailable: holds("total"),
   };
   if (!coherent[parsed.intent])
@@ -38,6 +39,7 @@ export const renderIntent = (raw: string, facts: Fact[]) => {
     changes: "Estos son los cambios que muestran tus movimientos:",
     recurring: "Estos cargos podrían ser recurrentes; dos períodos no confirman una suscripción:",
     pending: "Esto permanece pendiente y está separado del gasto contabilizado:",
+    transfers: "Esto no es gasto: es dinero tuyo que cambió de lugar:",
     unavailable: "Los datos disponibles no permiten responder eso. Sí podemos confirmar:",
   };
   return { intent: parsed.intent, factIds: parsed.factIds, summary: prefix[parsed.intent] + " " + evidence.map((fact) => fact.text).join(" "), facts: evidence };

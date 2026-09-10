@@ -90,6 +90,54 @@ respuesta que ganar cuatro segundos. Gemma 2B queda documentado como alternativa
 con menos memoria, con la advertencia de que confundió una pregunta de resumen con una de
 comparación y repitió una evidencia.
 
+## Dónde corre el modelo y dónde está el cliente
+
+La pregunta que decide este reto no es qué modelo se usa, sino en qué máquina piensa. QVAC
+corre en el dispositivo. Rastro no tiene ni puede tener un respaldo en la nube: si el modelo no
+está cargado, la aplicación lo dice y no responde.
+
+**En la demostración.** El portátil es a la vez el dispositivo y el servidor. Express escucha en
+`127.0.0.1`, sirve la interfaz y carga QVAC dentro de su propio proceso. No hay nada hospedado
+afuera, y por eso la prueba con el Wi-Fi apagado funciona. Para grabar el video basta con el
+equipo: no hay que desplegar nada ni conectarse a ningún servicio.
+
+**En un banco de verdad, tres caminos y lo que cuesta cada uno.**
+
+| Dónde piensa | Quién lo hospeda | A favor | En contra |
+| --- | --- | --- | --- |
+| Servidor del banco | El banco, en su propia infraestructura | La banca en línea sigue siendo web; el dato nunca sale del perímetro del banco; un solo lugar que actualizar | El banco paga el cómputo; hay que dimensionar concurrencia |
+| Teléfono del cliente | Nadie: la app lleva el modelo | El dato no sale ni siquiera del teléfono; costo de cómputo cero para el banco | Exige app nativa; un modelo de 2B es lo realista en un teléfono medio, no uno de 4B |
+| Delegación entre pares | Repartido, con Pears | Es lo que el reto valora explícitamente | Un banco no manda movimientos de un cliente a equipos de terceros |
+
+Las bases permiten la nube para hospedar la interfaz y autenticar, no para inferir. Eso encaja
+con el primer camino: el banco sirve la web como hoy y la inferencia ocurre en su propio
+hardware. El segundo camino es la evolución natural y el SDK ya lo contempla: expone un plugin
+de Expo para React Native, así que el mismo dominio de Rastro puede empaquetarse en una app
+donde el modelo viva en el teléfono. Este prototipo es web porque un jurado necesita abrirlo
+sin instalar nada, y porque el dominio y las reglas de cálculo se reutilizan tal cual en móvil.
+
+Lo que no cambia en ningún camino: el modelo solo clasifica la intención y escoge evidencia. Los
+importes salen de motores deterministas. Ese contrato es lo que hace que mover la inferencia de
+un servidor a un teléfono sea una decisión de despliegue y no una reescritura.
+
+## Cómo se leen tus movimientos
+
+- **Categorías.** Veinte categorías que cubren el gasto doméstico y el de quien además factura
+  por su cuenta: proveedores, servicios profesionales, marketing, alquileres, seguros, impuestos.
+- **Lo que no es gasto.** Una transferencia entre cuentas propias y un retiro de efectivo mueven
+  saldo sin consumirlo. Rastro los muestra aparte, con su importe, y no los suma al consumo del
+  período. Contarlos como gasto es el error clásico de cualquier tablero bancario.
+- **Productos separados.** La bandeja de movimientos filtra por tarjeta de crédito, cuenta
+  corriente y cuenta de ahorros. Las compras de tarjeta alimentan el análisis de consumo; la
+  cuenta alimenta el flujo de efectivo. El pago de tarjeta aparece en la cuenta y no vuelve a
+  contarse como gasto.
+- **Pasivos y compromisos.** Se distinguen por naturaleza (servicio, préstamo, seguro, tarjeta) y
+  por forma de pago. Un descuento directo de planilla no reduce el saldo de hoy porque el
+  empleador lo retiene antes de pagar: reduce el próximo ingreso, y así se muestra.
+- **Pendiente.** Una compra autorizada que el comercio todavía no cobró en firme. El banco
+  retiene el dinero, así que se resta del saldo disponible, pero no entra al gasto del período
+  porque su importe final puede cambiar.
+
 ## Privacidad y límites
 
 - No contiene datos reales ni solicita credenciales bancarias.

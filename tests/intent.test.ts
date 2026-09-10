@@ -50,3 +50,19 @@ test("rechaza una etiqueta que la evidencia elegida no sostiene", () => {
   );
   assert.match(ok.summary, /cambios/);
 });
+
+test("un traslado tiene encabezado propio y exige su propia evidencia", () => {
+  const ok = renderIntent(
+    JSON.stringify({ intent: "transfers", factIds: ["transfers"] }),
+    facts,
+  );
+  assert.match(ok.summary, /no es gasto/i);
+  assert.throws(
+    () =>
+      renderIntent(
+        JSON.stringify({ intent: "transfers", factIds: ["total"] }),
+        facts,
+      ),
+    /no coincide con la evidencia/,
+  );
+});
