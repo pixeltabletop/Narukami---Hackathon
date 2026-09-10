@@ -743,7 +743,7 @@ footer {
   grid-template-columns: 1fr 1.25fr;
   gap: 32px;
   border-radius: 10px;
-  background: #173f37;
+  background: #0e3a6b;
   color: #f4f7ee;
   padding: 30px;
 }
@@ -754,13 +754,13 @@ footer {
   letter-spacing: -1.5px;
   margin: 12px 0 8px;
 }
-.planning-hero p { color: #b9ccc4; line-height: 1.6; margin: 0; max-width: 430px; }
-.balance-breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #3c5b54; border: 1px solid #3c5b54; border-radius: 8px; overflow: hidden; }
-.balance-breakdown span { display: grid; gap: 8px; background: #214940; padding: 17px; }
-.balance-breakdown small { color: #a9beb6; font-size: 10px; }
+.planning-hero p { color: #b6cde6; line-height: 1.6; margin: 0; max-width: 430px; }
+.balance-breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #2a5f9c; border: 1px solid #2a5f9c; border-radius: 8px; overflow: hidden; }
+.balance-breakdown span { display: grid; gap: 8px; background: #134879; padding: 17px; }
+.balance-breakdown small { color: #a9c6e2; font-size: 10px; }
 .balance-breakdown b { font-size: 17px; font-weight: 550; }
 .planning-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
-.local-badge, .recommendation { color: #58764d; background: #edf3e3; border-radius: 4px; padding: 6px 8px; font-size: 9px; letter-spacing: .6px; }
+.local-badge, .recommendation { color: #2f5f92; background: #e8f0f9; border-radius: 4px; padding: 6px 8px; font-size: 9px; letter-spacing: .6px; }
 .plan-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 22px; }
 .plan-form label { display: grid; gap: 7px; color: #6e7e70; font-size: 10px; }
 .plan-form label:first-child { grid-column: span 2; }

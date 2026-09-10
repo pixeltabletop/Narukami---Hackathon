@@ -89,14 +89,21 @@ export const SpendingOverview = ({ state }: { state: RastroState }) => {
                   <span>
                     <i
                       style={{
+                        // Con veinte categorías posibles, seis colores se
+                        // repetían en la misma pantalla. Arranca en el azul de
+                        // la marca y sigue con tonos que se distinguen entre sí.
                         background: [
-                          "#3f7768",
+                          "#1858a0",
                           "#c6814c",
-                          "#78929a",
-                          "#a7ad78",
+                          "#3f7768",
                           "#899aca",
                           "#ba8b91",
-                        ][i % 6],
+                          "#78929a",
+                          "#8a6fae",
+                          "#a7ad78",
+                          "#4e93b8",
+                          "#c2694f",
+                        ][i % 10],
                       }}
                     />
                     {c.name}
@@ -118,14 +125,21 @@ export const SpendingOverview = ({ state }: { state: RastroState }) => {
                                 100,
                             ),
                           ) + "%",
+                        // Con veinte categorías posibles, seis colores se
+                        // repetían en la misma pantalla. Arranca en el azul de
+                        // la marca y sigue con tonos que se distinguen entre sí.
                         background: [
-                          "#3f7768",
+                          "#1858a0",
                           "#c6814c",
-                          "#78929a",
-                          "#a7ad78",
+                          "#3f7768",
                           "#899aca",
                           "#ba8b91",
-                        ][i % 6],
+                          "#78929a",
+                          "#8a6fae",
+                          "#a7ad78",
+                          "#4e93b8",
+                          "#c2694f",
+                        ][i % 10],
                       }}
                     />
                   </div>
