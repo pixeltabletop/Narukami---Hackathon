@@ -65,6 +65,13 @@ Tres detalles que cuestan horas si no se conocen, y que ya están resueltos en e
 Una intención que no cuadra con la evidencia elegida se rechaza antes de redactar y se
 reintenta una vez con otra semilla. Si vuelve a fallar, la aplicación lo dice y no responde.
 
+### Prueba sin red, 9 de septiembre de 2026
+
+Con el Wi-Fi desconectado y `1.1.1.1:443` inalcanzable, el modelo cargó desde caché en 16.9 s y
+respondió las tres preguntas con la intención y la evidencia correctas, entre 9.0 y 10.6 s cada
+una. El artefacto `artifacts/qvac-check-offline.json` deja registrado `network.reachable: false`
+junto a las respuestas. No hay respaldo en la nube que pudiera haber contestado por el modelo.
+
 ### Comparativo de modelos, 9 de septiembre de 2026
 
 Ocho preguntas bancarias, la misma máquina, el mismo corpus sintético:
