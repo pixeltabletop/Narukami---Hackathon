@@ -40,6 +40,7 @@ try {
     { question: "¿En qué se me fue el dinero?", required: "category-1" },
     { question: "¿Por qué gasté más?", required: "category-1" },
     { question: "¿Qué me cobran seguido?", required: "recurring-" },
+    { question: "¿Cuánto moví a mi cuenta de ahorros?", required: "transfers" },
   ];
   const results = [];
   for (const scenario of scenarios) {

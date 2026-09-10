@@ -49,9 +49,12 @@ npm run qvac:check
 npm run dev
 ```
 
-`npm run qvac:check` carga el modelo, corre tres preguntas reales y escribe
-`artifacts/qvac-check.json` con el modelo, el tiempo de carga, la latencia de cada respuesta y
-si la máquina tenía salida a internet durante la prueba. `npm run model:bench` compara los dos
+`npm run qvac:check` carga el modelo, corre cuatro preguntas reales (resumen, comparación,
+recurrencias y traslados) y escribe `artifacts/qvac-check.json` con el modelo, el tiempo de
+carga, la latencia de cada respuesta y si la máquina tenía salida a internet durante la prueba.
+Con veinte categorías el bloque de hechos es más largo y la respuesta tarda entre 11 y 26
+segundos, contra 9 a 14 del catálogo corto: más lenguaje cuesta tiempo, y para grabar conviene
+tener el modelo ya cargado y memoria libre. `npm run model:bench` compara los dos
 modelos candidatos sobre el mismo corpus y escribe `artifacts/model-bench.json`.
 
 Tres detalles que cuestan horas si no se conocen, y que ya están resueltos en el adaptador:
