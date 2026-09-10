@@ -85,14 +85,23 @@ segundos. Gemma 2B queda documentado como alternativa para equipos con menos mem
 
 ## Sin red
 
-Wi-Fi desconectado y `1.1.1.1:443` inalcanzable, verificado antes de empezar.
+Corrida del 10 de septiembre de 2026, con el adaptador desconectado y el perfil en conexión
+manual para que Windows no lo levantara solo. Doce sondeos por prueba, ninguno alcanzó nada.
 
 | Capacidad | Resultado |
 | --- | --- |
-| Texto, 7 preguntas incluidas las de historial | Correctas, de 14 a 19 s cada una |
-| Carga del modelo de texto desde caché | 36 s |
-| Voz, dos frases dictadas en español | Transcritas correctamente, 1.4 s cada una |
-| Carga de Whisper desde caché | 17 s |
+| Texto, 9 preguntas incluidas las dos que miran adelante | 9 de 9 con la intención esperada |
+| Carga del modelo de texto desde caché | 36 s, sin descargar nada |
+| Voz, dos frases dictadas en español | Transcritas correctamente, 1.5 y 1.3 s |
+| Carga de Whisper desde caché | 12 s |
+| Estado de la red en las tres tomas de cada prueba | Sin salida contra los cuatro destinos |
+
+**El primer intento no sirvió, y el instrumento fue quien lo dijo.** Se desconectó el Wi-Fi con un
+solo comando, pero el perfil estaba en conexión automática y Windows volvió a conectarse a mitad
+de la corrida: la toma del final registró salida a internet y el artefacto quedó marcado como
+alcanzable. Con el instrumento anterior, que sondeaba una sola vez y al terminar, esa corrida se
+habría archivado como prueba sin red siendo falsa. La segunda corrida fijó el perfil en conexión
+manual y las tres tomas salieron limpias.
 
 ### Cómo se mide que no hay red
 
@@ -115,14 +124,6 @@ y cuatro destinos.
 
 Son doce intentos por corrida y el artefacto guarda cada uno con su resultado y su tiempo. Las
 dos pruebas, la de texto y la de voz, usan la misma medición y la escriben en su artefacto.
-
-**Estado de esta medición.** El instrumento está en las dos pruebas, la de texto y la de voz, y
-quedó comprobado con red disponible el 10 de septiembre: `voice:check` registró las tres tomas
-contra los cuatro destinos dentro de su artefacto, cargó Whisper en 18 segundos y transcribió las
-dos frases correctamente. **Los artefactos sin red archivados siguen siendo los del 9 de
-septiembre**, hechos con el instrumento anterior de un solo sondeo, y el de voz no llevaba campo
-de red. Rehacer la corrida sin red con este instrumento es lo único que falta para que la tabla
-de arriba y los archivos digan lo mismo.
 
 **Un sondeo que no podía pasar nunca.** La primera versión resolvía el nombre consultando
 directamente a los servidores DNS configurados. En esta máquina esos servidores son `127.0.0.1`,

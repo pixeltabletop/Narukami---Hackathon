@@ -89,18 +89,9 @@ En Escenarios, el cliente compara una reserva conservadora, una sugerida y una a
 
 ## Bloque 7 — 3:42 a 4:20 · La prueba de que la inferencia no sale del dispositivo
 
-> **BLOQUEADO HASTA REHACER LA CORRIDA SIN RED.** La locución de este bloque describe la medición
-> nueva, que comprueba la red antes, durante y después de inferir contra cuatro destinos. Los
-> artefactos sin red que hay hoy en `evidencia/` son de la corrida del 9 de septiembre, hecha con
-> el instrumento anterior: un solo sondeo, a un solo host, después de terminar la inferencia. El
-> de voz ni siquiera lleva el campo de red. Si se graba este bloque tal como está, la narración
-> promete una medición que el archivo en pantalla contradice, y es lo primero que un jurado
-> técnico abriría. Antes de grabarlo hay que volver a correr `qvac:check` y `voice:check` con la
-> red desconectada, y reemplazar los dos artefactos.
-
 ### LOCUCIÓN
 
-La condición del reto es concreta: la inferencia en nube descalifica. Desactivamos la red y hacemos otra pregunta real. Chen responde porque QVAC y los datos están en este dispositivo. No existe respaldo remoto. Si el modelo local no está cargado, Chen lo dice y no responde. La prueba sin red registrada ejecutó siete preguntas de texto, entre catorce y diecinueve segundos cada una. También transcribió dos frases con Whisper dentro de QVAC. La medición comprobó la red antes, durante y después de inferir, contra cuatro destinos.
+La condición del reto es concreta: la inferencia en nube descalifica. Desactivamos la red y hacemos otra pregunta real. Chen responde porque QVAC y los datos están en este dispositivo. No existe respaldo remoto. Si el modelo local no está cargado, Chen lo dice y no responde. La prueba sin red registrada ejecutó nueve preguntas de texto, todas con la intención correcta. También transcribió dos frases con Whisper dentro de QVAC. La medición comprobó la red antes, durante y después de inferir, contra cuatro destinos.
 
 ### EN PANTALLA
 
@@ -108,7 +99,7 @@ La condición del reto es concreta: la inferencia en nube descalifica. Desactiva
 2. Regrese al Asistente Chen.
 3. Escriba exactamente “¿por qué gasté más?” y envíe la pregunta.
 4. Conserve en la captura la pregunta y la respuesta real; acelere solamente la espera.
-5. Abra `evidencia/qvac-check-offline.json` y muestre `network.reachable: false`, las siete respuestas y sus latencias.
+5. Abra `evidencia/qvac-check-offline.json` y muestre `network.reachable: false`, las tres tomas contra los cuatro destinos, las nueve respuestas y sus latencias.
 6. Muestre brevemente `evidencia/voice-check-offline.json` como evidencia separada del dictado local.
 
 ## Bloque 8 — 4:20 a 4:38 · Cierre
@@ -130,8 +121,9 @@ Hoy, este portátil es el dispositivo y el servidor. Express escucha solamente e
    grabación se vuelve impracticable. Cerrar lo que esté ocupando memoria, Jajanken incluido.
 2. `npm run fit:check`, para saber si la máquina de grabación aguanta el modelo.
 3. `npm run demo`, pulsar **Cargar modelo local** y esperar el estado listo. No es automático.
-4. **Rehacer la corrida sin red**: desconectar el adaptador y correr `qvac:check` y `voice:check`,
-   y copiar los artefactos nuevos a `evidencia/`. Sin esto el Bloque 7 no se puede grabar.
+4. La corrida sin red ya está hecha y archivada, del 10 de septiembre. Si se rehace, poner el
+   perfil de Wi-Fi en conexión manual antes de desconectar: en automático Windows se reconecta
+   solo a mitad de la corrida y la prueba deja de valer.
 5. Confirmar que la pregunta del Bloque 4 responde como se espera en esa misma sesión.
 
 ## Duración estimada

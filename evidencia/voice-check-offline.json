@@ -1,18 +1,129 @@
 {
   "passed": true,
   "model": "WHISPER_BASE_Q8_0",
-  "timestamp": "2026-09-10T03:56:23.559Z",
-  "loadMs": 16838,
+  "timestamp": "2026-09-10T20:22:04.232Z",
+  "loadMs": 11968,
+  "network": {
+    "reachable": false,
+    "timeoutMs": 2000,
+    "samples": [
+      {
+        "moment": "antes de cargar Whisper",
+        "at": "2026-09-10T20:21:49.410Z",
+        "reachable": false,
+        "destinations": [
+          {
+            "target": "1.1.1.1:443",
+            "layer": "tcp",
+            "reachable": false,
+            "detail": "connect EHOSTUNREACH 1.1.1.1:443",
+            "ms": 52
+          },
+          {
+            "target": "8.8.8.8:443",
+            "layer": "tcp",
+            "reachable": false,
+            "detail": "connect EHOSTUNREACH 8.8.8.8:443",
+            "ms": 53
+          },
+          {
+            "target": "https://cloudflare.com/cdn-cgi/trace",
+            "layer": "https",
+            "reachable": false,
+            "detail": "fetch failed",
+            "ms": 55
+          },
+          {
+            "target": "example.com",
+            "layer": "dns",
+            "reachable": false,
+            "detail": "getaddrinfo ENOTFOUND example.com",
+            "ms": 10
+          }
+        ]
+      },
+      {
+        "moment": "mientras Whisper transcribía el primer audio",
+        "at": "2026-09-10T20:22:01.384Z",
+        "reachable": false,
+        "destinations": [
+          {
+            "target": "1.1.1.1:443",
+            "layer": "tcp",
+            "reachable": false,
+            "detail": "connect EHOSTUNREACH 1.1.1.1:443",
+            "ms": 3
+          },
+          {
+            "target": "8.8.8.8:443",
+            "layer": "tcp",
+            "reachable": false,
+            "detail": "connect EHOSTUNREACH 8.8.8.8:443",
+            "ms": 3
+          },
+          {
+            "target": "https://cloudflare.com/cdn-cgi/trace",
+            "layer": "https",
+            "reachable": false,
+            "detail": "fetch failed",
+            "ms": 3
+          },
+          {
+            "target": "example.com",
+            "layer": "dns",
+            "reachable": false,
+            "detail": "getaddrinfo ENOTFOUND example.com",
+            "ms": 1
+          }
+        ]
+      },
+      {
+        "moment": "al terminar la transcripción",
+        "at": "2026-09-10T20:22:04.232Z",
+        "reachable": false,
+        "destinations": [
+          {
+            "target": "1.1.1.1:443",
+            "layer": "tcp",
+            "reachable": false,
+            "detail": "connect EHOSTUNREACH 1.1.1.1:443",
+            "ms": 3
+          },
+          {
+            "target": "8.8.8.8:443",
+            "layer": "tcp",
+            "reachable": false,
+            "detail": "connect EHOSTUNREACH 8.8.8.8:443",
+            "ms": 4
+          },
+          {
+            "target": "https://cloudflare.com/cdn-cgi/trace",
+            "layer": "https",
+            "reachable": false,
+            "detail": "fetch failed",
+            "ms": 3
+          },
+          {
+            "target": "example.com",
+            "layer": "dns",
+            "reachable": false,
+            "detail": "getaddrinfo ENOTFOUND example.com",
+            "ms": 1
+          }
+        ]
+      }
+    ]
+  },
   "results": [
     {
-      "file": "dictado-restaurantes.wav",
-      "text": "Cuanto llevo gastado en restaurantes.",
-      "elapsedMs": 1390
+      "file": "./audio/consulta.wav",
+      "text": "En que Rubros se me ha ido más en los últimos tres meses.",
+      "elapsedMs": 1548
     },
     {
-      "file": "dictado-ahorro.wav",
-      "text": "Si aparto 100 dólares al mes, Cuanto junto hasta fin de ano.",
-      "elapsedMs": 1324
+      "file": "./audio/ahorro.wav",
+      "text": "Cuanto llevo gastado en restaurantes.",
+      "elapsedMs": 1296
     }
   ]
 }
