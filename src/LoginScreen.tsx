@@ -4,6 +4,12 @@ export const LoginScreen = ({ state }: { state: RastroState }) => {
   return (
     <main className="welcome">
       <div className="brand">
+        <img
+          src="/brand/logo-ca-192.png"
+          alt="Caja de Ahorros"
+          width={52}
+          height={52}
+        />
         rastro<span>●</span>
       </div>
       <span className="eyebrow">INTELIGENCIA QUE SE QUEDA CONTIGO</span>

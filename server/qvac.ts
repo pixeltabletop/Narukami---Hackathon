@@ -2,6 +2,26 @@ import type { Dashboard } from "./domain";
 import { intentNames, renderIntent } from "./intent";
 export const inferenceEnabled = () => process.env.RASTRO_ENABLE_QVAC === "1";
 export const MODEL_NAME = "QWEN3_4B_INST_Q4_K_M";
+// El worker de QVAC tarda mas de 30 s en arrancar en Windows en frio. Sin esto
+// el SDK aborta con RPC_INIT_TIMEOUT aunque la carga siga siendo viable.
+process.env.QVAC_RPC_INIT_TIMEOUT_MS ??= "240000";
+// El SDK reporta "RPC initialization timed out" aunque el worker haya muerto al
+// instante. La causa real viaja en cause.stderrTail; sin leerla el diagnostico
+// apunta al lugar equivocado.
+function describeLoadError(error: unknown): string {
+  const message =
+    error instanceof Error ? error.message : "No se pudo cargar QVAC";
+  const cause = (
+    error as { cause?: { stderrTail?: string; exitCode?: number } }
+  )?.cause;
+  if (!cause) return message;
+  const tail =
+    (cause.stderrTail ?? "").split(/\r?\n/).find((line) => line.trim()) ?? "";
+  const parts = [message];
+  if (cause.exitCode != null) parts.push("worker exit " + cause.exitCode);
+  if (tail) parts.push(tail.slice(0, 300));
+  return parts.join(" · ");
+}
 const instructions = [
   "You are Rastro, a bank-card spending analyst. Answer in Spanish.",
   "Classify the question into one allowed intent and select one to three relevant factIds.",
@@ -33,6 +53,9 @@ export class LocalQvac {
       this.sdk = await import("@qvac/sdk");
       this.modelId = await this.sdk.loadModel({
         modelSrc: this.sdk.QWEN3_4B_INST_Q4_K_M,
+        // El contexto por defecto es 1024 y el bloque de hechos mas la pregunta
+        // lo desbordan en cuanto el cliente tiene varias categorias.
+        modelConfig: { ctx_size: 4096 },
         onProgress: (p) => {
           if (
             process.env.RASTRO_DEBUG === "1" &&
@@ -46,9 +69,8 @@ export class LocalQvac {
       this.status = "ready";
     } catch (error) {
       this.status = "error";
-      this.lastError =
-        error instanceof Error ? error.message : "No se pudo cargar QVAC";
-      throw error;
+      this.lastError = describeLoadError(error);
+      throw new Error(this.lastError, { cause: error });
     }
   }
   async explain(question: string, dashboard: Dashboard) {

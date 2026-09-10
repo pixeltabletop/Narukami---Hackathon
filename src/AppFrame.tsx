@@ -13,6 +13,12 @@ export const AppFrame = ({
     <div className="app-shell">
       <aside className="sidebar">
         <a className="brand" href="/">
+          <img
+            src="/brand/logo-ca-192.png"
+            alt="Caja de Ahorros"
+            width={34}
+            height={34}
+          />
           rastro<span>●</span>
         </a>
         <p className="sidebar-caption">TU DINERO, MÁS CLARO.</p>
@@ -32,7 +38,20 @@ export const AppFrame = ({
           ))}
         </nav>
         <div className="privacy-card">
-          <span>⌂</span>
+          {model.status === "loading" ? (
+            <video
+              className="model-loop"
+              src="/brand/ca-loop.mp4"
+              poster="/brand/ca-loop-poster.png"
+              autoPlay
+              loop
+              muted
+              playsInline
+              aria-label="Cargando el modelo local"
+            />
+          ) : (
+            <span>⌂</span>
+          )}
           <strong>Inteligencia en casa</strong>
           <p>
             QVAC procesa el análisis en este equipo, dentro del entorno bancario
@@ -86,7 +105,16 @@ export const AppFrame = ({
               </option>
             ))}
           </select>
-          <span className="demo-badge"><i aria-hidden="true" /> CAJA DE AHORROS · IDENTIDAD PENDIENTE</span>
+          <span className="demo-badge">
+            <img
+              src="/brand/logo-ca-64.png"
+              alt=""
+              aria-hidden="true"
+              width={16}
+              height={16}
+            />
+            CAJA DE AHORROS · PROTOTIPO
+          </span>
         </header>
         <div className="page-content">{children}</div>
       </main>

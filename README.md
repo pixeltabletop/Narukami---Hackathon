@@ -56,7 +56,7 @@ Antes de elegir el modelo final se debe medir un corpus fijo de preguntas bancar
 - El servidor escucha solo en `127.0.0.1` y limita el acceso de la demo a localhost.
 - No es una aplicación oficial del banco ni una instrucción financiera.
 - Una integración bancaria real requiere identidad, TLS, autorización, retención y auditoría del banco.
-- La identidad visual oficial está pendiente; el sello superior es el punto reemplazable para el logo y la guía de Caja de Ahorros.
+- La aplicación usa el logotipo de Caja de Ahorros solo para identificar el reto; no es una aplicación oficial del banco ni tiene su aval.
 
 ## Base preexistente declarada
 
@@ -64,7 +64,18 @@ La base de Rastro recibida de Diego el 9 de septiembre de 2026 se importó sin m
 
 Dependencias declaradas y fijadas en `package-lock.json`: QVAC SDK, React, Vite, Express, express-session, Zod, TypeScript, tsx y Playwright. Documentación de referencia del SDK: https://docs.qvac.tether.io/js-ts-sdk/ y https://docs.qvac.tether.io/ai-capabilities/text-generation/.
 
-No se han usado logotipos oficiales ni se presupone aval de Caja de Ahorros.
+### Identidad visual
+
+El logotipo y el video de marca provienen de la carpeta oficial del hackatón (`Hackathon 2026` en Drive), no de una descarga pública ni de una reproducción hecha por el equipo:
+
+| Archivo entregado | Formato real | Qué se hizo |
+| --- | --- | --- |
+| `caja_de_ahorros_logo.png` | WebP 696×698 con alfa, con extensión `.png` | Convertido a PNG real en `public/brand/logo-ca.png` más escalas de 512, 192, 64 y 32 px y `public/favicon.ico` |
+| `caja-de-ahorros-panama-30s-loop.webm` | VP9 720×720, 872 cuadros, sin duración ni fps en el contenedor | Metadatos reparados y transcodificado a H.264 en `public/brand/ca-loop.mp4` (659 KB frente a 8.9 MB), con `ca-loop-poster.png` |
+
+El color institucional `#1858A0` se tomó del propio logotipo y define la barra lateral, los acentos primarios y `theme-color`. El video se reproduce mientras el modelo local se carga.
+
+No se presupone aval de Caja de Ahorros ni titularidad sobre su marca.
 
 ## Archivos importantes
 
