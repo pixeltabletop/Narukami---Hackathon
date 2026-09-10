@@ -116,6 +116,14 @@ y cuatro destinos.
 Son doce intentos por corrida y el artefacto guarda cada uno con su resultado y su tiempo. Las
 dos pruebas, la de texto y la de voz, usan la misma medición y la escriben en su artefacto.
 
+**Estado de esta medición.** El instrumento está en las dos pruebas, la de texto y la de voz, y
+quedó comprobado con red disponible el 10 de septiembre: `voice:check` registró las tres tomas
+contra los cuatro destinos dentro de su artefacto, cargó Whisper en 18 segundos y transcribió las
+dos frases correctamente. **Los artefactos sin red archivados siguen siendo los del 9 de
+septiembre**, hechos con el instrumento anterior de un solo sondeo, y el de voz no llevaba campo
+de red. Rehacer la corrida sin red con este instrumento es lo único que falta para que la tabla
+de arriba y los archivos digan lo mismo.
+
 **Un sondeo que no podía pasar nunca.** La primera versión resolvía el nombre consultando
 directamente a los servidores DNS configurados. En esta máquina esos servidores son `127.0.0.1`,
 un proxy local que rechaza la consulta, así que ese destino fallaba con red y sin red. Una prueba
