@@ -22,8 +22,15 @@ const runtime = [...walk("server"), ...walk("src")];
 // nombrada: el sondeo de conectividad, que existe justamente para poder
 // demostrar que no hay red. Cualquier otro host en scripts/ rompe la prueba.
 const scripts = walk("scripts");
+// Las direcciones que sondea la prueba de red, escritas una por una. El sondeo
+// también abre conexiones TCP a IP literales, que esta cerca no puede ver
+// porque solo busca URLs; están declaradas en `scripts/network-probe.ts` y
+// existen para demostrar la ausencia de red, no para usarla.
 const probeAllowed = new Map([
-  ["scripts/qvac-check.ts", "https://cloudflare.com/cdn-cgi/trace"],
+  [
+    "scripts/network-probe.ts",
+    ["https://cloudflare.com/cdn-cgi/trace"],
+  ],
 ]);
 const rel = (path: string) => path.split(sep).join("/");
 
@@ -38,7 +45,7 @@ test("ningún archivo de ejecución contacta un host externo", () => {
       const match = clean.match(/https?:\/\/[^\s"'`)]+/);
       if (!match) continue;
       if (/127\.0\.0\.1|localhost|www\.w3\.org/.test(match[0])) continue;
-      if (probeAllowed.get(rel(path)) === match[0]) continue;
+      if (probeAllowed.get(rel(path))?.includes(match[0])) continue;
       offenders.push(rel(path) + ": " + match[0]);
     }
   }

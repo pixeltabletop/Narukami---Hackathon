@@ -42,11 +42,26 @@ medir, y elige un destino de categoría distinto del actual antes de guardarlo.
 `artifacts/qvac-check.json`. Última corrida con red disponible: 7 de 7 respondidas, con la
 evidencia y la redacción correctas.
 
-Conviene ser exacto sobre qué comprueba solo el comando y qué se revisó a mano. El script exige
-automáticamente que la evidencia elegida corresponda a lo preguntado, que la respuesta hable del
-rubro o del comercio consultado y que no devuelva otra pregunta; no compara la intención contra
-una lista esperada. La intención de cada una de las siete se revisó leyendo el artefacto de la
-corrida. Añadir esa comparación al script es una mejora pendiente y anotada.
+El comando comprueba, sin intervención humana: que la intención devuelta sea una de las que la
+pregunta admite, que la evidencia elegida corresponda a lo preguntado, que la respuesta hable del
+rubro o del comercio consultado, y que no devuelva otra pregunta. Falla si algo de eso no se
+cumple.
+
+Las intenciones esperadas están escritas por lo que la pregunta significa, no por lo que el
+modelo contestó la última vez. La diferencia no es cosmética: escribirlas al revés convertiría la
+verificación en un espejo del comportamiento actual, pasaría siempre y no detectaría nada.
+
+**Lo que apareció al exigirlo.** A «¿en qué se me fue el dinero?» el modelo respondía con la
+intención de comparación, que explica por qué el gasto subió o bajó contra el mes anterior. La
+pregunta no compara nada. Pasó desapercibido en tres corridas porque la verificación anterior
+solo miraba la evidencia, y la comparación también selecciona categorías. Corregido sacando esa
+intención del enum cuando la pregunta no trae ninguna marca de comparación, con su propia prueba
+determinista en la suite.
+
+**Y una expectativa que estaba mal calibrada.** La prueba exigía para esa misma pregunta la
+evidencia que elige la comparación. Estaba escrita contra el defecto, no contra la respuesta
+correcta. Ahora acepta las dos evidencias que una respuesta correcta puede traer: el total, si
+contesta el gasto global, o una categoría, si contesta en qué pesa más.
 
 `npm run model:bench` compara los dos candidatos sobre ocho preguntas y escribe
 `artifacts/model-bench.json`.
@@ -71,11 +86,33 @@ Wi-Fi desconectado y `1.1.1.1:443` inalcanzable, verificado antes de empezar.
 | Voz, dos frases dictadas en español | Transcritas correctamente, 1.4 s cada una |
 | Carga de Whisper desde caché | 17 s |
 
-Artefactos: `artifacts/qvac-check-offline.json` y `artifacts/voice-check-offline.json`. El de
-texto es el que sondea la red y guarda `network.reachable: false` junto a las respuestas. El de
-voz no lleva ese campo: registra el modelo, el tiempo de carga y las transcripciones, y su
-condición sin red consta en el log de la corrida, no dentro del archivo. Corregir el generador de
-voz para que capture el estado de red es una mejora pendiente y anotada.
+### Cómo se mide que no hay red
+
+Un solo intento contra un solo host, hecho cuando la inferencia ya terminó, prueba poco: prueba
+que ese host no contestó, en ese instante, por ese camino. La medición actual toma tres momentos
+y cuatro destinos.
+
+| Momento | Por qué está |
+| --- | --- |
+| Antes de cargar el modelo | Si ya hay red aquí, la corrida no vale como prueba sin conexión. |
+| Mientras el modelo responde la primera pregunta | Es la única toma que dice algo sobre el instante que importa. Corre en paralelo con la inferencia. |
+| Al terminar todas las respuestas | Descarta que la red volviera a mitad de camino. |
+
+| Destino | Capa | Qué descarta |
+| --- | --- | --- |
+| `1.1.1.1:443` | TCP directo | Salida a internet sin pasar por DNS. |
+| `8.8.8.8:443` | TCP directo | Lo mismo por otra red de destino. |
+| `cloudflare.com/cdn-cgi/trace` | HTTPS completo | DNS, TLS y HTTP funcionando de punta a punta. |
+| Resolución de `example.com` | DNS del sistema | El camino que usaría cualquier aplicación. |
+
+Son doce intentos por corrida y el artefacto guarda cada uno con su resultado y su tiempo. Las
+dos pruebas, la de texto y la de voz, usan la misma medición y la escriben en su artefacto.
+
+**Un sondeo que no podía pasar nunca.** La primera versión resolvía el nombre consultando
+directamente a los servidores DNS configurados. En esta máquina esos servidores son `127.0.0.1`,
+un proxy local que rechaza la consulta, así que ese destino fallaba con red y sin red. Una prueba
+que no puede pasar regala un «sin salida» y ensucia justo la medición que sostiene la afirmación
+central del reto. Ahora resuelve por el resolutor del sistema.
 
 ## Punta a punta desde un clon limpio
 

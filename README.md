@@ -70,8 +70,13 @@ npm run dev
 
 `npm run qvac:check` carga el modelo, corre siete preguntas reales (resumen, comparación,
 recurrencias, traslados y las tres de historial) y escribe `artifacts/qvac-check.json` con el
-modelo, el tiempo de
-carga, la latencia de cada respuesta y si la máquina tenía salida a internet durante la prueba.
+modelo, el tiempo de carga, la latencia de cada respuesta y la medición de red completa.
+
+El comando **falla si el modelo devuelve una intención equivocada**. Cada pregunta declara qué
+intenciones serían correctas, escritas por lo que la pregunta significa y no por lo que el
+modelo contestó la última vez. Escribirlo al revés convertiría la verificación en un espejo del
+comportamiento actual: pasaría siempre y no detectaría nada. Así fue como apareció el defecto de
+clasificación que se explica más abajo.
 Con veinte categorías el bloque de hechos es más largo y la respuesta tarda entre 11 y 26
 segundos, contra 9 a 14 del catálogo corto: más lenguaje cuesta tiempo, y para grabar conviene
 tener el modelo ya cargado y memoria libre. `npm run model:bench` compara los dos
@@ -100,6 +105,33 @@ Tres detalles que cuestan horas si no se conocen, y que ya están resueltos en e
 
 Una intención que no cuadra con la evidencia elegida se rechaza antes de redactar y se
 reintenta una vez con otra semilla. Si vuelve a fallar, la aplicación lo dice y no responde.
+
+### Un defecto que la verificación floja no veía
+
+Al exigirle a `qvac:check` la intención esperada apareció esto: a «¿en qué se me fue el dinero?»
+el modelo respondía con la intención de **comparación**, que es la que explica por qué el gasto
+subió o bajó contra el mes anterior. La pregunta no compara nada. La verificación anterior no lo
+notaba porque solo miraba la evidencia, y la comparación también selecciona categorías, así que
+el resultado parecía correcto.
+
+El arreglo no fue insistir en el prompt. Tres iteraciones de instrucciones no habían movido a
+este modelo en un problema parecido, y la lección ya estaba aprendida: una instrucción se puede
+ignorar, una gramática no. Ahora una regla decide si la pregunta compara dos períodos, y cuando
+no lo hace, la intención de comparación **se saca del enum del esquema**. El modelo no puede
+elegirla porque no existe en su menú.
+
+Quitarla destapó algo peor. Para una pregunta sin marca temporal, el menú incluía **todas** las
+intenciones, también las de varios meses. Sin la comparación disponible, el modelo se fue al
+historial y contestó tres meses a una pregunta del mes. Un menú abierto no es neutral: es una
+invitación. Ahora una pregunta sin marca temporal solo admite intenciones del período, con una
+única excepción, que nombre un comercio del propio cliente: «¿cuánto he gastado en Nube Música?»
+no trae marca temporal y aun así es historial, y eso se detecta con la lista de comercios que ya
+existe, no preguntándole al modelo.
+
+Todo ese menú lo arma `allowedIntentsFor` en `server/qvac.ts`. Es una función pura y tiene siete
+pruebas deterministas que corren sin cargar ningún modelo, en milisegundos. Comprobar lo mismo
+contra QVAC cuesta minutos y memoria; lo que sí necesita al modelo real es `qvac:check`, que
+verifica que con ese menú delante elija bien.
 
 ### Prueba sin red, primera corrida del 9 de septiembre de 2026
 
@@ -166,14 +198,25 @@ Tres capas, no una promesa:
 2. **Una prueba que lo mantiene así.** `tests/no-cloud.test.ts` recorre `server/`, `src/` y
    `scripts/`, y falla si aparece una URL externa, si la inferencia entra por algo que no sea el
    SDK de QVAC, o si se agrega otro motor de IA a las dependencias. Tiene una sola excepción, y
-   está escrita con nombre y dirección exacta en la propia prueba: el sondeo de conectividad de
-   `qvac:check`, que existe justamente para poder demostrar que no había red. Cualquier otro
-   destino rompe la suite. Es una cerca, no una declaración.
-3. **La corrida sin red, con todo encendido.** Con el Wi-Fi desconectado y `1.1.1.1:443`
-   inalcanzable: el modelo de texto carga desde caché en 36 s y responde las siete preguntas,
-   incluidas las tres de historial, entre 14 y 19 s cada una; Whisper carga en 17 s y transcribe
-   dos frases dictadas en español en 1.4 s. Los artefactos guardan `network.reachable: false`
-   junto a las respuestas. Ni el texto ni la voz necesitan internet.
+   está escrita con nombre y dirección exacta en la propia prueba: el sondeo de conectividad,
+   que existe justamente para poder demostrar que no había red. Cualquier otro destino rompe la
+   suite. Es una cerca, no una declaración.
+3. **La corrida sin red, con todo encendido.** Con el Wi-Fi desconectado, el modelo de texto
+   responde las siete preguntas y Whisper transcribe las dos frases dictadas. Ni el texto ni la
+   voz necesitan internet.
+
+   La medición de red no se toma a la ligera, porque es la evidencia que decide el reto. Un solo
+   intento contra un solo host, hecho cuando la inferencia ya terminó, prueba muy poco: prueba
+   que ese host no contestó, en ese instante, por ese camino. `scripts/network-probe.ts` mide en
+   **tres momentos** —antes de cargar el modelo, **mientras el modelo responde** y al terminar—
+   y contra **cuatro destinos** que fallan por razones distintas: dos conexiones TCP directas a
+   IP, que no dependen de DNS; una petición HTTPS completa, que sí depende de DNS y de TLS; y una
+   consulta DNS pura. Son doce intentos por corrida, y el artefacto guarda cada uno con su
+   resultado y su tiempo. Si cualquiera hubiera pasado, el artefacto lo diría y la corrida no
+   valdría como prueba sin red.
+
+   La toma del medio corre en paralelo con la primera inferencia. Es la única que demuestra que
+   no había salida mientras el modelo pensaba, que es exactamente lo que el reto pregunta.
 
 Lo único que sí necesita red es la **descarga inicial del modelo**, que ocurre una sola vez y no
 es inferencia. Después de eso la aplicación funciona con el equipo desconectado, y eso es
@@ -247,8 +290,12 @@ frase en 1.5 s. Lo dictado se deja en el campo para que el cliente lo revise ant
 se corrige en silencio, porque colapsar sinónimos cambia la pregunta.
 
 ```powershell
-npm run voice:check -- ./audio/consulta.wav
+npm run voice:check -- ./audio/consulta.wav ./audio/ahorro.wav
 ```
+
+El repositorio trae esos dos audios en `audio/`, en español y en el formato exacto que espera
+Whisper, para que la prueba se pueda correr sin grabar nada. Son voz sintética a propósito: una
+grabación de una persona real metería un dato biométrico en el repositorio.
 
 ## Guía dentro de la aplicación
 

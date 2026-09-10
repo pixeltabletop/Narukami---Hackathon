@@ -85,3 +85,24 @@ test("la temporalidad se decide por regla y recorta lo que el modelo puede elegi
   for (const q of ["¿Por qué gasté más?", "¿Qué me cobran seguido?"])
     assert.equal(timeframeHint(q), "unclear", q);
 });
+
+test("sin algo que comparar, 'changes' sale del menu del modelo", async () => {
+  const { comparesPeriods } = await import("../server/timeframe");
+  // Preguntas que si comparan dos periodos.
+  for (const q of [
+    "¿Por qué gasté más?",
+    "¿Gasté menos que el mes pasado?",
+    "¿Por qué subió mi consumo?",
+    "¿Cuál es la diferencia con el periodo anterior?",
+  ])
+    assert.equal(comparesPeriods(q), true, q);
+  // Preguntas del periodo que NO comparan nada. Antes el modelo contestaba
+  // "changes" a la primera de estas y el resto de la verificacion no lo veia.
+  for (const q of [
+    "¿En qué se me fue el dinero?",
+    "¿Qué me cobran seguido?",
+    "¿Cuánto moví a mi cuenta de ahorros?",
+    "¿Qué tengo pendiente por cobrar?",
+  ])
+    assert.equal(comparesPeriods(q), false, q);
+});
