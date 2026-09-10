@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { LocalQvac, MODEL_NAME, inferenceEnabled } from "../server/qvac";
 import { analyze } from "../server/analysis";
 import { createFixtures } from "../server/fixtures";
+import { PlanningRepository } from "../server/planning-repository";
 import {
   probeNetwork,
   summarize,
@@ -16,6 +17,7 @@ if (!inferenceEnabled()) {
   process.exit(0);
 }
 const model = new LocalQvac(),
+  repositorio = new PlanningRepository(),
   started = Date.now();
 const samples: ProbeSample[] = [];
 try {
@@ -31,7 +33,16 @@ try {
   console.log("Modelo cargado en", loadMs, "ms");
   const movements = createFixtures();
   const dashboard = analyze(movements, "ana", "2026-09");
-  const context = { movements, customerId: "ana", asOf: "2026-09-09" };
+  // El plan y la proyeccion se calculan igual que en la ruta real: sin ellos
+  // las dos intenciones que miran adelante no tienen con que responder.
+  const view = repositorio.get("ana");
+  const context = {
+    movements,
+    customerId: "ana",
+    asOf: "2026-09-09",
+    planning: view,
+    forecast: repositorio.forecast("ana"),
+  };
   // `intents` es lo que una respuesta correcta puede ser, no lo que el modelo
   // devolvió la última vez. Escribirlo al revés convertiría la prueba en un
   // espejo del comportamiento actual y dejaría de detectar una clasificación
@@ -81,6 +92,19 @@ try {
       required: [],
       expect: /Apartando/,
       intents: ["savings_projection"],
+    },
+    // Las dos que miran hacia adelante. Antes de conectar el asistente a los
+    // motores de proyeccion y de plan, estas dos preguntas devolvian una
+    // negativa: ninguna intencion encajaba y el guardian rechazaba la respuesta.
+    {
+      question: "¿Me alcanza hasta el próximo pago?",
+      required: [],
+      intents: ["payday_forecast"],
+    },
+    {
+      question: "¿Cuánto me queda disponible después de mis compromisos?",
+      required: [],
+      intents: ["available_margin"],
     },
   ];
   const results = [];

@@ -41,11 +41,22 @@ const normalize = (question: string) =>
     .replace(/[̀-ͯ]/g, "")
     .replace(/todos los meses|cada mes/g, " se repite ");
 
-export type Timeframe = "history" | "savings" | "unclear";
+// Preguntas que miran hacia adelante dentro del ciclo actual: si el saldo
+// aguanta, cuanto queda disponible, cuando se acaba. Antes caian en el menu
+// del periodo, ninguna intencion encajaba y la aplicacion terminaba diciendo
+// que no podia contestar. La regla decide y el enum queda en dos opciones.
+//
+// El orden importa: el ahorro se evalua primero, porque "si aparto cien al
+// mes" tambien mira al futuro y ya tiene su propia intencion.
+const FORECAST_HINTS =
+  /me alcanza|alcanza hasta|proximo pago|termino el mes|fin de mes|se me acaba|queda disponible|quedan disponible|puedo permitirme|quedarme corto|aguanta el saldo|cuantos dias|hasta cuando|compromisos/;
+
+export type Timeframe = "history" | "savings" | "forecast" | "unclear";
 
 export const timeframeHint = (question: string): Timeframe => {
   const clean = normalize(question);
   if (SAVINGS_HINTS.test(clean) && AMOUNT_HINTS.test(clean)) return "savings";
+  if (FORECAST_HINTS.test(clean)) return "forecast";
   return HISTORY_HINTS.test(clean) ? "history" : "unclear";
 };
 

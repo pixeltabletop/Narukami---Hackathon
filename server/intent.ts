@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { renderPaydayForecast, type Forecast } from "./forecast";
+import { renderAvailableMargin } from "./planning";
+import type { PlanningView } from "./planning-domain";
 import { categories, type Category, type Fact, type Movement } from "./domain";
 import {
   buildHistory,
@@ -30,7 +33,18 @@ export const analyticIntents = [
   "savings_projection",
 ] as const;
 
-export const intentNames = [...periodIntents, ...analyticIntents] as const;
+// Intenciones que miran hacia adelante. No eligen evidencia ni hacen cuentas:
+// llaman a los motores de proyeccion y de plan, que ya existian y ya estaban
+// probados, y redactan con lo que devuelven. Antes de esto el asistente no
+// tenia como contestar "¿me alcanza hasta el proximo pago?", la pregunta mas
+// natural que hay sobre dinero, y devolvia una negativa honesta.
+export const forecastIntents = ["payday_forecast", "available_margin"] as const;
+
+export const intentNames = [
+  ...periodIntents,
+  ...analyticIntents,
+  ...forecastIntents,
+] as const;
 export type IntentName = (typeof intentNames)[number];
 
 export const savingsHorizons = [
@@ -56,6 +70,10 @@ export type AnalyticContext = {
   movements: Movement[];
   customerId: string;
   asOf: string;
+  // Hechos ya calculados por los motores de plan y proyeccion. Se pasan
+  // resultados, no funciones: el modelo sigue sin disparar ningun calculo.
+  planning?: PlanningView;
+  forecast?: Forecast;
 };
 
 const periodPrefix: Record<(typeof periodIntents)[number], string> = {
@@ -84,6 +102,25 @@ export const renderIntent = (
   context?: AnalyticContext,
 ) => {
   const parsed = parse(raw);
+
+  if ((forecastIntents as readonly string[]).includes(parsed.intent)) {
+    const answer =
+      parsed.intent === "payday_forecast"
+        ? context?.forecast
+          ? renderPaydayForecast(context.forecast)
+          : null
+        : context?.planning
+          ? renderAvailableMargin(context.planning)
+          : null;
+    if (!answer)
+      throw new Error(
+        "La intención " + parsed.intent + " necesita el plan del cliente",
+      );
+    // Sin evidencia abrible a proposito: la respuesta no selecciona
+    // movimientos, es el resultado de una simulacion. La misma via que ya usa
+    // la proyeccion de ahorro. Los supuestos viven en la pestaña Proyeccion.
+    return { intent: parsed.intent, factIds: [], summary: answer.summary, facts: [] };
+  }
 
   if ((analyticIntents as readonly string[]).includes(parsed.intent)) {
     if (!context)

@@ -1,4 +1,5 @@
 import type { AccountMovement, Commitment, PlanInput, PlanningView, Scenario } from "./planning-domain";
+import { money } from "./domain";
 
 const safeCents = (value: number, label: string) => {
   if (!Number.isSafeInteger(value) || value < 0) throw new Error(label + " inválido");
@@ -83,3 +84,36 @@ export const calculatePlanning = (input: {
     ],
   };
 };
+
+/**
+ * Respuesta del asistente a "¿cuánto me queda disponible?".
+ *
+ * Repite la resta completa en vez de soltar el número solo: el margen es una
+ * cifra que se malinterpreta si no se ve de dónde sale, y el descuento de
+ * planilla es justo el que la gente cree que ya salió de la cuenta.
+ */
+export const renderAvailableMargin = (view: PlanningView) => ({
+  summary:
+    "Hasta tu próximo ingreso del " +
+    view.nextIncomeDate +
+    " tienes " +
+    money(view.availableCents) +
+    " disponibles. Sale de un saldo de " +
+    money(view.balanceCents) +
+    " menos " +
+    money(view.pendingCents) +
+    " pendientes de que te los cobren, " +
+    money(view.committedCents) +
+    " de compromisos que salen de la cuenta, " +
+    money(view.variableBudgetCents) +
+    " de presupuesto variable y " +
+    money(view.reserveCents) +
+    " de reserva." +
+    (view.payrollCommittedCents > 0
+      ? " Los " +
+        money(view.payrollCommittedCents) +
+        " que te retienen de planilla no tocan este saldo: reducen tu próximo ingreso, que queda en " +
+        money(view.expectedNextIncomeCents) +
+        "."
+      : ""),
+});

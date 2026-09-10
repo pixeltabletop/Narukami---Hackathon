@@ -229,6 +229,11 @@ app.post("/api/explain", async (req, res) => {
         movements,
         customerId: customer,
         asOf: AS_OF,
+        // El plan y la proyeccion llegan ya calculados. El asistente contesta
+        // con los mismos numeros que muestran Organiza y Proyeccion, asi que
+        // el chat y las pestañas no pueden decir cosas distintas.
+        planning: planningRepository.get(customer),
+        forecast: planningRepository.forecast(customer),
       }),
     );
   } catch {

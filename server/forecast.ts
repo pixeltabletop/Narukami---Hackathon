@@ -436,3 +436,22 @@ export const buildForecast = (input: {
     assumptions,
   };
 };
+
+/**
+ * Respuesta del asistente a "¿me alcanza hasta el próximo pago?".
+ *
+ * No calcula nada: toma el veredicto que ya produjo la proyección y le agrega
+ * la autonomía, que es la cifra que contesta "¿y si no me entra nada?". Si el
+ * chat redactara su propia versión, la pestaña y el asistente podrían decir
+ * cosas distintas sobre el mismo saldo.
+ */
+export const renderPaydayForecast = (forecast: Forecast) => ({
+  summary:
+    forecast.verdict +
+    " Sin contar ningún cobro nuevo, el saldo aguanta " +
+    forecast.runwayDays +
+    (forecast.runwayDays === 1 ? " día" : " días") +
+    (forecast.runwayEndsDate ? ", hasta el " + forecast.runwayEndsDate : "") +
+    ". " +
+    forecast.advice,
+});

@@ -271,11 +271,26 @@ llena huecos tipados, y la aplicación hace la aritmética.
 | ¿Cuánto he gastado en Nube Música? | Total, número de cargos, promedio mensual y su rubro |
 | ¿En qué rubro se me ha ido más en los últimos tres meses? | Los tres rubros que más pesan, con importe y porcentaje |
 | Si aparto cien dólares al mes, ¿cuánto junto hasta fin de año? | El acumulado, los meses de aporte y qué porcentaje de un mes representa |
+| ¿Me alcanza hasta el próximo pago? | El veredicto de la proyección día a día, con el día y el faltante si no alcanza, y cuántos días aguanta el saldo sin otro cobro |
+| ¿Cuánto me queda disponible después de mis compromisos? | El margen y la resta completa de donde sale, con el descuento de planilla explicado aparte |
 
 Dos detalles que sostienen la honestidad de esas respuestas. La ventana declara el mes parcial:
 si septiembre va por el día 9, se dice, porque promediar sin avisar haría parecer que el cliente
 gasta menos. Y la gramática solo admite rubros y comercios que existen en sus datos, así que el
 modelo no puede inventar uno.
+
+Las dos últimas miran hacia adelante, y hasta el 10 de septiembre de 2026 no existían. El motor
+de proyección día a día y el del margen ya estaban construidos y probados, pero cada uno vivía en
+su pestaña: quien escribía «¿me alcanza hasta el próximo pago?» en el asistente recibía una
+negativa, porque ninguna intención encajaba y el guardián de coherencia rechazaba la respuesta.
+Lo que faltaba no era matemática sino la palabra con la que pedirla. El asistente ahora llama a
+esos motores y contesta con **los mismos números que muestran Organiza y Proyección**, no con una
+redacción propia: si el chat calculara por su cuenta, las dos pantallas podrían contradecirse
+sobre el mismo saldo.
+
+Esas dos respuestas no traen evidencia abrible, y es a propósito. No seleccionan movimientos: son
+el resultado de una simulación. Ofrecer un botón que no lleva a ningún lado sería peor que no
+ofrecerlo; los supuestos de la proyección están a la vista en su pestaña.
 
 Decidir si una pregunta abarca varios meses es trivial con una regla y el modelo de 4B lo
 fallaba, porque se ancla en los hechos del mes que tiene delante. La regla resuelve la

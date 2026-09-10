@@ -1,5 +1,6 @@
 import type { Dashboard } from "./domain";
 import {
+  forecastIntents,
   intentNames,
   periodIntents,
   renderIntent,
@@ -73,10 +74,11 @@ const instructions = [
   "STEP 1. Decide the time frame.",
   "If the question spans several months, uses words like llevo, llevas, en lo que va, ultimos meses, promedio, porcentaje, or names a specific merchant or service, choose a HISTORY intent.",
   "If the question asks how much would be saved by putting an amount aside every month, choose savings_projection.",
+  "If the question asks whether the money lasts until the next income, how the month ends, when it runs out, or how much is available right now, choose a FORECAST intent.",
   "Otherwise choose a PERIOD intent about the current month.",
   "Hard rule: ultimos meses, ultimos tres meses, en lo que va del ano, llevo gastado, cuanto llevo, promedio mensual and porcentaje are ALWAYS history. Never answer those with changes or largest_categories.",
   "Hard rule: changes and largest_categories only compare this month against the previous one. If the client asks about more than two months, it is history.",
-  "The user message carries a timeframe field already resolved for you. When timeframe is history you MUST return category_history, merchant_history or top_categories_history. When timeframe is savings you MUST return savings_projection. Only when timeframe is unclear do you choose freely.",
+  "The user message carries a timeframe field already resolved for you. When timeframe is history you MUST return category_history, merchant_history or top_categories_history. When timeframe is savings you MUST return savings_projection. When timeframe is forecast you MUST return payday_forecast or available_margin. Only when timeframe is unclear do you choose freely.",
   "",
   "STEP 2A. PERIOD intents. Pick one to three factIds from the list given. Leave the other fields out.",
   "spending_summary: where the money went overall this period.",
@@ -86,6 +88,10 @@ const instructions = [
   "pending: charges not yet posted. Select the pending fact. Never for a comparison question.",
   "transfers: money moved between the client own accounts or taken as cash. Select the transfers fact.",
   "unavailable: the data cannot answer. Select the total fact.",
+  "",
+  "STEP 2C. FORECAST intents. Leave factIds empty and every field out. The application runs the simulation.",
+  "payday_forecast: will the money last until the next income, or how many days it lasts.",
+  "available_margin: how much is available right now after pending charges, commitments, variable budget and reserve.",
   "",
   "STEP 2B. HISTORY intents. Leave factIds empty and fill the fields instead.",
   "category_history: spending on one category over months. Fill category. Fill months only if the client names a number of months.",
@@ -99,6 +105,8 @@ const instructions = [
   '"¿En qué rubro se me ha ido más en los últimos tres meses?" -> {"intent":"top_categories_history","factIds":[],"months":3}',
   '"Si aparto cien dólares al mes, ¿cuánto junto hasta fin de año?" -> {"intent":"savings_projection","factIds":[],"monthlySavingCents":10000,"horizon":"fin_de_ano"}',
   '"¿Por qué gasté más?" -> {"intent":"changes","factIds":["total","category-1"]}',
+  '"¿Me alcanza hasta el próximo pago?" -> {"intent":"payday_forecast","factIds":[]}',
+  '"¿Cuánto me queda disponible después de mis compromisos?" -> {"intent":"available_margin","factIds":[]}',
   "",
   "Never invent a category or a merchant outside the allowed lists. If the client names something outside them, use unavailable.",
   "Return exactly one JSON object. Do not write prose and do not calculate anything.",
@@ -119,6 +127,9 @@ export const allowedIntentsFor = (
   // Sin historial cargado no hay nada que responder sobre varios meses.
   if (!hasHistory) return [...periodIntents];
   if (frame === "savings") return ["savings_projection"];
+  // Dos opciones, no una: "¿me alcanza?" y "¿cuanto me queda?" son preguntas
+  // distintas y el modelo sabe distinguirlas cuando solo tiene esas dos.
+  if (frame === "forecast") return [...forecastIntents];
   if (frame === "history")
     return ["category_history", "merchant_history", "top_categories_history"];
   // Frame sin marca temporal: es una pregunta del período en curso, con una
