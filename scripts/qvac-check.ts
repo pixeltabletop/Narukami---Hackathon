@@ -9,6 +9,25 @@ if (!inferenceEnabled()) {
   );
   process.exit(0);
 }
+// El reto descalifica la inferencia en nube. Para que la evidencia sirva hay que
+// registrar si la maquina tenia salida a internet mientras el modelo respondia.
+async function probeNetwork() {
+  const control = new AbortController(),
+    timer = setTimeout(() => control.abort(), 4000);
+  try {
+    const response = await fetch("https://cloudflare.com/cdn-cgi/trace", {
+      signal: control.signal,
+    });
+    return { reachable: response.ok, detail: "HTTP " + response.status };
+  } catch (error) {
+    return {
+      reachable: false,
+      detail: error instanceof Error ? error.message : "sin salida",
+    };
+  } finally {
+    clearTimeout(timer);
+  }
+}
 const model = new LocalQvac(),
   started = Date.now();
 try {
@@ -47,6 +66,12 @@ try {
       ),
     );
   }
+  const network = await probeNetwork();
+  console.log(
+    network.reachable
+      ? "Red disponible durante la prueba: " + network.detail
+      : "Sin salida a internet durante la prueba: " + network.detail,
+  );
   mkdirSync("artifacts", { recursive: true });
   writeFileSync(
     "artifacts/qvac-check.json",
@@ -56,6 +81,11 @@ try {
         timestamp: new Date().toISOString(),
         model: MODEL_NAME,
         loadMs,
+        network,
+        latencyMs: {
+          min: Math.min(...results.map((r) => r.elapsedMs)),
+          max: Math.max(...results.map((r) => r.elapsedMs)),
+        },
         results,
       },
       null,

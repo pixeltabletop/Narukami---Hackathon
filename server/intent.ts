@@ -14,6 +14,24 @@ export const renderIntent = (raw: string, facts: Fact[]) => {
   const selected = parsed.factIds.map((id) => facts.find((fact) => fact.id === id));
   if (selected.some((fact) => !fact)) throw new Error("Referencia inexistente");
   const evidence = selected as Fact[];
+  // El modelo acierta la evidencia y falla la etiqueta con mas frecuencia de la
+  // que parece: en la corrida del 2026-09-09 respondio "pending" a una pregunta
+  // de comparacion y el encabezado contradijo los hechos que el mismo eligio.
+  // La etiqueta solo se acepta si la evidencia la sostiene.
+  const holds = (prefix: string) =>
+    parsed.factIds.some((id) => id === prefix || id.startsWith(prefix + "-"));
+  const coherent: Record<(typeof intentNames)[number], boolean> = {
+    spending_summary: true,
+    largest_categories: holds("category"),
+    changes: holds("category") || holds("total"),
+    recurring: parsed.factIds.every((id) => id.startsWith("recurring-")),
+    pending: holds("pending"),
+    unavailable: holds("total"),
+  };
+  if (!coherent[parsed.intent])
+    throw new Error(
+      "La intención " + parsed.intent + " no coincide con la evidencia elegida",
+    );
   const prefix: Record<(typeof intentNames)[number], string> = {
     spending_summary: "Este es el resumen verificable de tu gasto:",
     largest_categories: "Estas categorías explican la mayor parte de tu gasto:",

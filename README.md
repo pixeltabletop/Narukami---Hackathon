@@ -38,9 +38,10 @@ React + TypeScript → API Express local → SQLite + fixtures sintéticos → m
 
 QVAC recibe la pregunta y hechos ya calculados. Su salida permitida contiene únicamente una intención tipada y entre una y tres referencias de evidencia. La aplicación redacta la respuesta desde esos hechos; el modelo no redacta libremente, no calcula importes, no ejecuta SQL y no mueve dinero. No existe fallback de inferencia en nube.
 
-## QVAC pendiente de validación
+## QVAC verificado localmente
 
-El adaptador usa QVAC SDK 0.19.0 y el modelo `QWEN3_4B_INST_Q4_K_M`. Para habilitarlo en el equipo de demostración:
+El adaptador usa QVAC SDK 0.19.0. El modelo por defecto es `QWEN3_4B_INST_Q4_K_M` y se puede
+cambiar con `RASTRO_QVAC_MODEL`. Para habilitar la inferencia:
 
 ```powershell
 $env:RASTRO_ENABLE_QVAC="1"
@@ -48,7 +49,21 @@ npm run qvac:check
 npm run dev
 ```
 
-Antes de elegir el modelo final se debe medir un corpus fijo de preguntas bancarias, exactitud de intención, referencias válidas, latencia, memoria y ejecución sin red. La máquina usada para este incremento tenía menos de 1 GB libre, por lo que no se cargó el modelo para evitar una validación engañosa.
+`npm run qvac:check` carga el modelo, corre tres preguntas reales y escribe
+`artifacts/qvac-check.json` con el modelo, el tiempo de carga, la latencia de cada respuesta y
+si la máquina tenía salida a internet durante la prueba. `npm run model:bench` compara los dos
+modelos candidatos sobre el mismo corpus y escribe `artifacts/model-bench.json`.
+
+Tres detalles que cuestan horas si no se conocen, y que ya están resueltos en el adaptador:
+
+- El worker de QVAC tarda más de treinta segundos en arrancar en Windows en frío. Sin subir
+  `QVAC_RPC_INIT_TIMEOUT_MS` el SDK aborta con un timeout que parece un fallo de instalación.
+- El contexto por defecto es de 1024 tokens y el bloque de hechos lo desborda.
+- Cuando el worker muere, el mensaje del SDK habla de RPC. La causa real viaja en
+  `cause.stderrTail`.
+
+Una intención que no cuadra con la evidencia elegida se rechaza antes de redactar y se
+reintenta una vez con otra semilla. Si vuelve a fallar, la aplicación lo dice y no responde.
 
 ## Privacidad y límites
 
