@@ -113,3 +113,16 @@ test("un modelo que el SDK no evaluó queda sin veredicto, no como aprobado", ()
   const gemma = report.models.find((m) => m.label === "Gemma4 2B");
   assert.equal(gemma?.verdict, "unknown");
 });
+
+test("el veredicto no se cachea: preguntar dos veces vuelve a medir", async () => {
+  // La primera version guardaba el resultado. Al cerrar aplicaciones la memoria
+  // libre paso de 2,2 a 4,4 GB y la aplicacion seguia contestando 2,2: el
+  // consejo que ella misma da, liberar memoria y volver a medir, no funcionaba.
+  const { LocalQvac } = await import("../server/qvac");
+  const fuente = LocalQvac.prototype.assessFit;
+  assert.equal(
+    /this\.fit/.test(fuente.toString()),
+    false,
+    "assessFit no debe devolver un resultado guardado: tiene que volver a medir",
+  );
+});

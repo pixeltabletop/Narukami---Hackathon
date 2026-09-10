@@ -200,20 +200,23 @@ export class LocalQvac {
       throw new Error(this.lastError, { cause: error });
     }
   }
-  private fit: ModelFitReport | undefined;
   /**
    * Estima si este equipo aguanta cada candidato ANTES de descargar pesos.
    * El SDK no baja nada en esta llamada y admite contestar que no sabe; esa
-   * respuesta se propaga tal cual en vez de convertirla en un "si". Se cachea
-   * porque el veredicto no cambia dentro de una corrida y levantar el worker
-   * cuesta segundos en frio.
+   * respuesta se propaga tal cual en vez de convertirla en un "si".
+   *
+   * NO se cachea. La primera version guardaba el resultado "porque el veredicto
+   * no cambia dentro de una corrida", y es falso: cambia justamente cuando el
+   * cliente hace lo que el propio veredicto le aconseja. Detectado el
+   * 2026-09-10 preparando el video: se cerraron aplicaciones, la memoria libre
+   * paso de 2,2 a 4,4 GB y la aplicacion seguia contestando 2,2. Una medicion
+   * que no vuelve a medir no sirve para decidir.
    */
   async assessFit(): Promise<ModelFitReport> {
     if (!inferenceEnabled())
       throw new Error(
         "Inferencia desactivada. Configurar QVAC en el equipo de destino.",
       );
-    if (this.fit) return this.fit;
     this.sdk ??= await import("@qvac/sdk");
     const sdk = this.sdk;
     const catalog = MODEL_KEYS.map((key) => ({
@@ -231,7 +234,7 @@ export class LocalQvac {
       })),
       execution: "sequential",
     })) as FitAssessment;
-    this.fit = summarizeFit(
+    return summarizeFit(
       assessment,
       catalog.map(({ key, constant }) => ({
         key,
@@ -240,7 +243,6 @@ export class LocalQvac {
       })),
       this.model,
     );
-    return this.fit;
   }
   async explain(
     question: string,
