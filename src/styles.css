@@ -315,6 +315,7 @@ h3 {
   margin-bottom: 24px;
 }
 .stat {
+  min-width: 0;
   background: #fff;
   border: 1px solid #e1e6dc;
   border-radius: 10px;
@@ -1699,6 +1700,19 @@ tr.no-cuenta .amount {
    es donde aparecia el desbordamiento: dos columnas de recurrentes no caben con
    el importe a tamano grande. Medido con la pagina, no calculado. */
 @media (max-width: 400px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+  .primary-stat {
+    grid-column: auto;
+  }
+  .stat {
+    padding: 18px;
+  }
+  .stat > strong,
+  .primary-stat > strong {
+    font-size: 30px;
+  }
   .recurring-grid {
     grid-template-columns: 1fr;
   }

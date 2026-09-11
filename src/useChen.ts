@@ -55,7 +55,13 @@ export const useChen = () => {
     // la unica salida limpia: el aviso rojo no se iba solo y obligaba a
     // recargar la pagina a mano en plena demostracion.
     cuandoSePierdaLaSesion(() => {
-      setSession((prior) => (prior ? { ...prior, customer: null } : prior));
+      // Solo si creiamos tener sesion. Un 401 antes de elegir cliente es lo
+      // normal, no una sesion caida, y reaccionar a el devolvia a la pantalla
+      // de seleccion justo despues de entrar: el sondeo del modelo del cliente
+      // anterior llegaba tarde y tumbaba la eleccion recien hecha.
+      setSession((prior) =>
+        prior?.customer ? { ...prior, customer: null } : prior,
+      );
       setDashboard(null);
       setEvidence(null);
       setError("");
