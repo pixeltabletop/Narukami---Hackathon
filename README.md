@@ -1,439 +1,403 @@
-# Chen, tu pasiero financiero
+# Chen · tu pasiero financiero
 
-_Asistente local de Caja de Ahorros para entender y organizar el dinero._
+Entrega del equipo **Narukami**.
 
-Prototipo para el Track 05 de Caja de Ahorros. Chen une dos recorridos: explica el consumo de tarjeta con evidencia y ayuda a organizar el saldo disponible hasta el próximo ingreso. Los cálculos se realizan en el servidor local y QVAC se usa exclusivamente en el dispositivo para clasificar las preguntas del cliente.
+Asistente bancario que explica el gasto y organiza el saldo, con IA **100 % local**. El dato del
+cliente no sale del equipo.
 
-**La inferencia está desactivada por defecto y el repositorio no incluye pesos de modelos.** Toda la demostración usa clientes y movimientos sintéticos.
+Para el **Track 05 de Caja de Ahorros** (IA descentralizada para banca) del ISD Summit 2026.
 
-## Equipo
+**▶ Video de demostración (3:47)** — _enlace pendiente de publicar_
 
-**Narukami** — Diego Laverde y Josué Carrillo.
+> **Aviso:** Chen · prototipo del equipo Narukami para el reto de Caja de Ahorros · Hackathon ISD
+> Summit 2026 · **No es una aplicación oficial de Caja de Ahorros.** Todos los clientes, tarjetas
+> y movimientos son **inventados**. El logotipo se usa solo para identificar el reto, sin aval del
+> banco. Esto no es consejo financiero.
 
-Diego Laverde escribió la base **Rastro**, importada sin modificar en el commit `57af18a` y
-declarada en detalle más abajo. Josué Carrillo construyó sobre ella el producto que se presenta
-aquí: el dominio de cuenta, la planificación y la proyección, el asistente conversacional con
-dictado, la integración real de QVAC y toda la validación. La historia completa de esa
-construcción está en los commits del repositorio, en orden y con lo que se verificó en cada uno.
+---
 
-## Ejecutar
+## Declaración de origen del trabajo
 
-Requiere Node 24 y npm. En Windows conviene trabajar en un disco local, fuera de carpetas sincronizadas.
+**Declaración obligatoria del reto.** Omitirla descalifica.
 
-```powershell
-npm ci
-npm run build
-npm test
-npm run demo
+**Hay una base preexistente y está declarada.** Diego Laverde escribió **Rastro** y la entregó al
+equipo el 9 de septiembre de 2026. Se importó **sin modificar** en el commit `57af18a`, que figura
+a su nombre. Ese commit es una instantánea, no el historial previo de Rastro: comparar cualquier
+commit posterior contra él muestra sin ambigüedad qué es base y qué se construyó encima. El
+producto se renombró a **Chen** ese mismo día.
+
+| | Qué |
+|---|---|
+| **Lo que traía la base** | El análisis de consumo de tarjeta, React con Vite, Express, SQLite, los fixtures sintéticos, las primeras pruebas y un adaptador de QVAC que nunca se había ejecutado contra un modelo. |
+| **Lo que se construyó encima** | El dominio de cuenta con productos separados; planificación, escenarios y proyección día a día; las veinte categorías con la distinción entre gasto y traslado; el historial por rubro y por comercio; el asistente conversacional y su guía; el dictado local con Whisper; el contrato de intención tipada con redacción determinista, su guardián de coherencia y la gramática que impide inventar entidades; el veredicto de memoria antes de descargar; y toda la verificación, incluida la corrida sin red. |
+
+El resto se construyó **durante el hackatón**. El `git log` lo refleja commit por commit.
+
+### Lo que no escribimos nosotros, y va declarado
+
+| Qué | De dónde | Cómo se usa |
+|---|---|---|
+| **SDK de QVAC** (`@qvac/sdk` 0.19.0) | Tether, Apache-2.0 | Toda la inferencia. Es la pieza que el reto pide usar. |
+| **Modelos** `QWEN3_4B_INST_Q4_K_M` y `WHISPER_BASE_Q8_0` | Catálogo de QVAC, Apache-2.0 | Se descargan del catálogo. No están entrenados ni ajustados por nosotros. |
+| **React, Vite, Express, express-session, Zod, tsx** | Sus proyectos, MIT | Interfaz, servidor, validación y herramientas. Fijados en `package-lock.json`. |
+| **TypeScript** | Microsoft, Apache-2.0 | Tipos y compilación. |
+| **Playwright** | Microsoft, Apache-2.0 | Solo para el recorrido de verificación de interfaz. No viaja en producción. |
+| **Logotipo y video de marca de Caja de Ahorros** | Carpeta oficial del hackatón | Solo para identificar el reto. Ver «Identidad visual». |
+| **Asistencia de IA** (Claude Code, Codex) | Anthropic, OpenAI | Asistente de programación durante todo el reto, con revisión humana de cada cambio. |
+
+No se usó plantilla de interfaz, tema comprado ni librería de componentes: las tarjetas, las
+barras y los iconos se dibujan a mano.
+
+---
+
+## Qué problema resuelve
+
+Un cliente de banca abre su aplicación y ve una lista de movimientos. Lo que no ve es lo que de
+verdad le preocupa: **en qué se le fue la plata, y si le alcanza hasta el próximo pago.**
+
+Los tableros bancarios fallan en tres puntos concretos, y los tres están resueltos aquí:
+
+1. **Cuentan como gasto lo que no lo es.** Un traspaso a la cuenta de ahorros, un retiro en cajero
+   o el pago de la tarjeta salen de la cuenta, pero el dinero no se consumió: cambió de lugar o ya
+   se había contado. Chen los separa en un bloque aparte, con su importe.
+2. **No distinguen lo que sale de la cuenta de lo que se retiene de la planilla.** Un préstamo
+   descontado por planilla no toca el saldo de hoy: reduce el próximo ingreso. Mezclarlos da un
+   margen falso.
+3. **Promedian el mes.** La pregunta «¿me alcanza?» se decide un día concreto. Chen proyecta día
+   por día y dice **qué día** el saldo se queda corto y **cuánto** falta.
+
+**El diferenciador:** cada cifra que el asistente afirma **se abre hasta los movimientos que la
+sostienen**. El modelo no redacta libremente y no calcula: clasifica la pregunta y elige entre una
+y tres evidencias ya calculadas. Si los datos no alcanzan, lo dice y no responde. Un modelo pequeño
+falla en silencio y con buena letra; aquí el fallo es auditable en vez de invisible.
+
+---
+
+## Qué es
+
+Ocho pantallas sobre los mismos movimientos sintéticos:
+
+| Pantalla | Qué hace |
+|---|---|
+| **Resumen** | Gasto neto del período, comparación con el anterior, pendiente por contabilizar, mapa por categoría y el bloque «no es gasto». |
+| **Movimientos** | Bandeja única con filtro por tarjeta de crédito, cuenta corriente y cuenta de ahorros. La categoría se corrige en el propio renglón y se queda corregida. |
+| **Recurrentes** | Cargos que se repiten período a período, con el importe anterior al lado: ahí se ve el que subió de precio. |
+| **Organiza** | Saldo, pendientes, compromisos confirmables, presupuesto variable, reserva y el margen hasta el próximo ingreso. Los descuentos de planilla van aparte. |
+| **Proyección** | Día a día hasta el próximo cobro, con el veredicto, el punto más bajo y la autonomía sin cobrar. |
+| **Escenarios** | Tres alternativas de ahorro con lo que quedaría disponible en cada una. |
+| **Asistente** | Pregunta en español, escrita o dictada, con la evidencia abrible. Accesible desde cualquier pantalla. |
+| **Guía** | Qué significa cada número y qué queda fuera de cada cálculo. |
+
+### La fórmula del plan
+
+```
+margen = saldo − pendientes − compromisos confirmados − presupuesto variable − reserva
 ```
 
-Abrir `http://127.0.0.1:4173` y seleccionar un cliente ficticio.
+El próximo ingreso no se suma antes de recibirse. Las compras de tarjeta alimentan el análisis de
+consumo; la cuenta solo registra el pago de tarjeta, así el mismo dinero no se cuenta dos veces.
+La sugerencia de ahorro toma la mitad de la capacidad histórica y nunca supera el margen.
 
-La instalación pesa unos 5 GB, casi todos del SDK de QVAC: son sus motores nativos, no pesos de
-modelos. Con npm 11 puede aparecer un aviso de que el script de instalación de `esbuild` quedó
-bloqueado. Es benigno y está comprobado: sin ese script, `npm run build` compila igual y las
-pruebas pasan, porque el binario que trae el paquete sirve. Si en algún equipo el build fallara
-por eso, `npm approve-scripts` lo resuelve.
+### Arquitectura
 
-Si el puerto 4173 ya está ocupado, el arranque lo dice y se detiene. No sigue en silencio
-dejándote con otro servidor, que podría ser el que corre sin inferencia.
+React + TypeScript → API Express en `127.0.0.1` → SQLite con fixtures sintéticos → motores
+deterministas → hechos con su evidencia. Sobre esos hechos, QVAC clasifica la pregunta y elige qué
+citar.
 
-`npm run demo` enciende la inferencia local. `npm run dev` levanta la misma aplicación **sin
-IA**, que es el modo por defecto a propósito: encender QVAC descarga unos 2,5 GB del modelo la
-primera vez y eso no se hace sin que la persona lo decida. Si abres la aplicación y el asistente
-aparece apagado, estás en ese modo y la pantalla te dice el comando.
+El contrato con el modelo está en `docs/ARQUITECTURA.md`. Su salida permitida contiene únicamente
+una intención tipada y entre una y tres referencias de evidencia. **No redacta, no calcula, no
+ejecuta consultas y no mueve dinero.**
 
-Con el servidor activo, `npm run ui:check` recorre la experiencia en Edge para escritorio y móvil.
+---
 
-## Qué funciona
+## Inferencia: qué es local y qué no
 
-- **Entiende:** gasto neto, comparación de períodos, categorías, movimientos y posibles cargos recurrentes.
-- **Organiza:** saldo explícito, pendientes, compromisos confirmables, presupuesto variable, reserva y margen hasta el próximo ingreso.
-- **Escenarios:** alternativas conservadora, sugerida y ambiciosa, con el dinero que quedaría en cada caso.
-- Correcciones de categoría y planes persistentes por cliente en SQLite.
-- Dos clientes ficticios, sesiones separadas, CSRF y aislamiento de registros.
-- Diseño adaptable, estados visibles y acceso desde cada resultado a su evidencia.
+**Toda la inferencia corre en la máquina que sirve la aplicación**, con el SDK de QVAC de Tether.
+Verificable en el código: los únicos puntos de entrada de inferencia del repositorio son
+`server/qvac.ts` (texto) y `server/voice.ts` (voz), y una prueba falla si aparece otro. No hay
+ninguna otra librería de inferencia en las dependencias y **no existe respaldo en la nube**: sin
+modelo local, Chen lo dice y no responde.
 
-## Fórmula del plan
+El dictado se transcribe con Whisper en el mismo equipo, **no** con la API de voz del navegador,
+que enviaría el audio del cliente al servidor de un tercero.
 
-`margen = saldo − pendientes − compromisos confirmados − presupuesto variable − reserva`
+**Matiz honesto sobre los modelos:** los pesos (unos 2,6 GB entre los dos) los provisiona el SDK.
+En una máquina nueva, la **primera** puesta en marcha los descarga por HTTP. Una vez en disco, ni
+el arranque ni el uso vuelven a tocar la red.
 
-El próximo ingreso no se suma antes de recibirse. Las compras de tarjeta pertenecen al análisis de consumo; el flujo de cuenta solo registra el pago de tarjeta, evitando contar el mismo dinero dos veces. La sugerencia de ahorro toma la mitad de la capacidad histórica y nunca supera el margen disponible.
+Esto se comprueba en tres capas, porque ninguna sola alcanza:
 
-## Arquitectura
+| Qué se comprueba | Cómo | Alcance real |
+|---|---|---|
+| Que el código no puede pedir nada fuera | `npm test` → `tests/no-cloud.test.ts`, sobre `server/`, `src/` y `scripts/` | Falla si aparece una URL externa, si la inferencia entra por algo que no sea QVAC, o si se agrega otro motor de IA a las dependencias. Una sola excepción, con nombre y dirección exacta en la propia prueba: la sonda de conectividad. |
+| Que responde de verdad sin red | `npm run qvac:check` con el Wi-Fi desconectado | El modelo carga desde caché y contesta. El artefacto guarda `network.reachable: false` junto a las respuestas. |
+| Que no hubo salida **mientras el modelo pensaba** | `scripts/network-probe.ts`, dentro de los dos comandos anteriores | Doce intentos por corrida: **tres momentos** (antes de cargar, **durante la inferencia**, al terminar) por **cuatro destinos** que fallan por razones distintas (dos TCP directos a IP sin DNS, una petición HTTPS completa, una consulta DNS pura). |
 
-React + TypeScript → API Express local → SQLite + fixtures sintéticos → motores deterministas.
+La tercera capa existe porque las otras dos no la cubren. Un solo intento contra un solo host,
+hecho cuando la inferencia ya terminó, prueba que ese host no contestó en ese instante por ese
+camino, y nada más. La toma del medio corre **en paralelo** con la primera inferencia, que es
+exactamente lo que el reto pregunta.
 
-QVAC recibe la pregunta y hechos ya calculados. Su salida permitida contiene únicamente una intención tipada y entre una y tres referencias de evidencia. La aplicación redacta la respuesta desde esos hechos; el modelo no redacta libremente, no calcula importes, no ejecuta SQL y no mueve dinero. No existe fallback de inferencia en nube.
+### Dónde correría en un banco de verdad
 
-## QVAC verificado localmente
+La pregunta que decide este reto no es qué modelo se usa, sino en qué máquina piensa.
 
-El adaptador usa QVAC SDK 0.19.0. El modelo por defecto es `QWEN3_4B_INST_Q4_K_M` y se puede
-cambiar con `CHEN_QVAC_MODEL`. Para habilitar la inferencia:
+| Dónde piensa | Quién lo hospeda | A favor | En contra |
+|---|---|---|---|
+| **Servidor del banco** | El banco, en su infraestructura | La banca en línea sigue siendo web; el dato nunca sale del perímetro; un solo lugar que actualizar | El banco paga el cómputo y dimensiona concurrencia |
+| **Teléfono del cliente** | Nadie: la app lleva el modelo | El dato no sale ni del teléfono; costo cero para el banco | Exige app nativa; en un teléfono medio lo realista es un 2B, no un 4B |
+| **Delegación entre pares** | Repartido, con Pears | Es lo que el reto valora explícitamente | Un banco no manda movimientos de un cliente a equipos de terceros |
 
-```powershell
-$env:CHEN_ENABLE_QVAC="1"
-npm run qvac:check
-npm run dev
-```
+Las bases permiten la nube para hospedar interfaz y autenticar, no para inferir: eso encaja con el
+primer camino. El segundo es la evolución natural y el SDK ya lo contempla con su plugin de Expo
+para React Native. Este prototipo es web porque un jurado necesita abrirlo sin instalar nada.
 
-`npm run qvac:check` carga el modelo, corre nueve preguntas reales (resumen, comparación,
-recurrencias, traslados, las tres de historial y las dos que miran hacia adelante) y escribe
-`artifacts/qvac-check.json` con el
-modelo, el tiempo de carga, la latencia de cada respuesta y la medición de red completa.
+Lo que no cambia en ningún camino: el modelo solo clasifica y escoge evidencia, y los importes
+salen de motores deterministas. Ese contrato hace que mover la inferencia de un servidor a un
+teléfono sea una decisión de despliegue y no una reescritura.
 
-El comando **falla si el modelo devuelve una intención equivocada**. Cada pregunta declara qué
-intenciones serían correctas, escritas por lo que la pregunta significa y no por lo que el
-modelo contestó la última vez. Escribirlo al revés convertiría la verificación en un espejo del
-comportamiento actual: pasaría siempre y no detectaría nada. Así fue como apareció el defecto de
-clasificación que se explica más abajo.
-Con veinte categorías el bloque de hechos es más largo y la respuesta tarda entre 11 y 35
-segundos según el equipo, contra 9 a 14 del catálogo corto: más lenguaje cuesta tiempo, y para
-grabar conviene tener el modelo ya cargado y memoria libre.
+---
 
-### Antes de descargar: ¿aguanta este equipo?
+## Hardware donde se midió
 
-`npm run fit:check` pregunta al SDK si cada candidato cabe en la memoria de esta máquina **sin
-bajar un solo byte de pesos**, y escribe `artifacts/fit-check.json`. La misma respuesta está en la
-aplicación, detrás de «¿Aguanta este equipo el modelo?», junto al botón de carga.
+HP ProBook 450 G10 · Windows 11 · 16 GB. Todas las cifras de este README salen de esa máquina.
 
-El veredicto puede ser que entra, que no entra o que no hay evidencia para decidirlo, y esa
-tercera respuesta se muestra tal cual: afirmar que entra sin sustento invita a una descarga de
-gigabytes que puede terminar en un cuelgue. En los tres casos se ven el tamaño de la descarga, el
-rango de memoria que el modelo pide y la memoria disponible, que es lo que permite decidir a mano.
-Si ningún candidato entra, el consejo es liberar memoria, no cambiar de modelo: ya pasó en este
-proyecto, con otro proceso reteniendo cuatro gigabytes.
+## Modelos, cuantizaciones y configuración exacta
 
-Tres detalles que cuestan horas si no se conocen, y que ya están resueltos en el adaptador:
+| Uso | Modelo | Configuración medida |
+|---|---|---|
+| Clasificar la pregunta | `QWEN3_4B_INST_Q4_K_M` (2,5 GB) | `ctx_size: 4096`, `temp: 0`, esquema JSON con el enum de intenciones recortado por pregunta, un reintento con otra semilla |
+| Voz a texto | `WHISPER_BASE_Q8_0` (78 MB) | `language: 'es'`, `translate: false`, `no_timestamps: true`, `initial_prompt` con el catálogo de rubros y comercios del cliente |
+
+El modelo de texto se cambia con `CHEN_QVAC_MODEL`. Alternativa medida:
+`GEMMA4_2B_MULTIMODAL_Q4_K_M`, más rápida y menos fiable (ver «Resultados medidos»).
+
+Tres detalles del SDK que cuestan horas si no se conocen, y que ya están resueltos en el adaptador:
 
 - El worker de QVAC tarda más de treinta segundos en arrancar en Windows en frío. Sin subir
-  `QVAC_RPC_INIT_TIMEOUT_MS` el SDK aborta con un timeout que parece un fallo de instalación.
+  `QVAC_RPC_INIT_TIMEOUT_MS`, el SDK aborta con un timeout que parece un fallo de instalación.
 - El contexto por defecto es de 1024 tokens y el bloque de hechos lo desborda.
 - Cuando el worker muere, el mensaje del SDK habla de RPC. La causa real viaja en
   `cause.stderrTail`.
 
-Una intención que no cuadra con la evidencia elegida se rechaza antes de redactar y se
-reintenta una vez con otra semilla. Si vuelve a fallar, la aplicación lo dice y no responde.
+---
 
-### Un defecto que la verificación floja no veía
+## Instalación
 
-Al exigirle a `qvac:check` la intención esperada apareció esto: a «¿en qué se me fue el dinero?»
-el modelo respondía con la intención de **comparación**, que es la que explica por qué el gasto
-subió o bajó contra el mes anterior. La pregunta no compara nada. La verificación anterior no lo
-notaba porque solo miraba la evidencia, y la comparación también selecciona categorías, así que
-el resultado parecía correcto.
+Requiere **Node 24** y npm. En Windows conviene trabajar en un disco local, fuera de carpetas
+sincronizadas.
 
-El arreglo no fue insistir en el prompt. Tres iteraciones de instrucciones no habían movido a
-este modelo en un problema parecido, y la lección ya estaba aprendida: una instrucción se puede
-ignorar, una gramática no. Ahora una regla decide si la pregunta compara dos períodos, y cuando
-no lo hace, la intención de comparación **se saca del enum del esquema**. El modelo no puede
-elegirla porque no existe en su menú.
+```bash
+npm ci
+npm run build
+npm test
+npm run demo
+```
 
-Quitarla destapó algo peor. Para una pregunta sin marca temporal, el menú incluía **todas** las
-intenciones, también las de varios meses. Sin la comparación disponible, el modelo se fue al
-historial y contestó tres meses a una pregunta del mes. Un menú abierto no es neutral: es una
-invitación. Ahora una pregunta sin marca temporal solo admite intenciones del período, con una
-única excepción, que nombre un comercio del propio cliente: «¿cuánto he gastado en Nube Música?»
-no trae marca temporal y aun así es historial, y eso se detecta con la lista de comercios que ya
-existe, no preguntándole al modelo.
+Abrir **http://127.0.0.1:4173** y elegir un cliente ficticio. En Windows también sirve hacer doble
+clic en `Iniciar-Chen.cmd`.
 
-Todo ese menú lo arma `allowedIntentsFor` en `server/qvac.ts`. Es una función pura y tiene siete
-pruebas deterministas que corren sin cargar ningún modelo, en milisegundos. Comprobar lo mismo
-contra QVAC cuesta minutos y memoria; lo que sí necesita al modelo real es `qvac:check`, que
-verifica que con ese menú delante elija bien.
+`npm run demo` enciende la inferencia local. **`npm run dev` levanta la misma aplicación sin IA**,
+que es el modo por defecto a propósito: encender QVAC descarga unos 2,5 GB la primera vez y eso no
+se hace sin que la persona lo decida. Si el asistente aparece apagado, estás en ese modo y la
+pantalla te dice el comando.
 
-### Prueba sin red, primera corrida del 9 de septiembre de 2026
+La instalación pesa unos 5 GB, casi todos del SDK de QVAC: son sus motores nativos, **no** pesos de
+modelos. `node_modules` nunca se copia entre máquinas: se instala con `npm ci`.
 
-Con el Wi-Fi desconectado y `1.1.1.1:443` inalcanzable, el modelo cargó desde caché en 16.9 s y
-respondió las tres preguntas con la intención y la evidencia correctas, entre 9.0 y 10.6 s cada
-una. El artefacto `artifacts/qvac-check-offline.json` deja registrado `network.reachable: false`
-junto a las respuestas. No hay respaldo en la nube que pudiera haber contestado por el modelo.
+Si el puerto 4173 está ocupado, el arranque lo dice y se detiene. No sigue en silencio dejándote
+frente a otro servidor, que podría ser el que corre sin inferencia.
 
-### Comparativo de modelos, 9 de septiembre de 2026
+Con npm 11 puede aparecer un aviso de que el script de instalación de `esbuild` quedó bloqueado. Es
+benigno y está comprobado: sin ese script, `npm run build` compila igual y las pruebas pasan. Si en
+algún equipo el build fallara por eso, `npm approve-scripts` lo resuelve.
+
+**Sin internet.** El SDK guarda los pesos en `%USERPROFILE%\.qvac` (`~/.qvac` fuera de Windows),
+dentro de `models/` y con el índice en `registry-corestore/`. Para una máquina sin red se copia esa
+carpeta desde otra donde la aplicación ya haya arrancado una vez. Hacen falta dos archivos: el de
+Qwen3 4B y el de Whisper Base. Con la carpeta en su sitio, la aplicación arranca sin tocar la red.
+
+---
+
+## Cómo reproducir la verificación
+
+```bash
+npm test                   # la batería completa, sin modelos y sin abrir la app
+npm run build              # tipos y compilación
+npm run fit:check          # ¿cabe el modelo en este equipo? sin descargar un solo byte
+npm run qvac:check         # nueve preguntas reales contra el modelo, con medición de red
+npm run voice:check -- ./audio/consulta.wav ./audio/ahorro.wav
+npm run ui:check           # el recorrido de interfaz, con el servidor levantado
+```
+
+`npm test` y `npm run build` corren en cualquier máquina y no necesitan ni la aplicación ni los
+modelos: es lo mismo que corre CI en cada push, en Windows, que es la plataforma verificada.
+
+`qvac:check` y `voice:check` necesitan la inferencia encendida:
+
+```powershell
+$env:CHEN_ENABLE_QVAC="1"
+npm run qvac:check
+```
+
+`ui:check` necesita el servidor levantado en otra terminal (`npm run demo` o `npm run dev`).
+
+**`qvac:check` falla si el modelo devuelve una intención equivocada.** Cada pregunta declara qué
+intenciones serían correctas, escritas por lo que la pregunta significa y no por lo que el modelo
+contestó la última vez. Escribirlo al revés convertiría la verificación en un espejo del
+comportamiento actual: pasaría siempre y no detectaría nada.
+
+### Todos los comandos
+
+| Comando | Qué hace | Escribe archivos |
+|---|---|---|
+| `npm run dev` | La aplicación **sin** inferencia, en `127.0.0.1:4173` | no |
+| `npm run demo` | La misma aplicación **con** inferencia local | `data/*.sqlite` |
+| `npm run build` | Tipos y compilación de la interfaz | `dist/` |
+| `npm test` | La batería completa, incluida la que prohíbe salir a la red | no |
+| `npm run fit:check` | Si cada modelo candidato cabe en la memoria de este equipo | `artifacts/fit-check.json` |
+| `npm run qvac:check` | Nueve preguntas reales contra el modelo, con intención esperada y sonda de red | `artifacts/qvac-check.json` |
+| `npm run voice:check -- <wav...>` | El dictado local, con sonda de red | `artifacts/voice-check.json` |
+| `npm run ui:check` | El recorrido de interfaz en escritorio y móvil, incluido el desbordamiento a 360 y 390 px | `artifacts/*.png`, `artifacts/ui-check.json` |
+| `npm run preguntas` | Una batería más amplia de preguntas contra el modelo | `artifacts/bateria-preguntas.json` |
+
+Las salidas no viajan en el repositorio: se regeneran corriendo los comandos.
+
+---
+
+## Resultados medidos
+
+| Qué | Resultado |
+|---|---|
+| Batería de pruebas | 76 de 76 |
+| Recorrido de interfaz, escritorio y móvil | 10 recorridos seguidos en verde, incluido el desbordamiento a 360 y 390 px en las ocho pestañas |
+| Preguntas con la intención esperada | 9 de 9 |
+| Dictado en español | 2 de 2 |
+| Corrida sin red: intentos de salida que alcanzaron algo | 0 de 12 |
+| Clon limpio desde GitHub: instalar, compilar y probar | sin vulnerabilidades, build y pruebas en verde |
+
+### Comparativo de modelos
 
 Ocho preguntas bancarias, la misma máquina, el mismo corpus sintético:
 
 | | QWEN3 4B Q4_K_M | GEMMA4 2B Q4_K_M |
-| --- | --- | --- |
-| Carga desde caché | 58.5 s | 36.6 s |
+|---|---|---|
+| Carga desde caché | 58,5 s | 36,6 s |
 | Preguntas respondidas | 8 de 8 | 7 de 8 |
 | Intención correcta | 8 de 8 | 6 de 8 |
 | Evidencia correcta | 8 de 8 | 7 de 8 |
-| Latencia mediana | 10.6 s | 6.6 s |
-| Latencia máxima | 22.1 s | 7.4 s |
+| Latencia mediana | 10,6 s | 6,6 s |
+| Latencia máxima | 22,1 s | 7,4 s |
 
-Queda Qwen3 4B como modelo por defecto: en banca importa más que la evidencia sostenga la
-respuesta que ganar cuatro segundos. Gemma 2B queda documentado como alternativa para equipos
-con menos memoria, con la advertencia de que confundió una pregunta de resumen con una de
-comparación y repitió una evidencia.
+Queda Qwen3 4B por defecto: en banca importa más que la evidencia sostenga la respuesta que ganar
+cuatro segundos. Gemma 2B queda documentado como alternativa para equipos con menos memoria, con la
+advertencia de que confundió una pregunta de resumen con una de comparación y repitió una evidencia.
 
-## Dónde corre el modelo y dónde está el cliente
+## Tiempos reales, arranque en frío
 
-La pregunta que decide este reto no es qué modelo se usa, sino en qué máquina piensa. QVAC
-corre en el dispositivo. Chen no tiene ni puede tener un respaldo en la nube: si el modelo no
-está cargado, la aplicación lo dice y no responde.
+| Proceso | Medido |
+|---|---|
+| Carga del modelo de texto desde caché | 43 a 58 s |
+| Carga de Whisper | ~17 s, la primera vez |
+| Responder una pregunta | 15 a 22 s |
+| Transcribir una frase dictada | 1,3 a 1,5 s |
+| Guardar un plan o corregir una categoría | menos de 0,2 s |
 
-**En la demostración.** El portátil es a la vez el dispositivo y el servidor. Express escucha en
-`127.0.0.1`, sirve la interfaz y carga QVAC dentro de su propio proceso. No hay nada hospedado
-afuera, y por eso la prueba con el Wi-Fi apagado funciona. Para grabar el video basta con el
-equipo: no hay que desplegar nada ni conectarse a ningún servicio.
+Con el equipo bajo presión de memoria una respuesta llegó a 42 s. Para grabar o demostrar conviene
+tener el modelo ya cargado y memoria libre.
 
-**En un banco de verdad, tres caminos y lo que cuesta cada uno.**
-
-| Dónde piensa | Quién lo hospeda | A favor | En contra |
-| --- | --- | --- | --- |
-| Servidor del banco | El banco, en su propia infraestructura | La banca en línea sigue siendo web; el dato nunca sale del perímetro del banco; un solo lugar que actualizar | El banco paga el cómputo; hay que dimensionar concurrencia |
-| Teléfono del cliente | Nadie: la app lleva el modelo | El dato no sale ni siquiera del teléfono; costo de cómputo cero para el banco | Exige app nativa; un modelo de 2B es lo realista en un teléfono medio, no uno de 4B |
-| Delegación entre pares | Repartido, con Pears | Es lo que el reto valora explícitamente | Un banco no manda movimientos de un cliente a equipos de terceros |
-
-Las bases permiten la nube para hospedar la interfaz y autenticar, no para inferir. Eso encaja
-con el primer camino: el banco sirve la web como hoy y la inferencia ocurre en su propio
-hardware. El segundo camino es la evolución natural y el SDK ya lo contempla: expone un plugin
-de Expo para React Native, así que el mismo dominio de Chen puede empaquetarse en una app
-donde el modelo viva en el teléfono. Este prototipo es web porque un jurado necesita abrirlo
-sin instalar nada, y porque el dominio y las reglas de cálculo se reutilizan tal cual en móvil.
-
-Lo que no cambia en ningún camino: el modelo solo clasifica la intención y escoge evidencia. Los
-importes salen de motores deterministas. Ese contrato es lo que hace que mover la inferencia de
-un servidor a un teléfono sea una decisión de despliegue y no una reescritura.
-
-## Que nada salga del equipo, comprobado
-
-Tres capas, no una promesa:
-
-1. **Auditoría del código.** Ningún archivo de `server/` ni de `src/` contacta un host externo.
-   Las únicas llamadas del navegador son a rutas relativas del propio servidor, que escucha solo
-   en `127.0.0.1`. No hay claves de API en el repositorio ni en el ejemplo de entorno.
-2. **Una prueba que lo mantiene así.** `tests/no-cloud.test.ts` recorre `server/`, `src/` y
-   `scripts/`, y falla si aparece una URL externa, si la inferencia entra por algo que no sea el
-   SDK de QVAC, o si se agrega otro motor de IA a las dependencias. Tiene una sola excepción, y
-   está escrita con nombre y dirección exacta en la propia prueba: el sondeo de conectividad,
-   que existe justamente para poder demostrar que no había red. Cualquier otro destino rompe la
-   suite. Es una cerca, no una declaración.
-3. **La corrida sin red, con todo encendido.** Con el Wi-Fi desconectado, el modelo de texto
-   responde las nueve preguntas y Whisper transcribe las dos frases dictadas. Ni el texto ni la
-   voz necesitan internet.
-
-   La medición de red no se toma a la ligera, porque es la evidencia que decide el reto. Un solo
-   intento contra un solo host, hecho cuando la inferencia ya terminó, prueba muy poco: prueba
-   que ese host no contestó, en ese instante, por ese camino. `scripts/network-probe.ts` mide en
-   **tres momentos** —antes de cargar el modelo, **mientras el modelo responde** y al terminar—
-   y contra **cuatro destinos** que fallan por razones distintas: dos conexiones TCP directas a
-   IP, que no dependen de DNS; una petición HTTPS completa, que sí depende de DNS y de TLS; y una
-   consulta DNS pura. Son doce intentos por corrida, y el artefacto guarda cada uno con su
-   resultado y su tiempo. Si cualquiera hubiera pasado, el artefacto lo diría y la corrida no
-   valdría como prueba sin red.
-
-   La toma del medio corre en paralelo con la primera inferencia. Es la única que demuestra que
-   no había salida mientras el modelo pensaba, que es exactamente lo que el reto pregunta.
-
-Lo único que sí necesita red es la **descarga inicial del modelo**, que ocurre una sola vez y no
-es inferencia. Después de eso la aplicación funciona con el equipo desconectado, y eso es
-justamente lo que demuestra la corrida de arriba.
-
-## El nombre
-
-**Chen** viene de *chen chen*, la plata en panameño. Es corto, se dice fácil y suena a alguien
-que te ayuda con lo tuyo, no a un tablero. La aplicación se llamaba Rastro cuando se recibió la
-base de Diego; el cambio de nombre está declarado más abajo junto con esa base.
-
-El lema de presentación es **«Chen, tu pasiero financiero»**: un pasiero es con quien uno anda, el
-que te acompaña. Es lo que se quiere que sea la herramienta, alguien de confianza que te dice las
-cosas claras sobre tu plata y no un producto que te habla desde arriba. Bajo el logotipo se
-conserva *tu chen chen, claro*, que es lo que explica de dónde sale el nombre.
-
-## Proyección: ¿llegas al próximo pago?
-
-La pregunta se decide en un día concreto, así que la proyección simula día por día en vez de
-promediar el mes. Un promedio mensual esconde justo la fecha en que la cuenta se queda corta.
-
-- **Reconoce cómo cobras.** A partir de tus propios ingresos clasifica el patrón en mensual,
-  quincenal o irregular, con el nivel de confianza a la vista. Si son irregulares, reparte el
-  ingreso por día en lugar de apostar a una fecha, y lo dice.
-- **Coloca lo que se repite.** Compromisos en su fecha de vencimiento y gastos recurrentes en el
-  día del mes en que suelen ocurrir. Un compromiso confirmado manda sobre la serie detectada con
-  el mismo nombre, para no descontar el mismo recibo dos veces.
-- **Deja fuera lo que no sale de la cuenta.** Los descuentos de planilla no aparecen como salida
-  porque el empleador los retiene antes de pagar.
-- **Responde con un veredicto.** Si el saldo aguanta, dice con cuánto llegas. Si no, dice el día
-  en que te quedas corto, cuánto falta y qué mover para cruzar el tramo.
-- **Autonomía sin cobrar.** Cuántos días aguanta lo que ya está en la cuenta si no entra ningún
-  cobro más. Para un ingreso irregular esa es la pregunta real, y el prorrateo por sí solo la
-  esconde.
-
-## Asistente
-
-Chen vive en su propia pestaña y en una burbuja disponible desde cualquier pantalla. Mantiene el
-mismo contrato de siempre: el modelo clasifica la pregunta y elige entre una y tres evidencias,
-la aplicación redacta con importes ya calculados, y cada afirmación se abre hasta los movimientos
-que la sostienen. Mientras piensa se reproduce el loop oficial de Caja de Ahorros, que es también
-la espera al cargar el modelo y al guardar cambios.
-
-## Preguntas que responde
-
-Además del mes en curso, Chen responde sobre varios meses. El modelo nunca calcula: clasifica y
-llena huecos tipados, y la aplicación hace la aritmética.
-
-| Lo que pregunta el cliente | Lo que devuelve |
-| --- | --- |
-| ¿Cuánto llevo gastado en Restaurantes? | Total del período, porcentaje del gasto y promedio mensual |
-| ¿Cuánto he gastado en Nube Música? | Total, número de cargos, promedio mensual y su rubro |
-| ¿En qué rubro se me ha ido más en los últimos tres meses? | Los tres rubros que más pesan, con importe y porcentaje |
-| Si aparto cien dólares al mes, ¿cuánto junto hasta fin de año? | El acumulado, los meses de aporte y qué porcentaje de un mes representa |
-| ¿Me alcanza hasta el próximo pago? | El veredicto de la proyección día a día, con el día y el faltante si no alcanza, y cuántos días aguanta el saldo sin otro cobro |
-| ¿Cuánto me queda disponible después de mis compromisos? | El margen y la resta completa de donde sale, con el descuento de planilla explicado aparte |
-
-Dos detalles que sostienen la honestidad de esas respuestas. La ventana declara el mes parcial:
-si septiembre va por el día 9, se dice, porque promediar sin avisar haría parecer que el cliente
-gasta menos. Y la gramática solo admite rubros y comercios que existen en sus datos, así que el
-modelo no puede inventar uno.
-
-Las dos últimas miran hacia adelante, y hasta el 10 de septiembre de 2026 no existían. El motor
-de proyección día a día y el del margen ya estaban construidos y probados, pero cada uno vivía en
-su pestaña: quien escribía «¿me alcanza hasta el próximo pago?» en el asistente recibía una
-negativa, porque ninguna intención encajaba y el guardián de coherencia rechazaba la respuesta.
-Lo que faltaba no era matemática sino la palabra con la que pedirla. El asistente ahora llama a
-esos motores y contesta con **los mismos números que muestran Organiza y Proyección**, no con una
-redacción propia: si el chat calculara por su cuenta, las dos pantallas podrían contradecirse
-sobre el mismo saldo.
-
-Esas dos respuestas no traen evidencia abrible, y es a propósito. No seleccionan movimientos: son
-el resultado de una simulación. Ofrecer un botón que no lleva a ningún lado sería peor que no
-ofrecerlo; los supuestos de la proyección están a la vista en su pestaña.
-
-Decidir si una pregunta abarca varios meses es trivial con una regla y el modelo de 4B lo
-fallaba, porque se ancla en los hechos del mes que tiene delante. La regla resuelve la
-temporalidad y recorta el enum del esquema; el modelo sigue haciendo lo difícil, que es elegir
-la intención exacta y extraer el rubro o el comercio. Una instrucción se puede ignorar, una
-gramática no.
-
-## Dictado, también local
-
-El micrófono del asistente transcribe con Whisper dentro de QVAC, en el mismo equipo. La API de
-voz del navegador manda el audio a un servidor del fabricante, y eso sacaría del dispositivo un
-dato del cliente, que es exactamente lo que el reto prohíbe.
-
-El navegador captura a WAV PCM de 16 bits, 16 kHz y mono, que es lo que Whisper espera, y lo
-envía crudo al servidor local. Medido en esta máquina: el modelo carga en 17 s y transcribe una
-frase en 1.5 s. Lo dictado se deja en el campo para que el cliente lo revise antes de enviar; no
-se corrige en silencio, porque colapsar sinónimos cambia la pregunta.
-
-```powershell
-npm run voice:check -- ./audio/consulta.wav ./audio/ahorro.wav
-```
-
-El repositorio trae esos dos audios en `audio/`, en español y en el formato exacto que espera
-Whisper, para que la prueba se pueda correr sin grabar nada. Son voz sintética a propósito: una
-grabación de una persona real metería un dato biométrico en el repositorio.
-
-## Guía dentro de la aplicación
-
-La pestaña Guía explica, sección por sección, qué entra en cada cálculo, qué queda fuera a
-propósito y qué la aplicación no hace. Son definiciones cortas, no un manual: treinta
-términos con salto directo a la pantalla que describen.
-
-## Cómo se leen tus movimientos
-
-- **Categorías.** Veinte categorías que cubren el gasto doméstico y el de quien además factura
-  por su cuenta: proveedores, servicios profesionales, marketing, alquileres, seguros, impuestos.
-- **Lo que no es gasto.** Una transferencia entre cuentas propias y un retiro de efectivo mueven
-  saldo sin consumirlo. Chen los muestra aparte, con su importe, y no los suma al consumo del
-  período. Contarlos como gasto es el error clásico de cualquier tablero bancario.
-- **Productos separados.** La bandeja de movimientos filtra por tarjeta de crédito, cuenta
-  corriente y cuenta de ahorros. Las compras de tarjeta alimentan el análisis de consumo; la
-  cuenta alimenta el flujo de efectivo. El pago de tarjeta aparece en la cuenta y no vuelve a
-  contarse como gasto.
-- **Pasivos y compromisos.** Se distinguen por naturaleza (servicio, préstamo, seguro, tarjeta) y
-  por forma de pago. Un descuento directo de planilla no reduce el saldo de hoy porque el
-  empleador lo retiene antes de pagar: reduce el próximo ingreso, y así se muestra.
-- **Pendiente.** Una compra autorizada que el comercio todavía no cobró en firme. El banco
-  retiene el dinero, así que se resta del saldo disponible, pero no entra al gasto del período
-  porque su importe final puede cambiar.
+---
 
 ## Cumplimiento del reto
 
-Cada requisito del Track 05, y dónde se cumple.
-
 | Requisito | Cómo se cumple |
-| --- | --- |
-| Construir con el SDK de QVAC | `@qvac/sdk` 0.19.0 es dependencia declarada. Texto en `server/qvac.ts`, voz en `server/voice.ts`. Son los dos únicos puntos de entrada de inferencia y una prueba lo verifica. |
-| Inferencia en el dispositivo; la nube descalifica | Todo corre en la máquina que sirve la aplicación. No hay respaldo remoto: sin modelo local, Chen lo dice y no responde. Comprobado con el equipo desconectado. |
-| Datos del cliente no salen del dispositivo | El servidor escucha solo en `127.0.0.1`. El dictado se transcribe con Whisper en el mismo equipo, no con la API de voz del navegador, que enviaría el audio a un tercero. |
-| Solo datos sintéticos o públicos | Dos clientes ficticios generados en `server/fixtures.ts` y `server/planning-fixtures.ts`. No hay datos reales de ninguna entidad ni credenciales bancarias. |
-| Declarar toda base preexistente | Sección «Base preexistente declarada», más abajo, y el archivo `LICENSE`. El commit `57af18a` conserva esa base sin modificar. |
-| Repositorio accesible al jurado | Publicado el 10 de septiembre de 2026 en https://github.com/pixeltabletop/Narukami---Hackathon, público y clonable sin credenciales. |
-| Video de máximo cinco minutos, sin credenciales | Pendiente de grabar. |
+|---|---|
+| Construir con el SDK de QVAC | `@qvac/sdk` 0.19.0 es dependencia declarada. Texto en `server/qvac.ts`, voz en `server/voice.ts`. Son los dos únicos puntos de entrada y una prueba lo verifica. |
+| Inferencia en el dispositivo; la nube descalifica | Todo corre en la máquina que sirve la aplicación. Sin respaldo remoto: sin modelo local, Chen lo dice y no responde. Comprobado con el equipo desconectado. |
+| Datos del cliente no salen del dispositivo | El servidor escucha solo en `127.0.0.1`. El dictado se transcribe con Whisper en el mismo equipo. |
+| Solo datos sintéticos o públicos | Dos clientes ficticios generados en `server/fixtures.ts` y `server/planning-fixtures.ts`. Ninguna entidad ni credencial real. |
+| Declarar toda base preexistente | Sección «Declaración de origen del trabajo», arriba, y `LICENSE`. El commit `57af18a` conserva esa base sin modificar. |
+| Repositorio accesible al jurado | https://github.com/pixeltabletop/Narukami---Hackathon, público y clonable sin credenciales. |
+| Video de máximo cinco minutos, sin credenciales | 3:47. Enlace arriba. |
 | La propiedad intelectual permanece en el equipo | `LICENSE`: derechos reservados, con permiso de evaluación para la organización y el jurado. |
 
-## Entrega
+## Cómo se leen los movimientos
 
-Lo que falta antes del cierre, en orden:
+Las cuatro reglas de dominio que hacen que las cuentas cuadren:
 
-1. **Publicar el repositorio** y confirmar que el jurado puede clonarlo y ejecutarlo.
-2. **Grabar el video** con el modelo ya cargado y memoria libre, y publicar el enlace aquí:
-   _(pendiente)_.
-3. **Leer los Términos y Condiciones generales**, en particular pertenencia simultánea a equipos.
-4. **Confirmar el canal y el horario de entrega** con la organización.
+- **Gasto contra traslado.** Las veinte categorías declaran si el dinero se consumió o solo cambió
+  de lugar. Traslados entre cuentas propias y retiros salen del saldo sin consumirlo: Chen los
+  muestra aparte, con su importe, y no los suma al consumo del período.
+- **Productos separados.** Las compras de tarjeta alimentan el análisis de consumo; la cuenta
+  alimenta el flujo de efectivo. El pago de tarjeta aparece en la cuenta y no vuelve a contarse.
+- **Pasivos y compromisos.** Se distinguen por naturaleza y por forma de pago. Un descuento directo
+  de planilla no reduce el saldo de hoy: reduce el próximo ingreso, y así se muestra.
+- **Pendiente.** Una compra autorizada que el comercio todavía no cobró en firme. Se resta del
+  saldo disponible, pero no entra al gasto del período porque su importe final puede cambiar.
 
-Para reproducir la evaluación completa desde cero:
+---
 
-```powershell
-npm ci
-npm run build
-npm test
-npm run qvac:check
-npm run demo
-```
+## Limitaciones conocidas
 
-`npm run demo` deja el servidor corriendo y no devuelve la terminal, así que va al final. Si
-quieres correrlo antes, abre `qvac:check` en otra terminal.
+- **El modelo se equivoca de intención si se le deja el menú abierto.** Está resuelto recortando el
+  enum del esquema por pregunta, no insistiendo en el prompt: una instrucción se puede ignorar, una
+  gramática no. Con el menú recortado acierta 9 de 9; la lógica que lo arma (`allowedIntentsFor`) es
+  una función pura con siete pruebas deterministas.
+- **Dos palabras cambian la clasificación.** «¿En qué se me fue el dinero?» se clasifica mal con el
+  plan en su estado de partida; «¿En qué se me fue el dinero **este mes**?» acierta. Cuando falla,
+  la aplicación muestra la negativa honesta en lugar de inventar. El video usa la forma larga.
+- **Responder tarda de 15 a 22 segundos** en este equipo, y hasta 42 bajo presión de memoria. Es el
+  costo de pensar en local y está a la vista en la interfaz, con el tiempo de cada respuesta.
+- **Las preguntas de proyección no traen evidencia abrible**, porque su respuesta la produce el
+  motor de proyección y no una selección de movimientos.
+- **El acceso no valida credenciales**, y la pantalla lo dice con esas palabras. Es una demostración.
+- **No es una integración bancaria.** Una de verdad exige identidad, TLS, autorización, retención y
+  auditoría del banco.
 
-## Privacidad y límites
+## Trabajo futuro
 
-- No contiene datos reales ni solicita credenciales bancarias.
-- El servidor escucha solo en `127.0.0.1` y limita el acceso de la demo a localhost.
-- No es una aplicación oficial del banco ni una instrucción financiera.
-- Una integración bancaria real requiere identidad, TLS, autorización, retención y auditoría del banco.
-- La aplicación usa el logotipo de Caja de Ahorros solo para identificar el reto; no es una aplicación oficial del banco ni tiene su aval.
+Aplicación móvil con Expo, para que el modelo viva en el teléfono del cliente; delegación entre
+pares con Pears para los equipos que no puedan cargar el modelo; y alertas por adelantado cuando la
+proyección vea el saldo corto antes de que ocurra.
 
-## Base preexistente declarada
+---
 
-La base recibida de Diego Laverde el 9 de septiembre de 2026, llamada **Rastro**, se importó sin modificar en el commit `57af18a`, que figura a su nombre. El producto se renombró a **Chen** el 9 de septiembre de 2026.
+## Licencias
 
-Ese commit es una instantánea, no el historial anterior de Rastro: la base llegó como carpeta y se importó tal cual, así que aquí no vive la historia previa de Diego, sino el punto exacto desde el que se construyó. Comparar ese commit con cualquiera posterior muestra sin ambigüedad qué es base y qué se agregó encima.
+Código propio con derechos reservados y permiso de evaluación para la organización y el jurado, en
+[`LICENSE`](LICENSE). El SDK y los modelos del catálogo de QVAC, bajo Apache-2.0. React, Vite,
+Express y Zod, bajo MIT. TypeScript y Playwright, bajo Apache-2.0.
 
-**Lo que traía esa base:** la experiencia de análisis de tarjeta, React con Vite, Express,
-SQLite, los fixtures sintéticos, las primeras pruebas y un adaptador inicial de QVAC que nunca
-se había ejecutado contra un modelo.
-
-**Lo que se construyó encima:** el dominio de cuenta con productos separados; planificación,
-escenarios y proyección día a día; el catálogo de veinte categorías con la distinción entre
-gasto y traslado; el historial por rubro y por comercio; el asistente conversacional con su
-burbuja y su guía; el dictado local con Whisper; la identidad de Caja de Ahorros; el contrato
-de intención tipada con redacción determinista, su guardián de coherencia y la gramática que
-impide inventar entidades; y la validación real de QVAC, incluida la corrida sin red.
-
-Dependencias declaradas y fijadas en `package-lock.json`: QVAC SDK, React, Vite, Express, express-session, Zod, TypeScript, tsx y Playwright. Documentación de referencia del SDK: https://docs.qvac.tether.io/js-ts-sdk/ y https://docs.qvac.tether.io/ai-capabilities/text-generation/.
+**Música del video.** «Inspired», de Kevin MacLeod (incompetech.com), bajo Creative Commons
+Atribución 4.0. Su licencia pide este crédito, que aparece también en el último plano del video. No
+forma parte de la aplicación: solo suena en el video de demostración.
 
 ### Identidad visual
 
-El logotipo y el video de marca provienen de la carpeta oficial del hackatón (`Hackathon 2026` en Drive), no de una descarga pública ni de una reproducción hecha por el equipo:
+El logotipo y el video de marca provienen de la carpeta oficial del hackatón, no de una descarga
+pública ni de una reproducción del equipo:
 
 | Archivo entregado | Formato real | Qué se hizo |
-| --- | --- | --- |
-| `caja_de_ahorros_logo.png` | WebP 696×698 con alfa, con extensión `.png` | Convertido a PNG real en `public/brand/logo-ca.png` más escalas de 512, 192, 64 y 32 px y `public/favicon.ico` |
-| `caja-de-ahorros-panama-30s-loop.webm` | VP9 720×720, 872 cuadros, sin duración ni fps en el contenedor | Primera versión del loop: metadatos reparados y transcodificado a H.264 |
-| `Caja_de_Ahorros_transparente_solo_logo_30s.webm` | VP9 1080×1080 con canal alfa | Versión vigente del loop. Compuesto sobre el mismo `#0b1c30` que la hoja de estilo pone detrás del video, y transcodificado a H.264 720×720 en `public/brand/ca-loop.mp4` (360 KB), con su cuadro de espera en `ca-loop-poster.png` |
+|---|---|---|
+| `caja_de_ahorros_logo.png` | WebP 696×698 con alfa, con extensión `.png` | Convertido a PNG real en `public/brand/logo-ca.png`, más escalas de 512, 192, 64 y 32 px y `public/favicon.ico` |
+| `Caja_de_Ahorros_transparente_solo_logo_30s.webm` | VP9 1080×1080 con canal alfa | Compuesto sobre el mismo `#0b1c30` que la hoja de estilo pone detrás, y transcodificado a H.264 720×720 en `public/brand/ca-loop.mp4` (360 KB), con su cuadro de espera |
 
-El color institucional `#1858A0` se tomó del propio logotipo y define la barra lateral, los acentos primarios y `theme-color`. El video se reproduce mientras el modelo local se carga.
+El color institucional `#1858A0` se tomó del propio logotipo y define la barra lateral, los acentos
+y `theme-color`. El video se reproduce mientras el modelo local carga. No se presupone aval de Caja
+de Ahorros ni titularidad sobre su marca.
 
-No se presupone aval de Caja de Ahorros ni titularidad sobre su marca.
+## Dónde está todo
 
-## Archivos importantes
+| Qué | Dónde |
+|---|---|
+| Cómo está armado y el contrato con el modelo | [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) |
+| Alcance de la licencia y propiedad intelectual | [`LICENSE`](LICENSE) |
+| Audio de prueba para el dictado | [`audio/`](audio/) |
+| Verificación que corre en cada push | [`.github/workflows/check.yml`](.github/workflows/check.yml) |
+| Variables de entorno | [`.env.example`](.env.example) |
 
-- `LICENSE`: propiedad intelectual, permiso de evaluación y declaración de la base preexistente.
-- `docs/ARQUITECTURA.md`: cómo está armado y cuál es el contrato con el modelo.
-- `audio/`: dos frases sintéticas en español para poder correr la prueba de dictado sin grabar nada.
+## El nombre
 
-Las salidas de los comandos de verificación no viajan en el repositorio: se regeneran
-corriendo los comandos de arriba, que las escriben en `artifacts/`.
+**Chen** viene de *chen chen*, la plata en panameño. El lema es **«Chen, tu pasiero financiero»**:
+un pasiero es con quien uno anda, el que te acompaña. Bajo el logotipo se conserva *tu chen chen,
+claro*, que explica de dónde sale el nombre.
