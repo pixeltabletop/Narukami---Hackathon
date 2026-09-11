@@ -7,7 +7,8 @@ cliente no sale del equipo.
 
 Para el **Track 05 de Caja de Ahorros** (IA descentralizada para banca) del ISD Summit 2026.
 
-**▶ Video de demostración (3:47)** — _enlace pendiente de publicar_
+**▶ [Video de demostración (3:47)](https://drive.google.com/file/d/10i_nyBdSJO63WVzsb_u78Ukou4CaBJtz/view?usp=sharing)**
+— abre sin pedir credenciales, comprobado sin sesión iniciada.
 
 > **Aviso:** Chen · prototipo del equipo Narukami para el reto de Caja de Ahorros · Hackathon ISD
 > Summit 2026 · **No es una aplicación oficial de Caja de Ahorros.** Todos los clientes, tarjetas
@@ -346,7 +347,7 @@ proyección vea el saldo corto antes de que ocurra.
 | Solo datos sintéticos o públicos | Dos clientes ficticios generados en `server/fixtures.ts` y `server/planning-fixtures.ts`. Ninguna entidad ni credencial real. |
 | Declarar toda base preexistente | Sección «Declaración de origen del trabajo», al final de este README, y `LICENSE`. El commit `57af18a` conserva esa base sin modificar. |
 | Repositorio accesible al jurado | https://github.com/pixeltabletop/Narukami---Hackathon, público y clonable sin credenciales. |
-| Video de máximo cinco minutos, sin credenciales | 3:47. Enlace en la cabecera de este README. |
+| Video de máximo cinco minutos, sin credenciales | 3:47, en Drive. Enlace en la cabecera de este README; comprobado sin sesión iniciada. |
 | La propiedad intelectual permanece en el equipo | `LICENSE`: derechos reservados, con permiso de evaluación para la organización y el jurado. |
 
 ---
