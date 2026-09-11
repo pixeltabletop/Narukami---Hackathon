@@ -29,6 +29,15 @@ npm run demo
 
 Abrir `http://127.0.0.1:4173` y seleccionar un cliente ficticio.
 
+La instalación pesa unos 5 GB, casi todos del SDK de QVAC: son sus motores nativos, no pesos de
+modelos. Con npm 11 puede aparecer un aviso de que el script de instalación de `esbuild` quedó
+bloqueado. Es benigno y está comprobado: sin ese script, `npm run build` compila igual y las
+pruebas pasan, porque el binario que trae el paquete sirve. Si en algún equipo el build fallara
+por eso, `npm approve-scripts` lo resuelve.
+
+Si el puerto 4173 ya está ocupado, el arranque lo dice y se detiene. No sigue en silencio
+dejándote con otro servidor, que podría ser el que corre sin inferencia.
+
 `npm run demo` enciende la inferencia local. `npm run dev` levanta la misma aplicación **sin
 IA**, que es el modo por defecto a propósito: encender QVAC descarga unos 2,5 GB del modelo la
 primera vez y eso no se hace sin que la persona lo decida. Si abres la aplicación y el asistente
