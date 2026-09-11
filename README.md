@@ -16,40 +16,6 @@ Para el **Track 05 de Caja de Ahorros** (IA descentralizada para banca) del ISD 
 
 ---
 
-## Declaración de origen del trabajo
-
-**Declaración obligatoria del reto.** Omitirla descalifica.
-
-**Hay una base preexistente y está declarada.** Diego Laverde escribió **Rastro** y la entregó al
-equipo el 9 de septiembre de 2026. Se importó **sin modificar** en el commit `57af18a`, que figura
-a su nombre. Ese commit es una instantánea, no el historial previo de Rastro: comparar cualquier
-commit posterior contra él muestra sin ambigüedad qué es base y qué se construyó encima. El
-producto se renombró a **Chen** ese mismo día.
-
-| | Qué |
-|---|---|
-| **Lo que traía la base** | El análisis de consumo de tarjeta, React con Vite, Express, SQLite, los fixtures sintéticos, las primeras pruebas y un adaptador de QVAC que nunca se había ejecutado contra un modelo. |
-| **Lo que se construyó encima** | El dominio de cuenta con productos separados; planificación, escenarios y proyección día a día; las veinte categorías con la distinción entre gasto y traslado; el historial por rubro y por comercio; el asistente conversacional y su guía; el dictado local con Whisper; el contrato de intención tipada con redacción determinista, su guardián de coherencia y la gramática que impide inventar entidades; el veredicto de memoria antes de descargar; y toda la verificación, incluida la corrida sin red. |
-
-El resto se construyó **durante el hackatón**. El `git log` lo refleja commit por commit.
-
-### Lo que no escribimos nosotros, y va declarado
-
-| Qué | De dónde | Cómo se usa |
-|---|---|---|
-| **SDK de QVAC** (`@qvac/sdk` 0.19.0) | Tether, Apache-2.0 | Toda la inferencia. Es la pieza que el reto pide usar. |
-| **Modelos** `QWEN3_4B_INST_Q4_K_M` y `WHISPER_BASE_Q8_0` | Catálogo de QVAC, Apache-2.0 | Se descargan del catálogo. No están entrenados ni ajustados por nosotros. |
-| **React, Vite, Express, express-session, Zod, tsx** | Sus proyectos, MIT | Interfaz, servidor, validación y herramientas. Fijados en `package-lock.json`. |
-| **TypeScript** | Microsoft, Apache-2.0 | Tipos y compilación. |
-| **Playwright** | Microsoft, Apache-2.0 | Solo para el recorrido de verificación de interfaz. No viaja en producción. |
-| **Logotipo y video de marca de Caja de Ahorros** | Carpeta oficial del hackatón | Solo para identificar el reto. Ver «Identidad visual». |
-| **Asistencia de IA** (Claude Code, Codex) | Anthropic, OpenAI | Asistente de programación durante todo el reto, con revisión humana de cada cambio. |
-
-No se usó plantilla de interfaz, tema comprado ni librería de componentes: las tarjetas, las
-barras y los iconos se dibujan a mano.
-
----
-
 ## Qué problema resuelve
 
 Un cliente de banca abre su aplicación y ve una lista de movimientos. Lo que no ve es lo que de
@@ -110,6 +76,22 @@ ejecuta consultas y no mueve dinero.**
 
 ---
 
+## Cómo se leen los movimientos
+
+Las cuatro reglas de dominio que hacen que las cuentas cuadren:
+
+- **Gasto contra traslado.** Las veinte categorías declaran si el dinero se consumió o solo cambió
+  de lugar. Traslados entre cuentas propias y retiros salen del saldo sin consumirlo: Chen los
+  muestra aparte, con su importe, y no los suma al consumo del período.
+- **Productos separados.** Las compras de tarjeta alimentan el análisis de consumo; la cuenta
+  alimenta el flujo de efectivo. El pago de tarjeta aparece en la cuenta y no vuelve a contarse.
+- **Pasivos y compromisos.** Se distinguen por naturaleza y por forma de pago. Un descuento directo
+  de planilla no reduce el saldo de hoy: reduce el próximo ingreso, y así se muestra.
+- **Pendiente.** Una compra autorizada que el comercio todavía no cobró en firme. Se resta del
+  saldo disponible, pero no entra al gasto del período porque su importe final puede cambiar.
+
+---
+
 ## Inferencia: qué es local y qué no
 
 **Toda la inferencia corre en la máquina que sirve la aplicación**, con el SDK de QVAC de Tether.
@@ -162,6 +144,8 @@ teléfono sea una decisión de despliegue y no una reescritura.
 
 HP ProBook 450 G10 · Windows 11 · 16 GB. Todas las cifras de este README salen de esa máquina.
 
+---
+
 ## Modelos, cuantizaciones y configuración exacta
 
 | Uso | Modelo | Configuración medida |
@@ -182,10 +166,25 @@ Tres detalles del SDK que cuestan horas si no se conocen, y que ya están resuel
 
 ---
 
+## Qué equipo hace falta
+
+| Qué | Mínimo para ejecutarlo |
+|---|---|
+| Sistema | Windows 11 verificado. Linux y macOS deberían funcionar, pero no se han probado. |
+| Node | **24 o superior**, con npm. Está declarado en `engines` del `package.json`; npm lo advierte pero no lo bloquea, así que conviene comprobarlo con `node --version`. |
+| Memoria | **16 GB**, con al menos 4 GB libres al cargar el modelo. Con menos, `npm run fit:check` lo dice antes de descargar nada. |
+| Disco | **8 GB**: unos 5 GB de `node_modules` (motores nativos del SDK, no pesos) y 2,6 GB de modelos en `%USERPROFILE%\.qvac`. |
+| Red | Solo para `npm ci` y para la **primera** descarga de modelos. Después funciona desconectado. |
+| Navegador | Cualquiera moderno. El dictado necesita permiso de micrófono. |
+
+**Qué se instala y qué no.** Se instalan las dependencias de npm y, al encender la inferencia, los
+dos modelos del catálogo de QVAC. **El repositorio no incluye pesos de modelos** y no hay nada que
+instalar en el sistema: ni servicio, ni base de datos externa, ni clave de API. El SQLite de la
+demostración se crea solo, en `data/`, la primera vez que se levanta.
+
 ## Instalación
 
-Requiere **Node 24** y npm. En Windows conviene trabajar en un disco local, fuera de carpetas
-sincronizadas.
+En Windows conviene trabajar en un disco local, fuera de carpetas sincronizadas.
 
 ```bash
 npm ci
@@ -293,6 +292,8 @@ Queda Qwen3 4B por defecto: en banca importa más que la evidencia sostenga la r
 cuatro segundos. Gemma 2B queda documentado como alternativa para equipos con menos memoria, con la
 advertencia de que confundió una pregunta de resumen con una de comparación y repitió una evidencia.
 
+---
+
 ## Tiempos reales, arranque en frío
 
 | Proceso | Medido |
@@ -305,35 +306,6 @@ advertencia de que confundió una pregunta de resumen con una de comparación y 
 
 Con el equipo bajo presión de memoria una respuesta llegó a 42 s. Para grabar o demostrar conviene
 tener el modelo ya cargado y memoria libre.
-
----
-
-## Cumplimiento del reto
-
-| Requisito | Cómo se cumple |
-|---|---|
-| Construir con el SDK de QVAC | `@qvac/sdk` 0.19.0 es dependencia declarada. Texto en `server/qvac.ts`, voz en `server/voice.ts`. Son los dos únicos puntos de entrada y una prueba lo verifica. |
-| Inferencia en el dispositivo; la nube descalifica | Todo corre en la máquina que sirve la aplicación. Sin respaldo remoto: sin modelo local, Chen lo dice y no responde. Comprobado con el equipo desconectado. |
-| Datos del cliente no salen del dispositivo | El servidor escucha solo en `127.0.0.1`. El dictado se transcribe con Whisper en el mismo equipo. |
-| Solo datos sintéticos o públicos | Dos clientes ficticios generados en `server/fixtures.ts` y `server/planning-fixtures.ts`. Ninguna entidad ni credencial real. |
-| Declarar toda base preexistente | Sección «Declaración de origen del trabajo», arriba, y `LICENSE`. El commit `57af18a` conserva esa base sin modificar. |
-| Repositorio accesible al jurado | https://github.com/pixeltabletop/Narukami---Hackathon, público y clonable sin credenciales. |
-| Video de máximo cinco minutos, sin credenciales | 3:47. Enlace arriba. |
-| La propiedad intelectual permanece en el equipo | `LICENSE`: derechos reservados, con permiso de evaluación para la organización y el jurado. |
-
-## Cómo se leen los movimientos
-
-Las cuatro reglas de dominio que hacen que las cuentas cuadren:
-
-- **Gasto contra traslado.** Las veinte categorías declaran si el dinero se consumió o solo cambió
-  de lugar. Traslados entre cuentas propias y retiros salen del saldo sin consumirlo: Chen los
-  muestra aparte, con su importe, y no los suma al consumo del período.
-- **Productos separados.** Las compras de tarjeta alimentan el análisis de consumo; la cuenta
-  alimenta el flujo de efectivo. El pago de tarjeta aparece en la cuenta y no vuelve a contarse.
-- **Pasivos y compromisos.** Se distinguen por naturaleza y por forma de pago. Un descuento directo
-  de planilla no reduce el saldo de hoy: reduce el próximo ingreso, y así se muestra.
-- **Pendiente.** Una compra autorizada que el comercio todavía no cobró en firme. Se resta del
-  saldo disponible, pero no entra al gasto del período porque su importe final puede cambiar.
 
 ---
 
@@ -354,11 +326,62 @@ Las cuatro reglas de dominio que hacen que las cuentas cuadren:
 - **No es una integración bancaria.** Una de verdad exige identidad, TLS, autorización, retención y
   auditoría del banco.
 
+---
+
 ## Trabajo futuro
 
 Aplicación móvil con Expo, para que el modelo viva en el teléfono del cliente; delegación entre
 pares con Pears para los equipos que no puedan cargar el modelo; y alertas por adelantado cuando la
 proyección vea el saldo corto antes de que ocurra.
+
+---
+
+## Cumplimiento del reto
+
+| Requisito | Cómo se cumple |
+|---|---|
+| Construir con el SDK de QVAC | `@qvac/sdk` 0.19.0 es dependencia declarada. Texto en `server/qvac.ts`, voz en `server/voice.ts`. Son los dos únicos puntos de entrada y una prueba lo verifica. |
+| Inferencia en el dispositivo; la nube descalifica | Todo corre en la máquina que sirve la aplicación. Sin respaldo remoto: sin modelo local, Chen lo dice y no responde. Comprobado con el equipo desconectado. |
+| Datos del cliente no salen del dispositivo | El servidor escucha solo en `127.0.0.1`. El dictado se transcribe con Whisper en el mismo equipo. |
+| Solo datos sintéticos o públicos | Dos clientes ficticios generados en `server/fixtures.ts` y `server/planning-fixtures.ts`. Ninguna entidad ni credencial real. |
+| Declarar toda base preexistente | Sección «Declaración de origen del trabajo», al final de este README, y `LICENSE`. El commit `57af18a` conserva esa base sin modificar. |
+| Repositorio accesible al jurado | https://github.com/pixeltabletop/Narukami---Hackathon, público y clonable sin credenciales. |
+| Video de máximo cinco minutos, sin credenciales | 3:47. Enlace en la cabecera de este README. |
+| La propiedad intelectual permanece en el equipo | `LICENSE`: derechos reservados, con permiso de evaluación para la organización y el jurado. |
+
+---
+
+## Declaración de origen del trabajo
+
+**Declaración obligatoria del reto.** Omitirla descalifica.
+
+**Hay una base preexistente y está declarada.** Diego Laverde escribió **Rastro** y la entregó al
+equipo el 9 de septiembre de 2026. Se importó **sin modificar** en el commit `57af18a`, que figura
+a su nombre. Ese commit es una instantánea, no el historial previo de Rastro: comparar cualquier
+commit posterior contra él muestra sin ambigüedad qué es base y qué se construyó encima. El
+producto se renombró a **Chen** ese mismo día.
+
+| | Qué |
+|---|---|
+| **Lo que traía la base** | El análisis de consumo de tarjeta, React con Vite, Express, SQLite, los fixtures sintéticos, las primeras pruebas y un adaptador de QVAC que nunca se había ejecutado contra un modelo. |
+| **Lo que se construyó encima** | El dominio de cuenta con productos separados; planificación, escenarios y proyección día a día; las veinte categorías con la distinción entre gasto y traslado; el historial por rubro y por comercio; el asistente conversacional y su guía; el dictado local con Whisper; el contrato de intención tipada con redacción determinista, su guardián de coherencia y la gramática que impide inventar entidades; el veredicto de memoria antes de descargar; y toda la verificación, incluida la corrida sin red. |
+
+El resto se construyó **durante el hackatón**. El `git log` lo refleja commit por commit.
+
+### Lo que no escribimos nosotros, y va declarado
+
+| Qué | De dónde | Cómo se usa |
+|---|---|---|
+| **SDK de QVAC** (`@qvac/sdk` 0.19.0) | Tether, Apache-2.0 | Toda la inferencia. Es la pieza que el reto pide usar. |
+| **Modelos** `QWEN3_4B_INST_Q4_K_M` y `WHISPER_BASE_Q8_0` | Catálogo de QVAC, Apache-2.0 | Se descargan del catálogo. No están entrenados ni ajustados por nosotros. |
+| **React, Vite, Express, express-session, Zod, tsx** | Sus proyectos, MIT | Interfaz, servidor, validación y herramientas. Fijados en `package-lock.json`. |
+| **TypeScript** | Microsoft, Apache-2.0 | Tipos y compilación. |
+| **Playwright** | Microsoft, Apache-2.0 | Solo para el recorrido de verificación de interfaz. No viaja en producción. |
+| **Logotipo y video de marca de Caja de Ahorros** | Carpeta oficial del hackatón | Solo para identificar el reto. Ver «Identidad visual». |
+| **Asistencia de IA** (Claude Code, Codex) | Anthropic, OpenAI | Asistente de programación durante todo el reto, con revisión humana de cada cambio. |
+
+No se usó plantilla de interfaz, tema comprado ni librería de componentes: las tarjetas, las
+barras y los iconos se dibujan a mano.
 
 ---
 
@@ -386,6 +409,8 @@ El color institucional `#1858A0` se tomó del propio logotipo y define la barra 
 y `theme-color`. El video se reproduce mientras el modelo local carga. No se presupone aval de Caja
 de Ahorros ni titularidad sobre su marca.
 
+---
+
 ## Dónde está todo
 
 | Qué | Dónde |
@@ -395,6 +420,8 @@ de Ahorros ni titularidad sobre su marca.
 | Audio de prueba para el dictado | [`audio/`](audio/) |
 | Verificación que corre en cada push | [`.github/workflows/check.yml`](.github/workflows/check.yml) |
 | Variables de entorno | [`.env.example`](.env.example) |
+
+---
 
 ## El nombre
 
